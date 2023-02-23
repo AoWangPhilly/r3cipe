@@ -107,6 +107,9 @@ export default function Navbar() {
                             <MenuItem onClick={handleCloseNavMenu}>
                                 <Link to="/library">Library</Link>
                             </MenuItem>
+                            <MenuItem onClick={handleCloseNavMenu}>
+                                <Link to="/create">Create a Recipe</Link>
+                            </MenuItem>
                         </Menu>
                     </Box>
                     {/* <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} /> */}
@@ -162,6 +165,16 @@ export default function Navbar() {
                             sx={{ my: 2, color: "white", display: "block" }}
                         >
                             Library
+                        </Button>
+                        <Button
+                            key="create-page"
+                            onClick={() => {
+                                handleCloseNavMenu();
+                                navigate("/create");
+                            }}
+                            sx={{ my: 2, color: "white", display: "block" }}
+                        >
+                            Create a Recipe
                         </Button>
                     </Box>
 
