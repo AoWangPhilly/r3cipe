@@ -1,1 +1,1 @@
-# budget-app
+# recipe-app
