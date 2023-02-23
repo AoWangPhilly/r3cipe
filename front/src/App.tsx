@@ -4,16 +4,23 @@ import {
     Routes,
     Route,
     Link,
-    Navigate,
 } from "react-router-dom";
-import Home from "./pages/";
+import Search from "./pages/Search";
+import Circle from "./pages/Circle";
+import Library from "./pages/Library"
+import Navbar from "./components/Navbar";
+import Settings from "./pages/Settings";
+
 
 function App() {
     return (
         <Router>
+            <Navbar />
             <Routes>
-                <Route path="/" element={<Home />} />
-                
+                <Route path="/" element={<Search />} />
+                <Route path="/circle" element={<Circle />} />
+                <Route path="/library" element={<Library />} />
+                <Route path="/settings" element={<Settings />} />
                 <Route
                     path="*"
                     element={
