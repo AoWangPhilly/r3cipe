@@ -13,9 +13,6 @@ dotenv.config({ path: path.join(__dirname, "../.env")});
 const API_KEY = process.env.API_KEY;
 // console.log(API_KEY);
 
-const ingredients = JSON.parse(
-    fs.readFileSync("../data/ingredients.json", "utf8")
-);
 let app = express();
 
 app.use(express.static(path.join(__dirname, "public")));
