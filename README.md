@@ -1,5 +1,9 @@
 # recipe-app
 
+## Spoonacular API
+This is a recipe app that uses the Spoonacular API to fetch recipes. Make an account on Spoonacular to get an API key. 
+at https://spoonacular.com/food-api/console#Dashboard
+
 ## Setup
 
 1. Clone the repository
