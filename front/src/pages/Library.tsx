@@ -21,7 +21,7 @@ export const Library = () => {
                 alignItems="center"
             >
                 {favorites.map((recipe) => (
-                    <Grid item xs={1}>
+                    <Grid item xs={1} key={recipe.id}>
                         <RecipeThumbnail recipe={recipe} />
                     </Grid>
                 ))}

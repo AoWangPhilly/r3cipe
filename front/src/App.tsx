@@ -8,6 +8,8 @@ import Settings from "./pages/Settings";
 import Recipe from "./pages/Recipe";
 import CircleSelected from "./pages/CircleSelected";
 import Create from "./pages/Create";
+import { Login } from "./pages/Login";
+import SignUp from "./pages/SignUp";
 
 function App() {
     return (
@@ -19,10 +21,10 @@ function App() {
                 <Route path="/circle/:id" element={<CircleSelected />} />
                 <Route path="/library" element={<Library />} />
                 <Route path="/settings" element={<Settings />} />
-                <Route path="/recipe">
-                    <Route path=":id" element={<Recipe />} />
-                </Route>
+                <Route path="/recipe/:id" element={<Recipe />} />
                 <Route path="/create" element={<Create />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<SignUp />} />
                 <Route
                     path="*"
                     element={
