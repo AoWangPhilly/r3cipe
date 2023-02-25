@@ -2,7 +2,7 @@
   "name": "recipe-app",
   "scripts": {
     "build": "rm -rf out && mkdir out && tsc",
-    "build:deploy": "rm -rf out && mkdir out && tsc && (cd front && npm run build)",
+    "build:deploy": "rm -rf out && mkdir out && tsc && (cd frontend && npm run build)",
     "start": "cd out && node server.js",
     "watch": "npm run build && tsc-watch --onSuccess \"npm run start\"",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --runInBand --rootDir=src"
