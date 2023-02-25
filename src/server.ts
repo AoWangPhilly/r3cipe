@@ -7,6 +7,7 @@ import * as fs from "fs";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import { config } from "./config/config.js";
+import { userProfileRouter } from "./routes/UserProfile.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -39,6 +40,11 @@ app.use(
     })
 );
 app.use(express.json());
+
+/**
+ * Routers
+ */
+app.use("/api/user/profiles", userProfileRouter);
 
 app.get("/*", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
