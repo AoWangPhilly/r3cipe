@@ -11,6 +11,7 @@ const MONGO_USERNAME = process.env.MONGO_USERNAME || "";
 const MONGO_PASSWORD = process.env.MONGO_PASSWORD || "";
 const MONGO_URL = `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@team-meatball.af1rvsy.mongodb.net`;
 console.log(MONGO_URL);
+
 const SERVER_PORT = process.env.SERVER_PORT
     ? Number(process.env.SERVER_PORT)
     : 1137;

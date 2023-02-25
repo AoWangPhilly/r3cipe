@@ -51,9 +51,9 @@ app.get("/*", (req, res) => {
 });
 
 // run server
-let port = 3000;
-let host = "localhost";
-let protocol = "http";
+const port = 3000;
+const host = "localhost";
+const protocol = "http";
 app.listen(port, host, () => {
     console.log(`${protocol}://${host}:${port}`);
 });
