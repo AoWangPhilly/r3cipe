@@ -1,24 +1,30 @@
 import { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
-import UserProfile from "../models/UserProfile.js";
+import UserProfile, {
+    createUserProfileSchema,
+    updateUserProfileSchema,
+} from "../models/UserProfile.js";
 
-const createUserProfile = (req: Request, res: Response, next: NextFunction) => {
-    const { name, email, password, profileUrl } = req.body;
-    const userProfile = new UserProfile({
-        _id: new mongoose.Types.ObjectId(),
-        name,
-        email,
-        password,
-        profileUrl,
-    });
-    return userProfile
-        .save()
-        .then((userProfile) => {
-            res.status(201).json({ userProfile });
-        })
-        .catch((error) => {
-            res.status(500).json({ error });
+const createUserProfile = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const validatedData = createUserProfileSchema.parse(req.body);
+        const { name, email, password, profileUrl } = validatedData;
+        const userProfile = new UserProfile({
+            _id: new mongoose.Types.ObjectId(),
+            name,
+            email,
+            password,
+            profileUrl,
         });
+        const savedUserProfile = await userProfile.save();
+        res.status(201).json({ userProfile: savedUserProfile });
+    } catch (error: any) {
+        res.status(400).json({ message: error.message });
+    }
 };
 
 const getUserProfile = (req: Request, res: Response, next: NextFunction) => {
@@ -46,17 +52,27 @@ const getAllUserProfiles = (
         });
 };
 
-const updateUserProfile = (req: Request, res: Response, next: NextFunction) => {
-    const { userId } = req.params;
-    return UserProfile.findByIdAndUpdate(userId, req.body, { new: true })
-        .then((userProfile) => {
-            if (userProfile) {
-                return res.status(201).json({ userProfile });
-            } else {
-                return res.status(404).json({ message: "not found" });
-            }
-        })
-        .catch((error) => res.status(500).json({ error }));
+const updateUserProfile = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const validatedData = updateUserProfileSchema.parse(req.body);
+        const userProfileId = req.params.userProfileId;
+        const updatedUserProfile = await UserProfile.findByIdAndUpdate(
+            userProfileId,
+            validatedData,
+            { new: true }
+        );
+        if (updatedUserProfile) {
+            res.status(200).json({ userProfile: updatedUserProfile });
+        } else {
+            res.status(404).json({ message: "User profile not found" });
+        }
+    } catch (error: any) {
+        res.status(400).json({ message: error.message });
+    }
 };
 
 const deleteUserProfile = (req: Request, res: Response, next: NextFunction) => {
