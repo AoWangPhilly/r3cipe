@@ -2,8 +2,10 @@ import { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
 import UserProfile, {
     createUserProfileSchema,
+    IUserProfile,
     updateUserProfileSchema,
 } from "../models/UserProfile.js";
+import * as argon2 from "argon2";
 
 const createUserProfile = async (
     req: Request,
@@ -13,11 +15,12 @@ const createUserProfile = async (
     try {
         const validatedData = createUserProfileSchema.parse(req.body);
         const { name, email, password, profileUrl } = validatedData;
+        const hashedPassword = await argon2.hash(password);
         const userProfile = new UserProfile({
             _id: new mongoose.Types.ObjectId(),
             name,
             email,
-            password,
+            password: hashedPassword,
             profileUrl,
         });
         const savedUserProfile = await userProfile.save();
@@ -59,18 +62,32 @@ const updateUserProfile = async (
 ) => {
     try {
         const validatedData = updateUserProfileSchema.parse(req.body);
-        const userProfileId = req.params.userProfileId;
-        const updatedUserProfile = await UserProfile.findByIdAndUpdate(
-            userProfileId,
-            validatedData,
-            { new: true }
-        );
-        if (updatedUserProfile) {
-            res.status(200).json({ userProfile: updatedUserProfile });
-        } else {
-            res.status(404).json({ message: "User profile not found" });
+        const { name, email, password, profileUrl } =
+            validatedData as IUserProfile;
+        const userId = req.params.userId;
+        const userProfile = await UserProfile.findById(userId);
+        if (!userProfile) {
+            return res.status(404).json({ message: "not found" });
         }
+        if (name) {
+            userProfile.name = name;
+        }
+
+        if (email) {
+            userProfile.email = email;
+        }
+
+        if (profileUrl) {
+            userProfile.profileUrl = profileUrl;
+        }
+
+        if (password) {
+            userProfile.password = await argon2.hash(password);
+        }
+        const updatedUserProfile = await userProfile.save();
+        res.status(201).json({ userProfile: updatedUserProfile });
     } catch (error: any) {
+        console.log("HERE");
         res.status(400).json({ message: error.message });
     }
 };
