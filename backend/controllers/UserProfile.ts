@@ -87,7 +87,6 @@ const updateUserProfile = async (
         const updatedUserProfile = await userProfile.save();
         res.status(201).json({ userProfile: updatedUserProfile });
     } catch (error: any) {
-        console.log("HERE");
         res.status(400).json({ message: error.message });
     }
 };

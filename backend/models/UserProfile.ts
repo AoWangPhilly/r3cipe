@@ -19,7 +19,7 @@ export type IUserProfile = z.infer<typeof createUserProfileSchema>;
 
 export interface IUserProfileModel extends IUserProfile, Document {}
 
-const UserProfileSchema: Schema = new Schema(
+const UserProfileSchema: Schema = new Schema<IUserProfile>(
     {
         name: { type: String, required: true },
         email: { type: String, required: true, unique: true },

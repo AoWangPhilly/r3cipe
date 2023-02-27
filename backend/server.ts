@@ -9,6 +9,8 @@ import mongoose from "mongoose";
 import { config } from "./config/config.js";
 
 import { userProfileRouter } from "./routes/UserProfile.js";
+import { ingredientRouter } from "./routes/Ingredient.js";
+
 import spoonacularRecipeRouter from "./routes/SpoonacularRecipe.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -48,6 +50,7 @@ app.use(express.json());
  */
 app.use("/api/user/profiles", userProfileRouter);
 app.use("/api/recipe", spoonacularRecipeRouter); // TODO: change
+app.use("/api/ingredients", ingredientRouter);
 
 app.get("/*", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
