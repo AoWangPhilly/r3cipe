@@ -6,3 +6,5 @@ export const userProfileRouter: Router = Router();
 userProfileRouter.post("/", controller.createUserProfile);
 userProfileRouter.get("/", controller.getAllUserProfiles);
 userProfileRouter.get("/:userId", controller.getUserProfile);
+userProfileRouter.put("/:userId", controller.updateUserProfile);
+userProfileRouter.delete("/:userId", controller.deleteUserProfile);
