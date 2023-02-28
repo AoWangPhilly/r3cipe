@@ -12,6 +12,7 @@ import { userProfileRouter } from "./routes/UserProfile.js";
 import { ingredientRouter } from "./routes/Ingredient.js";
 
 import spoonacularRecipeRouter from "./routes/SpoonacularRecipe.js";
+import { socialCircleRouter } from "./routes/SocialCircle.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -51,6 +52,7 @@ app.use(express.json());
 app.use("/api/user/profiles", userProfileRouter);
 app.use("/api/recipe", spoonacularRecipeRouter); // TODO: change
 app.use("/api/ingredients", ingredientRouter);
+app.use("/api/circles", socialCircleRouter);
 
 app.get("/*", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));

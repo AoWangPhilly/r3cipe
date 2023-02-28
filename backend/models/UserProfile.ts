@@ -17,7 +17,7 @@ export const updateUserProfileSchema = z.object({
 
 export type IUserProfile = z.infer<typeof createUserProfileSchema>;
 
-export interface IUserProfileModel extends IUserProfile, Document {}
+export type IUserProfileModel = IUserProfile & Document;
 
 const UserProfileSchema: Schema = new Schema<IUserProfile>(
     {
