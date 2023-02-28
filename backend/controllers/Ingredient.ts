@@ -29,11 +29,12 @@ export const getIngredients = async (req: Request, res: Response) => {
 // Get a specific ingredient by id
 export const getIngredientById = async (req: Request, res: Response) => {
     const { id } = req.params;
+    console.log(id);
 
     try {
-        const ingredient: IIngredient | null = await IngredientModel.findById(
-            id
-        );
+        const ingredient: IIngredient | null = await IngredientModel.findOne({
+            id: id,
+        });
         if (!ingredient) {
             return res.status(404).json({ error: "Ingredient not found" });
         }
@@ -47,11 +48,12 @@ export const getIngredientById = async (req: Request, res: Response) => {
 export const updateIngredient = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { name } = req.body;
-
+    console.log(name);
+    console.log(id);
     try {
         const ingredient: IIngredient | null =
-            await IngredientModel.findByIdAndUpdate(
-                id,
+            await IngredientModel.findOneAndUpdate(
+                { id: id },
                 { name },
                 { new: true }
             );
@@ -70,7 +72,7 @@ export const deleteIngredient = async (req: Request, res: Response) => {
 
     try {
         const ingredient: IIngredient | null =
-            await IngredientModel.findByIdAndDelete(id);
+            await IngredientModel.findOneAndDelete({ id });
         if (!ingredient) {
             return res.status(404).json({ error: "Ingredient not found" });
         }
