@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
-import SocialCircle from "../models/SocialCircle.js";
+import SocialCircle, { ISocialCircle } from "../models/SocialCircle.js";
 
 const createSocialCircle = async (
     req: Request,
@@ -22,8 +22,8 @@ const createSocialCircle = async (
 };
 
 const getSocialCircle = (req: Request, res: Response, next: NextFunction) => {
-    const { socialCircleId } = req.params;
-    return SocialCircle.findById(socialCircleId)
+    const { id } = req.params;
+    return SocialCircle.findById(id)
         .then((socialCircle) =>
             socialCircle
                 ? res.status(200).json({ socialCircle })
@@ -51,21 +51,22 @@ const updateSocialCircle = async (
     res: Response,
     next: NextFunction
 ) => {
+    const { id } = req.params;
+    const { name, ownerId, posts, members, profileUrl } = req.body;
     try {
-        const { socialCircleId } = req.params;
-        const { name, ownerId, posts, members, profileUrl } = req.body;
-        const socialCircle = await SocialCircle.findById(socialCircleId);
-        if (socialCircle) {
-            socialCircle.name = name;
-            socialCircle.ownerId = ownerId;
-            socialCircle.posts = posts;
-            socialCircle.members = members;
-            socialCircle.profileUrl = profileUrl;
-            const savedSocialCircle = await socialCircle.save();
-            res.status(201).json({ socialCircle: savedSocialCircle });
-        } else {
+        const socialCircle: ISocialCircle | null =
+            await SocialCircle.findByIdAndUpdate(id, {
+                name,
+                ownerId,
+                posts,
+                members,
+                profileUrl,
+            });
+
+        if (!socialCircle) {
             res.status(404).json({ message: "Not found" });
         }
+        return res.status(200).json({ socialCircle });
     } catch (error: any) {
         res.status(400).json({ message: error.message });
     }
@@ -76,8 +77,8 @@ const deleteSocialCircle = (
     res: Response,
     next: NextFunction
 ) => {
-    const { socialCircleId } = req.params;
-    return SocialCircle.findByIdAndDelete(socialCircleId)
+    const { id } = req.params;
+    return SocialCircle.findByIdAndDelete(id)
         .then((socialCircle) =>
             socialCircle
                 ? res.status(200).json({ socialCircle })
