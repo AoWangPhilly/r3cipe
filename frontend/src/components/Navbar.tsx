@@ -12,7 +12,9 @@ import {
     Button,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, redirect, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { AuthContext } from "../context/AuthContext";
 
 //use MUI navbar component
 
@@ -24,6 +26,7 @@ export default function Navbar() {
         null
     );
 
+    const { isAuth, setIsAuth } = React.useContext(AuthContext);
     const navigate = useNavigate();
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -40,6 +43,19 @@ export default function Navbar() {
 
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
+    };
+
+    const handleLogout = async () => {
+        // let response = await axios.get("/api/logout", {
+        //     withCredentials: true,
+        // });
+        // if (response.status === 200) {
+        //     setIsAuth(false);
+        //     navigate("/");
+        // }
+        //TODO change this to API call
+        setIsAuth(false);
+        navigate("/");
     };
 
     return (
@@ -177,40 +193,57 @@ export default function Navbar() {
                             Create a Recipe
                         </Button>
                     </Box>
-
-                    <Box sx={{ flexGrow: 0 }}>
-                        <Tooltip title="Open settings">
-                            <IconButton
-                                onClick={handleOpenUserMenu}
-                                sx={{ p: 0 }}
+                    {!isAuth ? (
+                        <Box sx={{ flexGrow: 0 }}>
+                            {/* login button with icon */}
+                            <Button
+                                key="login-page"
+                                onClick={() => {
+                                    handleCloseNavMenu();
+                                    navigate("/login");
+                                }}
+                                sx={{ my: 2, color: "white", display: "block" }}
                             >
-                                <Typography>PROF PIC</Typography>
-                            </IconButton>
-                        </Tooltip>
-                        <Menu
-                            sx={{ mt: "45px" }}
-                            id="menu-appbar"
-                            anchorEl={anchorElUser}
-                            anchorOrigin={{
-                                vertical: "top",
-                                horizontal: "right",
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: "top",
-                                horizontal: "right",
-                            }}
-                            open={Boolean(anchorElUser)}
-                            onClose={handleCloseUserMenu}
-                        >
-                            <MenuItem onClick={handleCloseUserMenu}>
-                                <Link to="/settings">Settings</Link>
-                            </MenuItem>
-                            <MenuItem onClick={handleCloseUserMenu}>
-                                <Link to="/logout">Logout</Link>
-                            </MenuItem>
-                        </Menu>
-                    </Box>
+                                Login
+                            </Button>
+                        </Box>
+                    ) : (
+                        <Box sx={{ flexGrow: 0 }}>
+                            <Tooltip title="Open settings">
+                                <IconButton
+                                    onClick={handleOpenUserMenu}
+                                    sx={{ p: 0 }}
+                                >
+                                    <Typography>PROF PIC</Typography>
+                                </IconButton>
+                            </Tooltip>
+                            <Menu
+                                sx={{ mt: "45px" }}
+                                id="menu-appbar"
+                                anchorEl={anchorElUser}
+                                anchorOrigin={{
+                                    vertical: "top",
+                                    horizontal: "right",
+                                }}
+                                keepMounted
+                                transformOrigin={{
+                                    vertical: "top",
+                                    horizontal: "right",
+                                }}
+                                open={Boolean(anchorElUser)}
+                                onClose={handleCloseUserMenu}
+                            >
+                                <MenuItem onClick={handleCloseUserMenu}>
+                                    <Link to="/settings">Settings</Link>
+                                </MenuItem>
+                                <MenuItem onClick={handleCloseUserMenu}>
+                                    <Link onClick={handleLogout} to="/">
+                                        Logout
+                                    </Link>
+                                </MenuItem>
+                            </Menu>
+                        </Box>
+                    )}
                 </Toolbar>
             </Container>
         </AppBar>

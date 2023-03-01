@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
 import {
     Avatar,
     Button,
@@ -12,7 +12,8 @@ import {
     Container,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import { Link } from "react-router-dom";
+import { Link, redirect, useNavigate, useSearchParams } from "react-router-dom";
+import { AuthContext, checkAuth } from "../context/AuthContext";
 
 type FormState = {
     email: string;
@@ -24,6 +25,17 @@ export const Login: React.FC = () => {
         email: "",
         password: "",
     });
+
+    const { isAuth, setIsAuth } = useContext(AuthContext);
+    const navigate = useNavigate();
+
+    const [searchParams] = useSearchParams();
+
+    // useEffect(() => {
+    //     checkAuth().then((result) => {
+    //         setIsAuth(result);
+    //     });
+    // }, []);
 
     const handleInputChange = (
         e: React.ChangeEvent<HTMLInputElement>
@@ -37,8 +49,10 @@ export const Login: React.FC = () => {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
         e.preventDefault();
-        console.log("Login");
-        // Submit login form here
+        console.log("AUTOMATICALLY LOGGING IN FOR TESTING");
+        //TODO change this to API call
+        setIsAuth(true);
+        navigate("/" + searchParams.get("redirect") || "/");
     };
 
     return (
