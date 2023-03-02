@@ -49,7 +49,6 @@ export const SignUp: React.FC = () => {
 
     return (
         <Container component="main" maxWidth="xs">
-            <CssBaseline />
             <div>
                 <Avatar>
                     <LockOutlinedIcon />

@@ -78,8 +78,7 @@ export const Login: React.FC = () => {
 
     return (
         <Container component="main" maxWidth="xs">
-            <CssBaseline />
-            <div>
+            <div style={{alignContent: "center"}}>
                 <Avatar>
                     <LockOutlinedIcon />
                 </Avatar>

@@ -10,6 +10,7 @@ import {
     Menu,
     MenuItem,
     Button,
+    Avatar,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Link, redirect, useNavigate } from "react-router-dom";
@@ -57,7 +58,7 @@ export default function Navbar() {
 
     return (
         <AppBar position="static">
-            <Container maxWidth="xl">
+            <Container maxWidth="xl" sx={{height: 70}}>
                 <Toolbar disableGutters>
                     {/* <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} /> */}
                     <Typography
@@ -206,13 +207,19 @@ export default function Navbar() {
                         </Box>
                     ) : (
                         <Box sx={{ flexGrow: 0 }}>
-                            <Tooltip title="Open settings">
-                                <IconButton
+                            <Tooltip title="User Menu">
+                                <Avatar
                                     onClick={handleOpenUserMenu}
-                                    sx={{ p: 0 }}
+                                    sx={{
+                                        width: 50,
+                                        height: 50,
+                                        cursor: "pointer",
+                                        background:
+                                            "linear-gradient(45deg, #2196F3 40%, #21CBF3 80%)",
+                                    }}
                                 >
-                                    <Typography>PROF PIC</Typography>
-                                </IconButton>
+                                    {"M"}
+                                </Avatar>
                             </Tooltip>
                             <Menu
                                 sx={{ mt: "45px" }}
