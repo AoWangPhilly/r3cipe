@@ -2,12 +2,8 @@ import { useState } from "react";
 import {
     Avatar,
     Button,
-    CssBaseline,
     TextField,
-    FormControlLabel,
-    Checkbox,
     Grid,
-    Box,
     Typography,
     Container,
 } from "@mui/material";
@@ -15,8 +11,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { Link } from "react-router-dom";
 
 type FormState = {
-    firstName: string;
-    lastName: string;
+    name: string;
     email: string;
     password: string;
     confirm: string;
@@ -24,8 +19,7 @@ type FormState = {
 
 export const SignUp: React.FC = () => {
     const [formState, setFormState] = useState<FormState>({
-        firstName: "",
-        lastName: "",
+        name: "",
         email: "",
         password: "",
         confirm: "",
@@ -59,30 +53,17 @@ export const SignUp: React.FC = () => {
                 <br />
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={1}>
-                        <Grid item xs={12} sm={6}>
+                        <Grid item xs={12}>
                             <TextField
-                                autoComplete="fname"
-                                name="firstName"
+                                autoComplete="name"
+                                name="name"
                                 variant="outlined"
                                 required
                                 fullWidth
-                                id="firstName"
-                                label="First Name"
-                                value={formState.firstName}
+                                id="name"
+                                label="Name"
+                                value={formState.name}
                                 autoFocus
-                                onChange={handleInputChange}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                variant="outlined"
-                                required
-                                fullWidth
-                                id="lastName"
-                                label="Last Name"
-                                name="lastName"
-                                autoComplete="lname"
-                                value={formState.lastName}
                                 onChange={handleInputChange}
                             />
                         </Grid>
