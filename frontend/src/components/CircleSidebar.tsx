@@ -98,7 +98,7 @@ const CircleSidebar = () => {
             >
                 or
             </Typography>
-            <Link to="/circlesignup" style={{ textDecoration: "none" }}>
+            <Link to="/circle-create" style={{ textDecoration: "none" }}>
                 <Button
                     variant="contained"
                     sx={{

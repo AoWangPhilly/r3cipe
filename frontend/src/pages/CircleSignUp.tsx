@@ -139,13 +139,6 @@ export const CircleSignUp: React.FC = () => {
                     >
                         Sign Up
                     </Button>
-                    <Grid container>
-                        <Grid item>
-                            <Link to="/Circle">
-                                {"Already created a circle? Join it from here"}
-                            </Link>
-                        </Grid>
-                    </Grid>
                 </form>
             </div>
         </Container>
