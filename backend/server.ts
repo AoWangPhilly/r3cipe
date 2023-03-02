@@ -3,16 +3,15 @@ import { fileURLToPath } from "url";
 import path from "path";
 import cors from "cors";
 import dotenv from "dotenv";
-import mongoose from "mongoose";
 import { config } from "./config/config.js";
+import mongoose from "mongoose";
+import cookieParser from "cookie-parser";
 
+import authRouter from "./routes/auth.js";
 import { userProfileRouter } from "./routes/UserProfile.js";
 import { ingredientRouter } from "./routes/Ingredient.js";
-import authRouter from "./routes/auth.js";
-
-import spoonacularRecipeRouter from "./routes/SpoonacularRecipe.js";
 import { socialCircleRouter } from "./routes/SocialCircle.js";
-import cookieParser from "cookie-parser";
+import spoonacularRecipeRouter from "./routes/SpoonacularRecipe.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
