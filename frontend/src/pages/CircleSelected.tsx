@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 
 const CircleSelected: React.FC = () => {
     const { id } = useParams<{ id: string }>();

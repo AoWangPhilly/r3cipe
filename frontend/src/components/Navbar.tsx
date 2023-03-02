@@ -13,7 +13,6 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Link, redirect, useNavigate } from "react-router-dom";
-import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 
 //use MUI navbar component
@@ -46,16 +45,14 @@ export default function Navbar() {
     };
 
     const handleLogout = async () => {
-        // let response = await axios.get("/api/logout", {
-        //     withCredentials: true,
-        // });
-        // if (response.status === 200) {
-        //     setIsAuth(false);
-        //     navigate("/");
-        // }
-        //TODO change this to API call
-        setIsAuth(false);
-        navigate("/");
+        let response = await fetch("/api/auth/logout", {
+            method: "POST",
+            credentials: "include",
+        });
+        if (response.status === 200) {
+            setIsAuth(false);
+            navigate("/");
+        }
     };
 
     return (

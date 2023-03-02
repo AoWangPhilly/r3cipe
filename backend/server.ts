@@ -2,8 +2,6 @@ import express from "express";
 import { fileURLToPath } from "url";
 import path from "path";
 import cors from "cors";
-import axios from "axios";
-import * as fs from "fs";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import { config } from "./config/config.js";

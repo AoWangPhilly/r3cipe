@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { RecipeType } from "../types";
-import axios from "axios";
 
 const Recipe: React.FC = () => {
     const { id } = useParams<{ id: string }>();

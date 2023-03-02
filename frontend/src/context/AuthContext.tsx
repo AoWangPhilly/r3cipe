@@ -1,4 +1,3 @@
-import axios from "axios";
 import React, { createContext, useState } from "react";
 
 interface AuthContextProps {
@@ -16,12 +15,11 @@ interface AuthContextProviderProps {
 }
 
 export const checkAuth = async () => {
-    // let response = await axios.get("/api/checkLogin", {
-    //     withCredentials: true,
-    // });
-    // return response.status === 200;
-    //TODO change this to API call
-    return true;
+    let response = await fetch("/api/auth/checkLogin", {
+        method: "GET",
+        credentials: "include",
+    });
+    return response.status === 200;
 };
 
 export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({
