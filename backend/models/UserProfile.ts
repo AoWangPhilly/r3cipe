@@ -1,6 +1,16 @@
 import mongoose, { Document, Schema } from "mongoose";
 import * as z from "zod";
 
+export const loginSchema = z.object({
+    email: z
+        .string({ required_error: "Email is required" })
+        .min(1, { message: "Email must not be empty" })
+        .email({ message: "Email is invalid" }),
+    password: z
+        .string({ required_error: "Password is required" })
+        .min(6, { message: "Password must have at least 6 characters" }),
+});
+
 export const createUserProfileSchema = z.object({
     name: z.string().min(2),
     email: z.string().email(),
