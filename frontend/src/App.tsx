@@ -83,10 +83,8 @@ function App() {
                             path="/settings"
                             element={<GoLogin redirect="settings" />}
                         />
-                        <Route
-                            path="/recipe/:id"
-                            element={<GoLogin redirect="recipe" />}
-                        />
+                        <Route path="/recipe/:id" element={<Recipe />} />
+
                         <Route
                             path="/create"
                             element={<GoLogin redirect="create" />}
