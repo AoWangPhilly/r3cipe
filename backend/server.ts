@@ -10,6 +10,7 @@ import { config } from "./config/config.js";
 
 import { userProfileRouter } from "./routes/UserProfile.js";
 import { ingredientRouter } from "./routes/Ingredient.js";
+import authRouter from "./routes/auth.js";
 
 import spoonacularRecipeRouter from "./routes/SpoonacularRecipe.js";
 import { socialCircleRouter } from "./routes/SocialCircle.js";
@@ -41,7 +42,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(
     cors({
         origin: ["http://localhost:3000", "http://localhost:3001"],
-        credentials: true,
+        credentials: true, // tells client to send token
     })
 );
 app.use(express.json());
@@ -49,10 +50,11 @@ app.use(express.json());
 /**
  * Routes
  */
+app.use("/api/auth", authRouter);
 app.use("/api/user/profiles", userProfileRouter);
-app.use("/api/recipe", spoonacularRecipeRouter); // TODO: change
 app.use("/api/ingredients", ingredientRouter);
 app.use("/api/circles", socialCircleRouter);
+app.use("/api/recipe", spoonacularRecipeRouter); // TODO: change
 
 app.get("/*", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
