@@ -26,6 +26,7 @@ export const Login: React.FC = () => {
         password: "",
     });
 
+    const [error, setError] = useState<string>("");
     const { isAuth, setIsAuth } = useContext(AuthContext);
     const navigate = useNavigate();
 
@@ -47,12 +48,32 @@ export const Login: React.FC = () => {
         }));
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
-        e.preventDefault();
-        console.log("AUTOMATICALLY LOGGING IN FOR TESTING");
-        //TODO change this to API call
-        setIsAuth(true);
-        navigate("/" + searchParams.get("redirect") || "/");
+    const handleSubmit = async (
+        e: React.FormEvent<HTMLFormElement>
+    ): Promise<void> => {
+        e.preventDefault(); // prevent default form submission behavior
+        if (formState.email === "" || formState.password === "") {
+            alert("Please fill in all fields");
+            return;
+        }
+        let response = await fetch("/api/auth/login", {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formState),
+        });
+        if (response.status === 200) {
+            setIsAuth(true);
+            if (searchParams.get("redirect") !== null) {
+                navigate("/" + searchParams.get("redirect"));
+            } else {
+                navigate("/");
+            }
+        } else {
+            setError("Invalid username or password");
+        }
     };
 
     return (
@@ -100,6 +121,7 @@ export const Login: React.FC = () => {
                     >
                         Login
                     </Button>
+                    <Typography color="firebrick">{error}</Typography>
                     <Grid container>
                         {/* <Grid item xs>
                             <Link href="#" variant="body2">
