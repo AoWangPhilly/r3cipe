@@ -14,6 +14,7 @@ import authRouter from "./routes/auth.js";
 
 import spoonacularRecipeRouter from "./routes/SpoonacularRecipe.js";
 import { socialCircleRouter } from "./routes/SocialCircle.js";
+import cookieParser from "cookie-parser";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -37,15 +38,15 @@ mongoose
         console.log("DB connection failed");
     });
 
-app.use(express.static(path.join(__dirname, "public")));
-
 app.use(
     cors({
         origin: ["http://localhost:3000", "http://localhost:3001"],
         credentials: true, // tells client to send token
     })
 );
+app.use(cookieParser());
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "public")));
 
 /**
  * Routes

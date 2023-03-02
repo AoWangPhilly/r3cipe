@@ -19,11 +19,6 @@ const cookieOptions: CookieOptions = {
 };
 
 async function checkLogin(req: Request, res: Response) {
-    if (!req.cookies) {
-        console.log("No cookies");
-        return res.status(400).json();
-    }
-
     const { token } = req.cookies;
     if (tokenStorage.hasOwnProperty(token)) {
         return res.status(200).json({ message: "Logged in" });
@@ -96,6 +91,7 @@ async function login(
 async function logout(req: Request, res: Response) {
     // sometimes there's no cookies property in Postman - this might be unnecessary
     if (!req.cookies) {
+        console.log(req.cookies);
         console.log("No cookies");
         return res.json();
     }
