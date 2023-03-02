@@ -1,3 +1,8 @@
+export type ErrorMsg = { errors: string[] };
+
+/**
+ * Spoonacular/User Recipe Types
+ */
 //This is the type that we will reduce the API response to. We will only use the data we need.
 //When users are creating their recipe, we will ask them for this data.
 export interface RecipeType {
