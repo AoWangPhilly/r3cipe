@@ -1,42 +1,43 @@
+import CircleSidebar from "../components/CircleSidebar";
 import GroupCard from "../components/GroupCard";
 
 // just here as an example
 const groupMembers = [
     {
         alt: "Dan",
-        src: "https://dan.com",
+        src: "dan.com",
     },
     {
         alt: "Tyler",
-        src: "https://tyler.com",
+        src: "tyler.com",
     },
     {
         alt: "Ao",
-        src: "https://ao.com",
+        src: "ao.com",
     },
     {
         alt: "Abe",
-        src: "https://abe.com",
-    },
-    {
-        alt: "Aaaa",
-        src: "https://aaaa.com",
+        src: "abe.com",
     },
 ];
-export const Circle = () => {
+
+const Circle = () => {
     return (
         <div>
             <h1>Circle</h1>
+            <CircleSidebar />
             <GroupCard
                 title="CST480"
                 subtitle={`Members: ${groupMembers.length}`}
                 avatars={groupMembers}
+                code="1234"
             />
 
             <GroupCard
                 title="Fam"
                 subtitle={`Members: ${groupMembers.length}`}
                 avatars={groupMembers}
+                code="5678"
             />
         </div>
     );

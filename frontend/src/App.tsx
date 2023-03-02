@@ -17,6 +17,7 @@ import { Login } from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import { useContext } from "react";
 import { AuthContext } from "./context/AuthContext";
+import CircleSignUp from "./pages/CircleSignUp";
 
 function App() {
     const { isAuth } = useContext(AuthContext);
@@ -54,6 +55,10 @@ function App() {
                         <Route path="/create" element={<Create />} />
                         <Route path="/login" element={<GoHome />} />
                         <Route path="/signup" element={<GoHome />} />
+                        <Route
+                            path="/circlesignup"
+                            element={<CircleSignUp />}
+                        />
                     </>
                 ) : (
                     <>
