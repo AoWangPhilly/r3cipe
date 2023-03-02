@@ -49,16 +49,16 @@ function App() {
                             path="/circle/:id"
                             element={<CircleSelected />}
                         />
+                        <Route
+                            path="/circle-create"
+                            element={<CircleSignUp />}
+                        />
                         <Route path="/library" element={<Library />} />
                         <Route path="/settings" element={<Settings />} />
                         <Route path="/recipe/:id" element={<Recipe />} />
                         <Route path="/create" element={<Create />} />
                         <Route path="/login" element={<GoHome />} />
                         <Route path="/signup" element={<GoHome />} />
-                        <Route
-                            path="/circlesignup"
-                            element={<CircleSignUp />}
-                        />
                     </>
                 ) : (
                     <>
@@ -70,6 +70,10 @@ function App() {
                             path="/circle/:id"
                             //might have to change this if we want to pass the id and join
                             element={<GoLogin redirect="circle" />}
+                        />
+                        <Route
+                            path="/circle-create"
+                            element={<GoLogin redirect="circle-create" />}
                         />
                         <Route
                             path="/library"
