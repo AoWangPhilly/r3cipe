@@ -5,11 +5,12 @@ import { loginSchema } from "../models/UserProfile.js";
 import { ErrorMsg } from "../types.js";
 import { findUserByEmail } from "../helpers/UserProfile.js";
 
+// TODO: check if email is already in tokenStorage & how to handle duplicates
 // need to export this for middleware
 const tokenStorage: { [key: string]: string } = {};
 
 const clientCookieOptions: CookieOptions = {
-    secure: true,
+    // secure: true, // comment out for Dev in Postman!!!
     sameSite: "strict",
 };
 const cookieOptions: CookieOptions = {
@@ -20,7 +21,6 @@ const cookieOptions: CookieOptions = {
 /**
  * Request body: { username: string, password: string }
  * return: set cookies
- * TODO: might need to check if email is already in tokenStorage?
  */
 async function login(
     req: Request,
@@ -69,12 +69,36 @@ async function login(
     // console.log(user);
     const token = crypto.randomBytes(32).toString("hex");
     tokenStorage[token] = email;
+    // console.log(tokenStorage);
     return res
         .cookie("token", token, cookieOptions)
         .cookie("loggedIn", true, clientCookieOptions)
         .json({ message: "success" });
 }
 
+async function logout(req: Request, res: Response) {
+    // sometimes there's no cookies property in Postman - this might be unnecessary
+    if (!req.cookies) {
+        console.log("No cookies");
+        return res.json();
+    }
+
+    const { token } = req.cookies;
+
+    if (!token) {
+        console.log("already logged out");
+        return res.json();
+    }
+    if (!tokenStorage.hasOwnProperty(token)) {
+        console.log("token invalid");
+    }
+    delete tokenStorage[token];
+
+    res.clearCookie("loggedIn", clientCookieOptions);
+    return res.clearCookie("token", cookieOptions).json({ message: "success" });
+}
+
 export default {
     login,
+    logout,
 };
