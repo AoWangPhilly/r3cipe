@@ -1,16 +1,12 @@
-// import mongoose from "mongoose";
 import { CookieOptions, Request, Response } from "express";
 import * as argon2 from "argon2";
 import crypto from "crypto";
-import UserProfile, {
-    createUserProfileSchema,
-    IUserProfile,
-    loginSchema,
-    updateUserProfileSchema,
-} from "../models/UserProfile.js";
+import { loginSchema } from "../models/UserProfile.js";
 import { ErrorMsg } from "../types.js";
+import { findUserByEmail } from "../helpers/UserProfile.js";
 
-let tokenStorage: { [key: string]: string } = {};
+// need to export this for middleware
+const tokenStorage: { [key: string]: string } = {};
 
 const clientCookieOptions: CookieOptions = {
     secure: true,
@@ -69,7 +65,7 @@ async function login(
     if (!isPasswordCorrect) {
         return res.status(400).json({ errors: ["Incorrect password"] });
     }
-    
+
     // console.log(user);
     const token = crypto.randomBytes(32).toString("hex");
     tokenStorage[token] = email;
@@ -77,18 +73,6 @@ async function login(
         .cookie("token", token, cookieOptions)
         .cookie("loggedIn", true, clientCookieOptions)
         .json({ message: "success" });
-}
-
-async function findUserByEmail(providedEmail: string) {
-    try {
-        const userProfile = await UserProfile.findOne({ email: providedEmail });
-        return userProfile
-            ? { userProfile }
-            : { errors: ["404", "Email not found"] };
-    } catch (error) {
-        console.log(error);
-        return { errors: ["500", "Internal server error"] };
-    }
 }
 
 export default {
