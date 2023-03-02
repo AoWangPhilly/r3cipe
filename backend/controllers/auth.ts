@@ -18,6 +18,23 @@ const cookieOptions: CookieOptions = {
     httpOnly: true,
 };
 
+async function checkLogin(req: Request, res: Response) {
+    if (!req.cookies) {
+        console.log("No cookies");
+        return res.status(400).json();
+    }
+
+    const { token } = req.cookies;
+    if (tokenStorage.hasOwnProperty(token)) {
+        return res.status(200).json({ message: "Logged in" });
+    } else {
+        return res.status(400).json({ message: "Not logged in" });
+    }
+}
+
+// TODO
+async function signup(req: Request, res: Response) {}
+
 /**
  * Request body: { username: string, password: string }
  * return: set cookies
@@ -101,4 +118,6 @@ async function logout(req: Request, res: Response) {
 export default {
     login,
     logout,
+    signup,
+    checkLogin,
 };
