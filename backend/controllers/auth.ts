@@ -28,6 +28,11 @@ async function checkLogin(req: Request, res: Response) {
 }
 
 // TODO
+// I set this up in the frontend to send a request to this endpoint with:
+// { name: string,  email: string, password: string, }
+// if successful, set cookies
+// else send response message with error
+// -tyler
 async function signup(req: Request, res: Response) {}
 
 /**
