@@ -13,5 +13,5 @@ API_KEY=123456789
 ```
 3. Run `npm install`
 4. `cd front` and run `npm install`
-5. For development, run `npm run watch` in the root directory. In a separate terminal, `cd front` and run `npm run start`.
+5. For development, run `npm run watch` in the root directory. In a separate terminal, `cd frontend` and run `npm run start`.
 
