@@ -26,12 +26,18 @@ export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({
     children,
 }) => {
     const [isAuth, setIsAuth] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     React.useEffect(() => {
         checkAuth().then((result) => {
             setIsAuth(result);
+            setLoading(false);
         });
     }, []);
+
+    if (loading) {
+        return <>...</>;
+    }
 
     return (
         <AuthContext.Provider
