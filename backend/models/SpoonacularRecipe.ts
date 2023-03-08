@@ -3,7 +3,7 @@ import { RecipeType } from "backend/types.js";
 
 interface ISpoonacularRecipe {
     recipeId: string;
-    recipe: RecipeType | any; // will remove "any" after testing
+    recipe: RecipeType; // will remove "any" after testing
     lastModified: Date;
     userId: null;
     isPublic: boolean;
