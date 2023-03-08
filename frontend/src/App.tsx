@@ -27,7 +27,7 @@ function App() {
     };
 
     type GoLoginProps = {
-        redirect: string;
+        redirect?: string;
     };
     const GoLogin = (props: GoLoginProps) => {
         let route = "/login";
@@ -93,7 +93,7 @@ function App() {
 
                         <Route
                             path="/edit/:id"
-                            element={<GoLogin redirect="create" />}
+                            element={<GoLogin />}
                         />
                         <Route
                             path="/create"
