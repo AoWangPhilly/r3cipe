@@ -1,7 +1,10 @@
 import { CookieOptions, Request, Response } from "express";
 import * as argon2 from "argon2";
 import crypto from "crypto";
-import { loginSchema } from "../models/UserProfile.js";
+import UserProfile, {
+    createUserProfileSchema,
+    loginSchema,
+} from "../models/UserProfile.js";
 import { ErrorMsg } from "../types.js";
 import { findUserByEmail } from "../helpers/UserProfile.js";
 import {
@@ -10,6 +13,7 @@ import {
     setToken,
     tokenUserInfo,
 } from "../helpers/tokenStorage.js";
+import mongoose from "mongoose";
 
 const TOKEN_EXPIRY = 3600; // 1 hr (in seconds)
 
@@ -52,7 +56,60 @@ function checkLogin(req: Request, res: Response) {
 // if successful, set cookies
 // else send response message with error
 // -tyler
-async function signup(req: Request, res: Response) {}
+async function signup(req: Request, res: Response) {
+    let parseResult = createUserProfileSchema.safeParse(req.body);
+    if (!parseResult.success) {
+        // extract Zod error message
+        let errors = parseResult.error.errors.map((error) => {
+            return error.message;
+        });
+        // console.log(errors);
+        return res.status(400).json({ errors: errors });
+    }
+
+    const { name, email, password } = parseResult.data;
+
+    // check if user exists
+    const user = await findUserByEmail(email);
+    if (user.errors) {
+        if (user.errors[0] == "500") {
+            console.log(500);
+            return res.status(500).json({ errors: user.errors?.slice(1) });
+        }
+    }
+
+    if (!user.userProfile) {
+        // create new user
+        const hashedPassword = await argon2.hash(password);
+        // add to mongo
+        const userProfile = new UserProfile({
+            _id: new mongoose.Types.ObjectId(),
+            name,
+            email,
+            password: hashedPassword,
+        });
+        const savedUserProfile = await userProfile.save();
+        if (!savedUserProfile) {
+            return res.status(500).json({ errors: ["Internal server error"] });
+        }
+
+        const token = crypto.randomBytes(32).toString("hex");
+        const tokenInfo: tokenUserInfo = {
+            id: token,
+            name,
+            email,
+            profileUrl: "",
+            expiry: new Date(Date.now() + TOKEN_EXPIRY * 1000),
+        };
+        setToken(token, tokenInfo);
+
+        return res
+            .cookie("token", token, cookieOptions)
+            .json({ message: "success" });
+    } else {
+        return res.status(400).json({ errors: ["Email already exists"] });
+    }
+}
 
 /**
  * Request body: { username: string, password: string }

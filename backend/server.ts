@@ -52,7 +52,6 @@ app.use("/api/auth", authRouter);
 app.use("/api/search", searchRouter);
 app.use("/api/ingredients", ingredientRouter);
 app.use("/api/circles", socialCircleRouter);
-
 app.use("/api/user/profiles", userProfileRouter); // TODO: DELETE
 
 app.get("/*", (req, res) => {
