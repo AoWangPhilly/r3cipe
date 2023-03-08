@@ -24,7 +24,7 @@ const SearchResults: React.FC = () => {
 
     const searchForRecipes = async () => {
         const apiResponse = await fetch(
-            `/api/search?query=${query}&cuisine=${cuisine}&mealtype=${mealType}&pantry=${pantryString}&usersubmitted=${userSubmittedString}`,
+            `/api/search/user?query=${query}&cuisine=${cuisine}&mealtype=${mealType}&pantry=${pantryString}&usersubmitted=${userSubmittedString}`,
             {
                 method: "GET",
                 credentials: "include",
