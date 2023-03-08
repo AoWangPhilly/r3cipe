@@ -1,3 +1,8 @@
+/**
+ * Centralized Session storage for tokens
+ * Get, Set, Delete tokens here
+ */
+
 export interface tokenUserInfo {
     id: string;
     name: string;
@@ -7,7 +12,7 @@ export interface tokenUserInfo {
 }
 
 // TODO?: check if user is already in tokenStorage & how to handle duplicates
-const tokenStorage: { [key: string]: tokenUserInfo } = {};
+let tokenStorage: { [key: string]: tokenUserInfo } = {};
 
 export function getTokenStorage() {
     return tokenStorage;
