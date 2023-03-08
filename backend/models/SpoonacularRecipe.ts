@@ -9,13 +9,16 @@ interface ISpoonacularRecipe {
     isPublic: boolean;
 }
 
-const spoonacularRecipeSchema = new mongoose.Schema<ISpoonacularRecipe>({
-    recipeId: { type: String, required: true, unique: true },
-    recipe: { type: Object, required: true },
-    lastModified: { type: Date, default: Date.now },
-    userId: { type: String, default: null },
-    isPublic: { type: Boolean, default: true },
-});
+const spoonacularRecipeSchema = new mongoose.Schema<ISpoonacularRecipe>(
+    {
+        recipeId: { type: String, required: true, unique: true },
+        recipe: { type: Object, required: true },
+        lastModified: { type: Date, default: Date.now },
+        userId: { type: String, default: null },
+        isPublic: { type: Boolean, default: true },
+    },
+    { versionKey: false }
+);
 
 export default mongoose.model<ISpoonacularRecipe>(
     "SpoonacularRecipe",

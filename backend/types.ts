@@ -34,7 +34,7 @@ export interface SearchResultResponse {
 }
 
 //This is the recipe type that we get from the API. We will use this to create our RecipeType
-interface RawRecipeType {
+export interface RawRecipeType {
     vegetarian: boolean;
     vegan: boolean;
     glutenFree: boolean;

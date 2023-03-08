@@ -4,10 +4,7 @@ import controller from "../controllers/search.js";
 const router: Router = Router();
 
 // this is just temporary for testing
-router.post("/spoonacular", (req, res) => {
-    // controller.createSpoonacularRecipe();
-    res.json();
-});
+router.get("/spoonacular", controller.searchSpoonacularRecipes);
 
 router.post("/user", (req, res) => {
     // controller.createSpoonacularRecipe();
