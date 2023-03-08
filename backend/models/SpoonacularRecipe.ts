@@ -3,7 +3,7 @@ import { RecipeType } from "backend/types.js";
 
 interface ISpoonacularRecipe {
     recipeId: string;
-    recipe: RecipeType; // will remove "any" after testing
+    recipe: RecipeType | null; // will remove "any" after testing
     lastModified: Date;
     userId: null;
     isPublic: boolean;
@@ -19,26 +19,7 @@ const spoonacularRecipeSchema = new mongoose.Schema<ISpoonacularRecipe>(
     },
     { versionKey: false }
 );
-
-interface ISpoontacularSearchResult {
-    searchKey: string;
-    recipeIds: string[];
-}
-
-const spoonacularSearchResultSchema =
-    new mongoose.Schema<ISpoontacularSearchResult>(
-        {
-            searchKey: { type: String, required: true, unique: true },
-            recipeIds: { type: [String], required: true },
-        },
-        { versionKey: false }
-    );
-
-export default (mongoose.model<ISpoonacularRecipe>(
+export default mongoose.model<ISpoonacularRecipe>(
     "SpoonacularRecipe",
     spoonacularRecipeSchema
-),
-mongoose.model<ISpoontacularSearchResult>(
-    "SpoonacularSearchResult",
-    spoonacularSearchResultSchema
-));
+);

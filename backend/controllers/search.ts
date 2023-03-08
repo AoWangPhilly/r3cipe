@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import SpoonacularRecipe from "../models/SpoonacularRecipe.js";
-import SpoonacularSearchResult from "../models/SpoonacularRecipe.js";
-
+import SpoonacularSearchResult from "../models/SearchResults.js";
 import { getTokenStorage } from "../helpers/tokenStorage.js";
 import axios from "axios";
 import { parseRecipe } from "../helpers/recipeParser.js";
@@ -61,11 +60,14 @@ async function searchSpoonacularRecipes(req: Request, res: Response) {
             response.data.results.forEach((recipe: any) => {
                 const { recipeId, ...parsedRecipe } = parseRecipe(recipe);
                 recipeIds.push(recipeId);
+
                 const spoonacularRecipe = new SpoonacularRecipe({
                     recipeId: recipeId,
                     recipe: parsedRecipe,
                     userId: "Spoonacular",
                 });
+
+                console.log(spoonacularRecipe);
 
                 spoonacularRecipe
                     .save()
@@ -76,11 +78,16 @@ async function searchSpoonacularRecipes(req: Request, res: Response) {
                         console.log(error);
                     });
             });
+
             const spoonacularRecipeResult = new SpoonacularSearchResult({
                 searchKey: key,
                 recipeIds: recipeIds,
             });
-            const savedResult = spoonacularRecipeResult
+
+            console.log(key);
+            console.log(recipeIds);
+            console.log(spoonacularRecipeResult);
+            spoonacularRecipeResult
                 .save()
                 .then((result) => {
                     console.log("result saved");
@@ -88,7 +95,7 @@ async function searchSpoonacularRecipes(req: Request, res: Response) {
                 .catch((error) => {
                     console.log(error);
                 });
-            return res.status(200).json({ savedResult });
+            return res.status(200).json({ spoonacularRecipeResult });
         })
         .catch((error) => {
             return res.status(500).json({ error });
