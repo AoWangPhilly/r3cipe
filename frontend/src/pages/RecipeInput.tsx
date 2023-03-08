@@ -6,35 +6,37 @@ import { IngredientSelect } from "../components/IngredientSelect";
 import { InstructionsInput } from "../components/InstructionsInput";
 import {
     Button,
-    FormControl,
+    FormControlLabel,
     Grid,
-    MenuItem,
-    Select,
-    SelectChangeEvent,
+    Switch,
 } from "@mui/material";
+import { useParams } from "react-router-dom";
+
 interface IngredientRaw {
     id: number;
     name: string;
 }
 
-interface Instructions {
-    instruction: string;
+interface RecipeInputProps {
+    isEdit?: boolean;
 }
-export const Create = () => {
+
+export const RecipeInput = (props: RecipeInputProps) => {
     const [formState, setFormState] = useState<RecipeType>({
         title: "",
         summary: "",
         extendedIngredients: [],
         instructions: "",
-        image: "https://www.justonecookbook.com/wp-content/uploads/2021/10/Chicken-Katsu-3818-II.jpg",
-        imageType: "jpg",
-        preparationMinutes: 20,
-        cookingMinutes: 20,
+        image: "",
+        imageType: "",
+        preparationMinutes: 0,
+        cookingMinutes: 0,
         sourceUrl: "",
-        servings: 20,
+        servings: 0,
         id: 0,
         cuisines: [],
         dishTypes: [],
+        isPublic: false,
     });
 
     const [loading, setLoading] = useState<boolean>(true);
@@ -42,6 +44,9 @@ export const Create = () => {
     const [allIngredients, setAllIngredients] = useState<IngredientRaw[]>([]);
     const [ingredients, setIngredients] = useState<Ingredient[]>([]);
     const [instructions, setInstructions] = useState<string[]>([]);
+    const { id } = useParams<{ id: string }>();
+
+    const IS_OWNER = true; //TODO: check
 
     useEffect(() => {
         fetch("/api/ingredients", {
@@ -54,9 +59,29 @@ export const Create = () => {
             .then((res) => res.json())
             .then((data) => {
                 setAllIngredients(data.ingredients);
-                setLoading(false);
             });
-    }, []);
+        if (props.isEdit) {
+            fetch(`/api/recipes/${id}`, {
+                method: "GET",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    setFormState(data.recipe);
+                    setIngredients(data.recipe.extendedIngredients);
+                    setInstructions(data.recipe.instructions.split("\n"));
+                    setLoading(false);
+                }).catch((err) => {
+                    setError(err);
+                    setLoading(false);
+                });
+        } else {
+            setLoading(false);
+        }
+    }, [props.isEdit, id]);
 
     const handleInputChange = (
         e: React.ChangeEvent<HTMLInputElement>
@@ -88,11 +113,28 @@ export const Create = () => {
         }));
     };
 
+    const handleSwitchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormState((prevState) => ({
+            ...prevState,
+            isPublic: e.target.checked,
+        }));
+    };
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         // prevent default form submission behavior
         e.preventDefault();
-        for (let i = 1; i <= instructions.length; i++) {
-            formState.instructions += instructions[i - 1] + "\n";
+        formState.instructions = "";
+        for (let i = 0; i < instructions.length; i++) {
+            formState.instructions += instructions[i] + "\n";
+        }
+        if(formState.instructions === "") {
+            alert("Please enter instructions");
+            return;
+        }
+
+        if (ingredients.length === 0) {
+            alert("Please enter ingredients");
+            return;
         }
 
         //make instructions into a string, separated by newlines
@@ -111,22 +153,27 @@ export const Create = () => {
             id: formState.id,
             cuisines: formState.cuisines,
             dishTypes: formState.dishTypes,
+            isPublic: formState.isPublic,
         };
         console.log(recipe);
     };
 
+    if (props.isEdit && !IS_OWNER) {
+        return <h1>403 Forbidden</h1>;
+    }
+
     if (loading) {
         return <h1>Loading...</h1>;
     } else if (error) {
-        return <h1>{error}</h1>;
+        return <h1>Error</h1>;
     } else {
         return (
             <div>
-                <h1>Create a recipe</h1>
+                {props.isEdit ? <h1>Edit Recipe</h1> : <h1>Create Recipe</h1>}
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
                         <Grid item xs={12} md={6}>
-                            <Grid container spacing={2}>
+                            <Grid container spacing={2} display="flex">
                                 <Grid item xs={12}>
                                     <TextField
                                         label="Title"
@@ -150,7 +197,7 @@ export const Create = () => {
                                         }}
                                     />
                                 </Grid>
-                                <Grid item xs={12}>
+                                <Grid item xs={12} display="flex">
                                     <Autocomplete
                                         disablePortal
                                         aria-label="cuisines"
@@ -166,9 +213,10 @@ export const Create = () => {
                                         )}
                                         onChange={handleSelectChangeCuisine}
                                         value={formState.cuisines}
+                                        sx={{
+                                            width: "40%",
+                                        }}
                                     />
-                                </Grid>
-                                <Grid item xs={12}>
                                     <Autocomplete
                                         disablePortal
                                         aria-label="dishTypes"
@@ -184,8 +232,12 @@ export const Create = () => {
                                         )}
                                         onChange={handleSelectChangeDishType}
                                         value={formState.dishTypes}
+                                        sx={{
+                                            width: "40%",
+                                        }}
                                     />
                                 </Grid>
+                                <Grid item xs={12}></Grid>
                                 <Grid item xs={12}>
                                     <TextField
                                         label="Image"
@@ -273,19 +325,22 @@ export const Create = () => {
                                 setInstructions={setInstructions}
                             />
                         </Grid>
-                        <Grid item xs={12}></Grid>
-                        {/* <Grid item xs={12}>
-                            <Select
-                                label="Dish Types"
-                                name="dishTypes"
-                                value={formState.dishTypes}
-                                onChange={handleSelectChange}
-                            />
-                        </Grid> */}
                     </Grid>
+                    <br />
 
+                    <FormControlLabel
+                        control={
+                            <Switch
+                                checked={formState.isPublic}
+                                onChange={handleSwitchChange}
+                                name="isPublic"
+                                inputProps={{ "aria-label": "controlled" }}
+                            />
+                        }
+                        label="Public?"
+                    />
                     <Button variant="contained" type="submit">
-                        Submit
+                        {props.isEdit ? "Save" : "Create Recipe"}
                     </Button>
                 </form>
             </div>
@@ -293,4 +348,4 @@ export const Create = () => {
     }
 };
 
-export default Create;
+export default RecipeInput;

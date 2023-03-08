@@ -12,7 +12,7 @@ import Navbar from "./components/Navbar";
 import Settings from "./pages/Settings";
 import Recipe from "./pages/Recipe";
 import CircleSelected from "./pages/CircleSelected";
-import Create from "./pages/Create";
+import RecipeInput from "./pages/RecipeInput";
 import { Login } from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import { useContext } from "react";
@@ -56,7 +56,8 @@ function App() {
                         <Route path="/library" element={<Library />} />
                         <Route path="/settings" element={<Settings />} />
                         <Route path="/recipe/:id" element={<Recipe />} />
-                        <Route path="/create" element={<Create />} />
+                        <Route path="/create" element={<RecipeInput isEdit={false} />} />
+                        <Route path="/edit/:id" element={<RecipeInput isEdit={true} />} />
                         <Route path="/login" element={<GoHome />} />
                         <Route path="/signup" element={<GoHome />} />
                     </>

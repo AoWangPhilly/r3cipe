@@ -1,10 +1,10 @@
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import { Button, Box, Grid, Typography, IconButton, Icon } from "@mui/material";
+import { Box, Grid, Typography, IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import { Ingredient } from "../types";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 interface IngredientRaw {
     id: number;
