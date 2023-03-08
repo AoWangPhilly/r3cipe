@@ -27,16 +27,10 @@ export const Login: React.FC = () => {
     });
 
     const [error, setError] = useState<string>("");
-    const { isAuth, setIsAuth } = useContext(AuthContext);
+    const { isAuth, setIsAuth, setName, setEmail } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const [searchParams] = useSearchParams();
-
-    // useEffect(() => {
-    //     checkAuth().then((result) => {
-    //         setIsAuth(result);
-    //     });
-    // }, []);
 
     const handleInputChange = (
         e: React.ChangeEvent<HTMLInputElement>
@@ -56,7 +50,7 @@ export const Login: React.FC = () => {
             alert("Please fill in all fields");
             return;
         }
-        let response = await fetch("/api/auth/login", {
+        const resposne = await fetch("/api/auth/login", {
             method: "POST",
             credentials: "include",
             headers: {
@@ -64,21 +58,29 @@ export const Login: React.FC = () => {
             },
             body: JSON.stringify(formState),
         });
-        if (response.status === 200) {
-            setIsAuth(true);
-            if (searchParams.get("redirect") !== null) {
-                navigate("/" + searchParams.get("redirect"));
-            } else {
-                navigate("/");
-            }
-        } else {
+        if(resposne.status !== 200) {
             setError("Invalid username or password");
+            return;
         }
+        checkAuth().then((result) => {
+            if (result.message === "Authenticated") {
+                setIsAuth(true);
+                setName(result.user.name);
+                setEmail(result.user.email);
+                if (searchParams.get("redirect") !== null) {
+                    navigate("/" + searchParams.get("redirect"));
+                } else {
+                    navigate("/");
+                }
+            } else {
+                setError("Invalid username or password");
+            }
+        });
     };
 
     return (
         <Container component="main" maxWidth="xs">
-            <div style={{alignContent: "center"}}>
+            <div style={{ alignContent: "center" }}>
                 <Avatar>
                     <LockOutlinedIcon />
                 </Avatar>

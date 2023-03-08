@@ -13,8 +13,10 @@ import {
     Avatar,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
+import KitchenIcon from "@mui/icons-material/Kitchen";
 import { Link, redirect, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import PantryModal from "./PantryModal";
 
 //use MUI navbar component
 
@@ -26,7 +28,10 @@ export default function Navbar() {
         null
     );
 
-    const { isAuth, setIsAuth } = React.useContext(AuthContext);
+    const [pantryOpen, setPantryOpen] = React.useState(false);
+
+    const { isAuth, setIsAuth, name, setName, setEmail } =
+        React.useContext(AuthContext);
     const navigate = useNavigate();
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -45,6 +50,14 @@ export default function Navbar() {
         setAnchorElUser(null);
     };
 
+    const handlePantryOpen = () => {
+        setPantryOpen(true);
+    };
+
+    const handlePantryClose = () => {
+        setPantryOpen(false);
+    };
+
     const handleLogout = async () => {
         let response = await fetch("/api/auth/logout", {
             method: "POST",
@@ -52,204 +65,249 @@ export default function Navbar() {
         });
         if (response.status === 200) {
             setIsAuth(false);
+            setName("");
+            setEmail("");
             navigate("/");
         }
     };
 
     return (
-        <AppBar position="static">
-            <Container maxWidth="xl" sx={{height: 70}}>
-                <Toolbar disableGutters>
-                    {/* <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} /> */}
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="a"
-                        sx={{
-                            mr: 2,
-                            display: { xs: "none", md: "flex" },
-                            fontFamily: "monospace",
-                            fontWeight: 700,
-                            letterSpacing: ".3rem",
-                            color: "inherit",
-                            textDecoration: "none",
-                        }}
-                    >
-                        Recipe App
-                    </Typography>
-
-                    <Box
-                        sx={{
-                            flexGrow: 1,
-                            display: { xs: "flex", md: "none" },
-                        }}
-                    >
-                        <IconButton
-                            size="large"
-                            aria-label="account of current user"
-                            aria-controls="menu-appbar"
-                            aria-haspopup="true"
-                            onClick={handleOpenNavMenu}
-                            color="inherit"
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                        <Menu
-                            id="menu-appbar"
-                            anchorEl={anchorElNav}
-                            anchorOrigin={{
-                                vertical: "bottom",
-                                horizontal: "left",
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: "top",
-                                horizontal: "left",
-                            }}
-                            open={Boolean(anchorElNav)}
-                            onClose={handleCloseNavMenu}
+        <>
+            <AppBar position="static">
+                <Container maxWidth="xl" sx={{ height: 70 }}>
+                    <Toolbar disableGutters>
+                        {/* <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} /> */}
+                        <Typography
+                            variant="h6"
+                            noWrap
+                            component="a"
                             sx={{
-                                display: { xs: "block", md: "none" },
+                                mr: 2,
+                                display: { xs: "none", md: "flex" },
+                                fontFamily: "monospace",
+                                fontWeight: 700,
+                                letterSpacing: ".3rem",
+                                color: "inherit",
+                                textDecoration: "none",
                             }}
                         >
-                            <MenuItem onClick={handleCloseNavMenu}>
-                                <Link to="/">Find Recipes</Link>
-                            </MenuItem>
-                            <MenuItem onClick={handleCloseNavMenu}>
-                                <Link to="/circle">Circles</Link>
-                            </MenuItem>
-                            <MenuItem onClick={handleCloseNavMenu}>
-                                <Link to="/library">Library</Link>
-                            </MenuItem>
-                            <MenuItem onClick={handleCloseNavMenu}>
-                                <Link to="/create">Create a Recipe</Link>
-                            </MenuItem>
-                        </Menu>
-                    </Box>
-                    {/* <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} /> */}
-                    <Typography
-                        variant="h5"
-                        noWrap
-                        component="a"
-                        sx={{
-                            mr: 2,
-                            display: { xs: "flex", md: "none" },
-                            flexGrow: 1,
-                            fontFamily: "monospace",
-                            fontWeight: 700,
-                            letterSpacing: ".3rem",
-                            color: "inherit",
-                            textDecoration: "none",
-                        }}
-                    >
-                        Recipe App
-                    </Typography>
-                    <Box
-                        sx={{
-                            flexGrow: 1,
-                            display: { xs: "none", md: "flex" },
-                        }}
-                    >
-                        <Button
-                            key="search-page"
-                            onClick={() => {
-                                handleCloseNavMenu();
-                                navigate("/");
+                            Recipe App
+                        </Typography>
+
+                        <Box
+                            sx={{
+                                flexGrow: 1,
+                                display: { xs: "flex", md: "none" },
                             }}
-                            sx={{ my: 2, color: "white", display: "block" }}
                         >
-                            Find Recipes
-                        </Button>
-                        <Button
-                            key="circle-page"
-                            onClick={() => {
-                                handleCloseNavMenu();
-                                navigate("/circle");
-                            }}
-                            sx={{ my: 2, color: "white", display: "block" }}
-                        >
-                            Circles
-                        </Button>
-                        <Button
-                            key="library-page"
-                            onClick={() => {
-                                handleCloseNavMenu();
-                                navigate("/library");
-                            }}
-                            sx={{ my: 2, color: "white", display: "block" }}
-                        >
-                            Library
-                        </Button>
-                        <Button
-                            key="create-page"
-                            onClick={() => {
-                                handleCloseNavMenu();
-                                navigate("/create");
-                            }}
-                            sx={{ my: 2, color: "white", display: "block" }}
-                        >
-                            Create a Recipe
-                        </Button>
-                    </Box>
-                    {!isAuth ? (
-                        <Box sx={{ flexGrow: 0 }}>
-                            {/* login button with icon */}
-                            <Button
-                                key="login-page"
-                                onClick={() => {
-                                    handleCloseNavMenu();
-                                    navigate("/login");
-                                }}
-                                sx={{ my: 2, color: "white", display: "block" }}
+                            <IconButton
+                                size="large"
+                                aria-label="account of current user"
+                                aria-controls="menu-appbar"
+                                aria-haspopup="true"
+                                onClick={handleOpenNavMenu}
+                                color="inherit"
                             >
-                                Login
-                            </Button>
-                        </Box>
-                    ) : (
-                        <Box sx={{ flexGrow: 0 }}>
-                            <Tooltip title="User Menu">
-                                <Avatar
-                                    onClick={handleOpenUserMenu}
-                                    sx={{
-                                        width: 50,
-                                        height: 50,
-                                        cursor: "pointer",
-                                        background:
-                                            "linear-gradient(45deg, #2196F3 40%, #21CBF3 80%)",
-                                    }}
-                                >
-                                    {"M"}
-                                </Avatar>
-                            </Tooltip>
+                                <MenuIcon />
+                            </IconButton>
                             <Menu
-                                sx={{ mt: "45px" }}
                                 id="menu-appbar"
-                                anchorEl={anchorElUser}
+                                anchorEl={anchorElNav}
                                 anchorOrigin={{
-                                    vertical: "top",
-                                    horizontal: "right",
+                                    vertical: "bottom",
+                                    horizontal: "left",
                                 }}
                                 keepMounted
                                 transformOrigin={{
                                     vertical: "top",
-                                    horizontal: "right",
+                                    horizontal: "left",
                                 }}
-                                open={Boolean(anchorElUser)}
-                                onClose={handleCloseUserMenu}
+                                open={Boolean(anchorElNav)}
+                                onClose={handleCloseNavMenu}
+                                sx={{
+                                    display: { xs: "block", md: "none" },
+                                }}
                             >
-                                <MenuItem onClick={handleCloseUserMenu}>
-                                    <Link to="/settings">Settings</Link>
+                                <MenuItem onClick={handleCloseNavMenu}>
+                                    <Link to="/">Find Recipes</Link>
                                 </MenuItem>
-                                <MenuItem onClick={handleCloseUserMenu}>
-                                    <Link onClick={handleLogout} to="/">
-                                        Logout
-                                    </Link>
+                                <MenuItem onClick={handleCloseNavMenu}>
+                                    <Link to="/circle">Circles</Link>
+                                </MenuItem>
+                                <MenuItem onClick={handleCloseNavMenu}>
+                                    <Link to="/library">Library</Link>
+                                </MenuItem>
+                                <MenuItem onClick={handleCloseNavMenu}>
+                                    <Link to="/create">Create a Recipe</Link>
                                 </MenuItem>
                             </Menu>
                         </Box>
-                    )}
-                </Toolbar>
-            </Container>
-        </AppBar>
+                        {/* <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} /> */}
+                        <Typography
+                            variant="h5"
+                            noWrap
+                            component="a"
+                            sx={{
+                                mr: 2,
+                                display: { xs: "flex", md: "none" },
+                                flexGrow: 1,
+                                fontFamily: "monospace",
+                                fontWeight: 700,
+                                letterSpacing: ".3rem",
+                                color: "inherit",
+                                textDecoration: "none",
+                            }}
+                        >
+                            Recipe App
+                        </Typography>
+                        <Box
+                            sx={{
+                                flexGrow: 1,
+                                display: { xs: "none", md: "flex" },
+                            }}
+                        >
+                            <Button
+                                key="search-page"
+                                onClick={() => {
+                                    handleCloseNavMenu();
+                                    navigate("/");
+                                }}
+                                sx={{ my: 2, color: "white", display: "block" }}
+                            >
+                                Find Recipes
+                            </Button>
+                            <Button
+                                key="circle-page"
+                                onClick={() => {
+                                    handleCloseNavMenu();
+                                    navigate("/circle");
+                                }}
+                                sx={{ my: 2, color: "white", display: "block" }}
+                            >
+                                Circles
+                            </Button>
+                            <Button
+                                key="library-page"
+                                onClick={() => {
+                                    handleCloseNavMenu();
+                                    navigate("/library");
+                                }}
+                                sx={{ my: 2, color: "white", display: "block" }}
+                            >
+                                Library
+                            </Button>
+                            <Button
+                                key="create-page"
+                                onClick={() => {
+                                    handleCloseNavMenu();
+                                    navigate("/create");
+                                }}
+                                sx={{ my: 2, color: "white", display: "block" }}
+                            >
+                                Create a Recipe
+                            </Button>
+                        </Box>
+                        {!isAuth ? (
+                            <Box sx={{ flexGrow: 0 }}>
+                                {/* login button with icon */}
+                                <Button
+                                    key="login-page"
+                                    onClick={() => {
+                                        handleCloseNavMenu();
+                                        navigate("/login");
+                                    }}
+                                    sx={{
+                                        my: 2,
+                                        color: "white",
+                                        display: "block",
+                                    }}
+                                >
+                                    Login
+                                </Button>
+                            </Box>
+                        ) : (
+                            <>
+                                <Box sx={{ flexGrow: 0 }}>
+                                    <Tooltip title="Pantry">
+                                        <IconButton
+                                            size="large"
+                                            aria-label="account of current user"
+                                            aria-controls="menu-appbar"
+                                            aria-haspopup="true"
+                                            onClick={handlePantryOpen}
+                                            color="inherit"
+                                        >
+                                            <KitchenIcon />
+                                        </IconButton>
+                                    </Tooltip>
+                                </Box>
+
+                                <Box sx={{ flexGrow: 0 }}>
+                                    <Typography
+                                        variant="h6"
+                                        noWrap
+                                        component="a"
+                                        sx={{
+                                            mr: 2,
+                                            display: { xs: "none", md: "flex" },
+                                            fontFamily: "monospace",
+                                            fontWeight: 700,
+                                            letterSpacing: ".3rem",
+                                            color: "inherit",
+                                            textDecoration: "none",
+                                        }}
+                                    >
+                                        {name}
+                                    </Typography>
+                                </Box>
+
+                                <Box sx={{ flexGrow: 0 }}>
+                                    <Tooltip title="User Menu">
+                                        <Avatar
+                                            onClick={handleOpenUserMenu}
+                                            sx={{
+                                                width: 50,
+                                                height: 50,
+                                                cursor: "pointer",
+                                                background:
+                                                    "linear-gradient(45deg, #2196F3 40%, #21CBF3 80%)",
+                                            }}
+                                        >
+                                            {name && name[0].toUpperCase()}
+                                        </Avatar>
+                                    </Tooltip>
+                                    <Menu
+                                        sx={{ mt: "45px" }}
+                                        id="menu-appbar"
+                                        anchorEl={anchorElUser}
+                                        anchorOrigin={{
+                                            vertical: "top",
+                                            horizontal: "right",
+                                        }}
+                                        keepMounted
+                                        transformOrigin={{
+                                            vertical: "top",
+                                            horizontal: "right",
+                                        }}
+                                        open={Boolean(anchorElUser)}
+                                        onClose={handleCloseUserMenu}
+                                    >
+                                        <MenuItem onClick={handleCloseUserMenu}>
+                                            <Link to="/settings">Settings</Link>
+                                        </MenuItem>
+                                        <MenuItem onClick={handleCloseUserMenu}>
+                                            <Link onClick={handleLogout} to="/">
+                                                Logout
+                                            </Link>
+                                        </MenuItem>
+                                    </Menu>
+                                </Box>
+                            </>
+                        )}
+                    </Toolbar>
+                </Container>
+            </AppBar>
+            <PantryModal pantryOpen={pantryOpen} handlePantryClose={handlePantryClose} />
+        </>
     );
 }
