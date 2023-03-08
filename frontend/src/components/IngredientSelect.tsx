@@ -21,6 +21,115 @@ type FormState = {
     selectedIngredient: IngredientRaw | null;
     amount: string;
 };
+
+const SubmittedIngredient = (props: {
+    ingredient: Ingredient;
+    ingredients: Ingredient[];
+    setIngredients: React.Dispatch<React.SetStateAction<Ingredient[]>>;
+}) => {
+    const { setIngredients, ingredients } = props;
+    return (
+        <Grid
+            container
+            sx={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                border: "1px solid black",
+                borderRadius: "5px",
+                padding: "5px",
+                margin: "5px",
+                justifyContent: "space-between",
+            }}
+        >
+            <Grid item display="flex">
+                <Typography>{props.ingredient.original}</Typography>
+            </Grid>
+            <Grid item display="flex">
+                <IconButton
+                    color="error"
+                    onClick={() => {
+                        setIngredients(
+                            ingredients.filter(
+                                (ingredient) =>
+                                    ingredient.id !== props.ingredient.id
+                            )
+                        );
+                    }}
+                >
+                    <DeleteIcon />
+                </IconButton>
+            </Grid>
+        </Grid>
+    );
+};
+
+const AddIngredient = (props: {
+    allIngredients: IngredientRaw[];
+    ingredients: Ingredient[];
+    setIngredients: React.Dispatch<React.SetStateAction<Ingredient[]>>;
+    formState: FormState;
+    setFormState: React.Dispatch<React.SetStateAction<FormState>>;
+    handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    handleSelectChange: (
+        e: React.ChangeEvent<{}>,
+        value: IngredientRaw | null
+    ) => void;
+    addIngredientOnClick: () => void;
+}) => {
+    const {
+        allIngredients,
+        ingredients,
+        setIngredients,
+        formState,
+        setFormState,
+        handleInputChange,
+        handleSelectChange,
+        addIngredientOnClick,
+    } = props;
+
+    return (
+        <Grid
+            container
+            spacing={2}
+            sx={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+            }}
+            width="100%"
+        >
+            <Grid item display="flex" width="20%">
+                <TextField
+                    name="amount"
+                    variant="outlined"
+                    fullWidth
+                    id="amount"
+                    label="Amount"
+                    value={formState.amount}
+                    onChange={handleInputChange}
+                    autoFocus
+                />
+            </Grid>
+            <Grid item display="flex" width="40%">
+                <Autocomplete
+                    disablePortal
+                    id="tags-standard"
+                    options={allIngredients}
+                    getOptionLabel={(option) => option.name}
+                    sx={{ width: 200 }}
+                    renderInput={(params) => <TextField {...params} />}
+                    onChange={handleSelectChange}
+                    value={formState.selectedIngredient}
+                />
+                <IconButton onClick={addIngredientOnClick} color={"primary"}>
+                    <AddIcon />
+                </IconButton>
+            </Grid>
+        </Grid>
+    );
+};
+
 export const IngredientSelect = (props: IngredientSelectProps) => {
     const [formState, setFormState] = useState<FormState>({
         amount: "",
@@ -68,92 +177,6 @@ export const IngredientSelect = (props: IngredientSelectProps) => {
         });
     };
 
-    const SubmittedIngredient = (props: { ingredient: Ingredient }) => {
-        return (
-            <Grid
-                container
-                sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    border: "1px solid black",
-                    borderRadius: "5px",
-                    padding: "5px",
-                    margin: "5px",
-                    justifyContent: "space-between",
-                }}
-            >
-                <Grid item display="flex">
-                    <Typography>{props.ingredient.original}</Typography>
-                </Grid>
-                <Grid item display="flex">
-                    <IconButton
-                        color="error"
-                        onClick={() => {
-                            setIngredients(
-                                ingredients.filter(
-                                    (ingredient) =>
-                                        ingredient.id !== props.ingredient.id
-                                )
-                            );
-                        }}
-                    >
-                        <DeleteIcon />
-                    </IconButton>
-                </Grid>
-            </Grid>
-        );
-    };
-
-    const AddIngredient = () => {
-        return (
-            <Grid
-                container
-                spacing={2}
-                sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                }}
-            >
-                <Grid item display="flex">
-                    <TextField
-                        name="amount"
-                        variant="outlined"
-                        required
-                        fullWidth
-                        id="amount"
-                        sx={{ width: 100 }}
-                        label="Amount"
-                        value={formState.amount}
-                        onChange={handleInputChange}
-                        autoFocus
-                    />
-                </Grid>
-                <Grid item display="flex">
-                    <Autocomplete
-                        disablePortal
-                        id="tags-standard"
-                        options={allIngredients}
-                        getOptionLabel={(option) => option.name}
-                        sx={{ width: 200 }}
-                        renderInput={(params) => <TextField {...params} />}
-                        onChange={handleSelectChange}
-                        value={formState.selectedIngredient}
-                    />
-                </Grid>
-                <Grid item display="flex">
-                    <IconButton
-                        onClick={addIngredientOnClick}
-                        color={"primary"}
-                    >
-                        <AddIcon />
-                    </IconButton>
-                </Grid>
-            </Grid>
-        );
-    };
-
     return (
         <Box
             sx={{
@@ -164,14 +187,28 @@ export const IngredientSelect = (props: IngredientSelectProps) => {
                 borderRadius: "5px",
                 padding: "5px",
                 margin: "5px",
-                width: "20%",
+                width: "85%",
             }}
         >
             <Typography variant="h6">Ingredients</Typography>
             {ingredients.map((ingredient) => (
-                <SubmittedIngredient ingredient={ingredient} key={ingredient.id} />
+                <SubmittedIngredient
+                    ingredient={ingredient}
+                    key={ingredient.id}
+                    ingredients={ingredients}
+                    setIngredients={setIngredients}
+                />
             ))}
-            <AddIngredient />
+            <AddIngredient
+                allIngredients={allIngredients}
+                ingredients={ingredients}
+                setIngredients={setIngredients}
+                formState={formState}
+                setFormState={setFormState}
+                handleInputChange={handleInputChange}
+                handleSelectChange={handleSelectChange}
+                addIngredientOnClick={addIngredientOnClick}
+            />
         </Box>
     );
 };
