@@ -19,7 +19,13 @@ const fakeRecipe = {
 };
 
 // TODO: parsing + caching needed
-function searchSpoonacular(req: Request, res: Response) {
+function searchSpoonacularRecipes(req: Request, res: Response) {
+    const { query, cuisine, pantry } = req.params;
+    const key = `${query}-${cuisine}-${pantry}`;
+}
+
+// TODO: parsing + caching needed
+function searchUserRecipes(req: Request, res: Response) {
     const { query, cuisine, pantry } = req.params;
     const key = `${query}-${cuisine}-${pantry}`;
 }
@@ -45,4 +51,6 @@ function createSpoonacularRecipe() {
 
 export default {
     createSpoonacularRecipe,
+    searchSpoonacularRecipes,
+    searchUserRecipes,
 };
