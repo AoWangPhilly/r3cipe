@@ -54,6 +54,7 @@ app.use("/api/circles", socialCircleRouter);
 app.use("/api/user/profiles", userProfileRouter); // TODO: DELETE
 app.use("/api/user/inventory", inventoryRouter);
 
+
 app.get("/*", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
 });
