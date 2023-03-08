@@ -4,9 +4,14 @@ import controller from "../controllers/SpoonacularRecipe.js";
 const router: Router = Router();
 
 // this is just temporary for testing
-router.post("/", (req, res) => {
+router.post("/spoonacular", (req, res) => {
     controller.createSpoonacularRecipe();
-    res.send();
+    res.json();
+});
+
+router.post("/user", (req, res) => {
+    // controller.createSpoonacularRecipe();
+    res.json();
 });
 
 export default router;
