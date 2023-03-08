@@ -4,6 +4,7 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import ToggleButton from "@mui/material/ToggleButton";
 import TextField from "@mui/material/TextField";
 import SearchIcon from "@mui/icons-material/Search";
+import { CUISINES, DISH_TYPES } from "../types";
 
 // find a way to check if the user is logged in - set to true for now
 const isLoggedIn = true;
@@ -21,26 +22,15 @@ type Option = {
     label: string;
 };
 
-const cuisines: Option[] = [
-    { value: "american", label: "American" },
-    { value: "chinese", label: "Chinese" },
-    { value: "french", label: "French" },
-    { value: "indian", label: "Indian" },
-    { value: "mexican", label: "Mexican" },
-    { value: "african", label: "African" },
-    { value: "vietnamese", label: "Vietnamese" },
-    { value: "italian", label: "Italian" },
-    { value: "japanese", label: "Japanese" },
-    { value: "korean", label: "Korean" },
-    { value: "thai", label: "Thai" },
-];
+const cuisines: Option[] = CUISINES.map((cuisine: string) => ({
+    value: cuisine.toLowerCase(),
+    label: cuisine,
+}));
 
-const mealTypes: Option[] = [
-    { value: "breakfast", label: "Breakfast" },
-    { value: "lunch", label: "Lunch" },
-    { value: "dinner", label: "Dinner" },
-    { value: "dessert", label: "Dessert" },
-];
+const mealTypes: Option[] = DISH_TYPES.map((mealType: string) => ({
+    value: mealType.toLowerCase(),
+    label: mealType.charAt(0).toUpperCase() + mealType.slice(1),
+}));
 
 const Search = () => {
     const [searchFormState, setSearchFormState] = useState<SearchFormState>({
@@ -229,5 +219,10 @@ const Search = () => {
         </form>
     );
 };
+
+// create a function that will return the searched page with the search results
+// with query parameters search?query=chicken%20pasta&cusine=italian&pantry=true
+// if the user is logged in, then the pantry will be checked for the ingredients
+// if the user is not logged in, then the pantry will not be checked
 
 export default Search;
