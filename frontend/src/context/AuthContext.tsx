@@ -3,11 +3,19 @@ import React, { createContext, useState } from "react";
 interface AuthContextProps {
     isAuth: boolean;
     setIsAuth: React.Dispatch<React.SetStateAction<boolean>>;
+    name: string;
+    setName: React.Dispatch<React.SetStateAction<string>>;
+    email: string;
+    setEmail: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export const AuthContext = createContext<AuthContextProps>({
     isAuth: false,
     setIsAuth: () => {},
+    name: "",
+    setName: () => {},
+    email: "",
+    setEmail: () => {},
 });
 
 interface AuthContextProviderProps {
@@ -19,22 +27,32 @@ export const checkAuth = async () => {
         method: "GET",
         credentials: "include",
     });
-    console.log("checking...");
-    return response.status === 200;
+    return response.json();
 };
 
 export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({
     children,
 }) => {
     const [isAuth, setIsAuth] = useState(false);
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
     const [loading, setLoading] = useState(true);
 
     React.useEffect(() => {
-        checkAuth().then((result) => {
-            setIsAuth(result);
+        checkAuth().then((data) => {
+            console.log(data);
+            if (data.message === "Authenticated") {
+                setIsAuth(true);
+                setName(data.user.name);
+                setEmail(data.user.email);
+            } else {
+                setIsAuth(false);
+            }
             setLoading(false);
         });
     }, []);
+
+
 
     if (loading) {
         return <>...</>;
@@ -45,6 +63,10 @@ export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({
             value={{
                 isAuth,
                 setIsAuth,
+                name,
+                setName,
+                email,
+                setEmail,
             }}
         >
             {children}
