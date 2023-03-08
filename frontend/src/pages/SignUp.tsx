@@ -98,7 +98,11 @@ export const SignUp: React.FC = () => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(formState),
+                body: JSON.stringify({
+                    name: formState.name,
+                    email: formState.email,
+                    password: formState.password,
+                }),
             });
             if (response.status === 200) {
                 setIsAuth(true);
