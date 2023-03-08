@@ -14,8 +14,7 @@ type FormState = {
     Description: string;
     // could also be inferred from the person who created the circle once they are logged in
     OwnerUsername: string;
-    // public or private - we can discuss if we want to add this and the description I included in the schema
-    Type: string;
+
     confirm: string;
 };
 
@@ -24,7 +23,6 @@ export const CircleSignUp: React.FC = () => {
         Name: "",
         Description: "",
         OwnerUsername: "",
-        Type: "",
         confirm: "",
     });
 
@@ -107,21 +105,6 @@ export const CircleSignUp: React.FC = () => {
                                 autoComplete="username"
                                 autoFocus
                                 value={formState.OwnerUsername}
-                                onChange={handleInputChange}
-                            />
-                        </Grid>
-                        {/* To do: Make this drop down if we decide to add this */}
-                        <Grid item xs={12}>
-                            <TextField
-                                variant="outlined"
-                                margin="normal"
-                                required
-                                fullWidth
-                                name="Type"
-                                label="Private or Public"
-                                id="Type"
-                                autoComplete="Type"
-                                value={formState.Type}
                                 onChange={handleInputChange}
                             />
                         </Grid>
