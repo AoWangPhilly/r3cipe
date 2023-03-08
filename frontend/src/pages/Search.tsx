@@ -5,6 +5,9 @@ import ToggleButton from "@mui/material/ToggleButton";
 import TextField from "@mui/material/TextField";
 import SearchIcon from "@mui/icons-material/Search";
 
+// find a way to check if the user is logged in - set to true for now
+const isLoggedIn = true;
+
 type SearchFormState = {
     query: string;
     cuisine: string;
@@ -13,8 +16,32 @@ type SearchFormState = {
     usersubmitted: boolean;
 };
 
-// find a way to check if the user is logged in - set to true for now
-const isAuthenticated = true;
+type Option = {
+    value: string;
+    label: string;
+};
+
+const cuisines: Option[] = [
+    { value: "american", label: "American" },
+    { value: "chinese", label: "Chinese" },
+    { value: "french", label: "French" },
+    { value: "indian", label: "Indian" },
+    { value: "mexican", label: "Mexican" },
+    { value: "african", label: "African" },
+    { value: "vietnamese", label: "Vietnamese" },
+    { value: "italian", label: "Italian" },
+    { value: "japanese", label: "Japanese" },
+    { value: "korean", label: "Korean" },
+    { value: "thai", label: "Thai" },
+];
+
+const mealTypes: Option[] = [
+    { value: "breakfast", label: "Breakfast" },
+    { value: "lunch", label: "Lunch" },
+    { value: "dinner", label: "Dinner" },
+    { value: "dessert", label: "Dessert" },
+];
+
 const Search = () => {
     const [searchFormState, setSearchFormState] = useState<SearchFormState>({
         query: "",
@@ -142,15 +169,15 @@ const Search = () => {
                             sx={{ margin: "auto", width: "50%" }}
                         >
                             <MenuItem value="">Cuisine</MenuItem>
-                            <MenuItem value="American">American</MenuItem>
-                            <MenuItem value="Chinese">Chinese</MenuItem>
-                            <MenuItem value="French">French</MenuItem>
-                            <MenuItem value="Indian">Indian</MenuItem>
-                            <MenuItem value="Italian">Italian</MenuItem>
-                            <MenuItem value="Japanese">Japanese</MenuItem>
-                            <MenuItem value="Korean">Korean</MenuItem>
-                            <MenuItem value="Mexican">Mexican</MenuItem>
-                            <MenuItem value="Thai">Thai</MenuItem>
+
+                            {cuisines.map((option) => (
+                                <MenuItem
+                                    key={option.value}
+                                    value={option.value}
+                                >
+                                    {option.label}
+                                </MenuItem>
+                            ))}
                         </Select>
                     </Grid>
                     <Grid item xs={3}>
@@ -161,13 +188,17 @@ const Search = () => {
                             sx={{ margin: "auto", width: "50%" }}
                         >
                             <MenuItem value="">Meal Type</MenuItem>
-                            <MenuItem value="Breakfast">Breakfast</MenuItem>
-                            <MenuItem value="Lunch">Lunch</MenuItem>
-                            <MenuItem value="Dinner">Dinner</MenuItem>
-                            <MenuItem value="Dessert">Dessert</MenuItem>
+                            {mealTypes.map((option) => (
+                                <MenuItem
+                                    key={option.value}
+                                    value={option.value}
+                                >
+                                    {option.label}
+                                </MenuItem>
+                            ))}
                         </Select>
                     </Grid>
-                    {isAuthenticated && (
+                    {isLoggedIn && (
                         <Grid item xs={3}>
                             <ToggleButton
                                 color="primary"
@@ -180,7 +211,7 @@ const Search = () => {
                             </ToggleButton>
                         </Grid>
                     )}
-                    {isAuthenticated && (
+                    {isLoggedIn && (
                         <Grid item xs={3}>
                             <ToggleButton
                                 color="primary"
