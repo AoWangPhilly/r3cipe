@@ -19,6 +19,7 @@ export const checkAuth = async () => {
         method: "GET",
         credentials: "include",
     });
+    console.log("checking...");
     return response.status === 200;
 };
 
