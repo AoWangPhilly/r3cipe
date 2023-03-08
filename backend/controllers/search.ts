@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import SpoonacularRecipe from "../models/SpoonacularRecipe.js";
+import SpoonacularSearchResult from "../models/SpoonacularRecipe.js";
+
 import { getTokenStorage } from "../helpers/tokenStorage.js";
 import axios from "axios";
 import { parseRecipe } from "../helpers/recipeParser.js";
@@ -15,7 +17,7 @@ const fakeRecipe = {
 };
 
 // TODO: parsing + caching needed
-function searchSpoonacularRecipes(req: Request, res: Response) {
+async function searchSpoonacularRecipes(req: Request, res: Response) {
     const { query, cuisine, mealtype, pantry } = req.query;
     const key = `${query}-${cuisine}`;
     const { token } = req.cookies;
@@ -40,12 +42,25 @@ function searchSpoonacularRecipes(req: Request, res: Response) {
         `fillIngredients=true&` +
         `number=10`;
     console.log(spoonacularUrl);
+
+    const spoonacularRecipeResult = await SpoonacularSearchResult.findOne({
+        searchKey: key,
+    });
+
+    if (spoonacularRecipeResult) {
+        console.log("cache hit");
+        // if the key is in the cache, return the cached result
+        return res.status(200).json({ spoonacularRecipeResult });
+    }
+    console.log("cache miss");
+    // if the key isn't in the cache, make the request
     axios
         .get(spoonacularUrl)
         .then((response) => {
+            let recipeIds: string[] = [];
             response.data.results.forEach((recipe: any) => {
                 const { recipeId, ...parsedRecipe } = parseRecipe(recipe);
-                console.log(recipeId);
+                recipeIds.push(recipeId);
                 const spoonacularRecipe = new SpoonacularRecipe({
                     recipeId: recipeId,
                     recipe: parsedRecipe,
@@ -61,20 +76,23 @@ function searchSpoonacularRecipes(req: Request, res: Response) {
                         console.log(error);
                     });
             });
+            const spoonacularRecipeResult = new SpoonacularSearchResult({
+                searchKey: key,
+                recipeIds: recipeIds,
+            });
+            const savedResult = spoonacularRecipeResult
+                .save()
+                .then((result) => {
+                    console.log("result saved");
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+            return res.status(200).json({ savedResult });
         })
         .catch((error) => {
-            console.log(error);
+            return res.status(500).json({ error });
         });
-
-    //     // const recipes = response.data.results;
-    //     // const spoonacularRecipes = recipes.map((recipe: any) => {
-    //     //     // return new SpoonacularRecipe({
-    //     //     //     recipeId: recipe.id,
-    //     //     //     recipe: recipe,
-    //     //     // });
-    //     // });
-
-    return res.status(200).json({ key });
 }
 
 // TODO: parsing + caching needed
