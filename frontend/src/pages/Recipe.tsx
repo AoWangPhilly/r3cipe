@@ -1,17 +1,28 @@
 import React, { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { RecipeType } from "../types";
 import { KATSU } from "../mockdata";
+import { Button } from "@mui/material";
 
 const Recipe: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [recipe, setRecipe] = React.useState<RecipeType>();
     const [error, setError] = React.useState(null);
     const [isLoaded, setIsLoaded] = React.useState(false);
+    const navigate = useNavigate();
 
+    const CURRENT_USER = "1234";
+
+    const response = {
+        recipeId: id,
+        recipe: KATSU,
+        lastModified: new Date(),
+        ownerId: "1234",
+        isPublic: true,
+    };
     //mock data
     useEffect(() => {
-        setRecipe(KATSU);
+        setRecipe(response.recipe);
         setIsLoaded(true);
     }, []);
 
@@ -37,7 +48,30 @@ const Recipe: React.FC = () => {
             <div>
                 {recipe && (
                     <div>
-                        <h1>{recipe.title}</h1>
+                        <div style={{ display: "flex" }}>
+                            <h1>{recipe.title}</h1>
+                            {
+                                //if the recipe is owned by the current user, show edit button
+                                response.ownerId === CURRENT_USER && (
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        sx={{
+                                            marginLeft: "auto",
+                                            height: "50px",
+                                        }}
+                                        onClick={() => {
+                                            navigate(`/edit/${id}`);
+                                        }}
+                                    >
+                                        Edit
+                                    </Button>
+                                )
+                            }
+                        </div>
+
+                        <p>Prep Time: {recipe.preparationMinutes} minutes</p>
+                        <p>Cooking Time: {recipe.cookingMinutes} minutes</p>
                         <img src={recipe.image} alt={recipe.title} />
                         <p>{recipe.summary}</p>
                         <h3>Ingredients</h3>
@@ -51,8 +85,6 @@ const Recipe: React.FC = () => {
                                 </li>
                             ))}
                         </ul>
-                        <p>Prep Time: {recipe.preparationMinutes} minutes</p>
-                        <p>Cooking Time: {recipe.cookingMinutes} minutes</p>
 
                         <p>
                             {" "}

@@ -3,29 +3,31 @@ import { Card, CardContent, CardMedia, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 interface RecipeThumbnailProps {
-    recipe: RecipeType;
+    title: string;
+    image: string;
     id: string;
 }
 
 export const RecipeThumbnail = (props: RecipeThumbnailProps) => {
     const navigate = useNavigate();
+    const { title, image, id } = props;
 
     return (
         <Card
             sx={{ maxWidth: 345 }}
             style={{ cursor: "pointer" }}
             onClick={() => {
-                navigate(`/recipe/${props.id}`);
+                navigate(`/recipe/${id}`);
             }}
         >
             <CardMedia
                 sx={{ height: 140 }}
-                image={props.recipe.image}
-                title={props.recipe.title}
+                image={image}
+                title={title}
             />
             <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
-                    {props.recipe.title}
+                    {title}
                 </Typography>
             </CardContent>
         </Card>
