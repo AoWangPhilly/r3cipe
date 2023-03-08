@@ -12,9 +12,13 @@ export const loginSchema = z.object({
 });
 
 export const createUserProfileSchema = z.object({
-    name: z.string().min(2),
+    name: z
+        .string({ required_error: "Name is required" })
+        .min(2, { message: "Name must have at least 2 characters" }),
     email: z.string().email(),
-    password: z.string().min(6),
+    password: z
+        .string({ required_error: "Password is required" })
+        .min(6, { message: "Password must have at least 6 characters" }),
     profileUrl: z.string().optional(),
 });
 
