@@ -15,8 +15,8 @@ export interface RecipeType {
     image: string; //link to image
     imageType: string; // image type (jpg, png, etc)
     summary: string; // A short summary of the recipe
-    cuisines: any[]; // An array of strings of the cuisines the recipe belongs to "italian", "mexican", etc
-    dishTypes: string[]; // An array of strings of the dish types the recipe belongs to "main course", "side dish", etc
+    cuisines: Cuisine[]; // An array of strings of the cuisines the recipe belongs to "italian", "mexican", etc
+    dishTypes: DishType[]; // An array of strings of the dish types the recipe belongs to "main course", "side dish", etc
     instructions: string; // The instructions on how to make the recipe
     sourceUrl: string; // Optional link to the source of the recipe
 }
@@ -75,3 +75,53 @@ interface RawRecipeType {
     originalId: null;
     spoonacularSourceUrl: string;
 }
+
+export const CUISINES = [
+    "African",
+    "American",
+    "British",
+    "Cajun",
+    "Caribbean",
+    "Chinese",
+    "Eastern European",
+    "European",
+    "French",
+    "German",
+    "Greek",
+    "Indian",
+    "Irish",
+    "Italian",
+    "Japanese",
+    "Jewish",
+    "Korean",
+    "Latin American",
+    "Mediterranean",
+    "Mexican",
+    "Middle Eastern",
+    "Nordic",
+    "Southern",
+    "Spanish",
+    "Thai",
+    "Vietnamese",
+];
+
+export type Cuisine = typeof CUISINES[number];
+
+export const DISH_TYPES = [
+    "main course",
+    "side dish",
+    "dessert",
+    "appetizer",
+    "salad",
+    "bread",
+    "breakfast",
+    "soup",
+    "beverage",
+    "sauce",
+    "marinade",
+    "fingerfood",
+    "snack",
+    "drink",
+];
+
+export type DishType = typeof DISH_TYPES[number];
