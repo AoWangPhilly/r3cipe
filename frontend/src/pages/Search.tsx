@@ -5,11 +5,12 @@ import ToggleButton from "@mui/material/ToggleButton";
 import TextField from "@mui/material/TextField";
 import SearchIcon from "@mui/icons-material/Search";
 import { CUISINES, DISH_TYPES } from "../types";
+import { useNavigate } from "react-router-dom";
 
 // find a way to check if the user is logged in - set to true for now
 const isLoggedIn = true;
 
-type SearchFormState = {
+export type SearchFormState = {
     query: string;
     cuisine: string;
     mealtype: string;
@@ -40,6 +41,7 @@ const Search = () => {
         usersubmitted: false,
         pantry: false,
     });
+    const navigate = useNavigate();
 
     /* useEffect(() => {
         console.log("test authorize middleware");
@@ -65,28 +67,31 @@ const Search = () => {
         event.preventDefault();
         console.log("Sign up");
         console.log(searchFormState);
-        console.log(JSON.stringify(searchFormState));
 
         if (searchFormState.query === "") {
             // exit early if there is no search query
             return;
         }
 
-        let response = await fetch("/api/search", {
-            method: "POST",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(searchFormState),
-        });
-        if (response.status === 200) {
-            console.log("Success");
-        } else {
-            await response.json().then((data) => {
-                console.log(data);
-            });
+        // search query params for search page
+        const queryParams = new URLSearchParams();
+        queryParams.append("query", searchFormState.query);
+        if (searchFormState.cuisine !== "") {
+            queryParams.append("cuisine", searchFormState.cuisine);
         }
+        if (searchFormState.mealtype !== "") {
+            queryParams.append("mealtype", searchFormState.mealtype);
+        }
+        if (searchFormState.usersubmitted && isLoggedIn) {
+            queryParams.append("usersubmitted", "true");
+        }
+        if (searchFormState.pantry && isLoggedIn) {
+            queryParams.append("pantry", "true");
+        }
+        const searchUrl = `/search?${queryParams.toString()}`;
+        navigate(searchUrl);
+
+        console.log("sending");
     };
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -235,10 +240,5 @@ const Search = () => {
         </form>
     );
 };
-
-// create a function that will return the searched page with the search results
-// with query parameters search?query=chicken%20pasta&cusine=italian&pantry=true
-// if the user is logged in, then the pantry will be checked for the ingredients
-// if the user is not logged in, then the pantry will not be checked
 
 export default Search;

@@ -18,6 +18,7 @@ import SignUp from "./pages/SignUp";
 import { useContext } from "react";
 import { AuthContext } from "./context/AuthContext";
 import CircleSignUp from "./pages/CircleSignUp";
+import SearchResults from "./pages/SearchResults";
 
 function App() {
     const { isAuth } = useContext(AuthContext);
@@ -42,6 +43,8 @@ function App() {
             <Navbar />
             <Routes>
                 <Route path="/" element={<Search />} />
+                <Route path="/:query" element={<SearchResults />} />
+
                 <Route path="/recipe/:id" element={<Recipe />} />
                 {isAuth ? (
                     <>
@@ -91,10 +94,7 @@ function App() {
                             element={<GoLogin redirect="settings" />}
                         />
 
-                        <Route
-                            path="/edit/:id"
-                            element={<GoLogin />}
-                        />
+                        <Route path="/edit/:id" element={<GoLogin />} />
                         <Route
                             path="/create"
                             element={<GoLogin redirect="create" />}
