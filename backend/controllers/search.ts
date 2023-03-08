@@ -4,6 +4,7 @@ import SpoonacularSearchResult from "../models/SearchResults.js";
 import { getTokenStorage } from "../helpers/tokenStorage.js";
 import axios from "axios";
 import { parseRecipe } from "../helpers/recipeParser.js";
+import Inventory from "../models/Inventory.js";
 
 const API_KEY = process.env.API_KEY;
 
@@ -17,29 +18,44 @@ const fakeRecipe = {
 
 // TODO: parsing + caching needed
 async function searchSpoonacularRecipes(req: Request, res: Response) {
-    const { query, cuisine, mealtype, pantry } = req.query;
+    const { query, cuisine, mealtype, pantry, usersubmitted } = req.query;
     const key = `${query}-${cuisine}`;
+    const maxResults: number = 10;
     const { token } = req.cookies;
-    if (pantry && token) {
-        const tokenStorage = getTokenStorage();
-        console.log(tokenStorage[token]);
-        // get pantry from the collections given the id
-    }
+    const tokenStorage = getTokenStorage();
 
-    console.log(query, cuisine, mealtype, pantry);
     // parameters are empty
     if (!query && !cuisine && !mealtype) {
         return res.status(400).json({ error: "no parameters provided" });
     }
+    console.log(query, cuisine, mealtype, pantry);
+    let spoonacularUrl = "";
 
-    const spoonacularUrl =
-        `https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY}` +
-        `&query=${query}&` +
-        `type=${mealtype}&` +
-        `cuisine=${cuisine}&` +
-        `addRecipeInformation=true&` +
-        `fillIngredients=true&` +
-        `number=10`;
+    if (pantry && tokenStorage[token]) {
+        const userPantry = await Inventory.findOne({
+            userId: tokenStorage[token].id,
+        });
+        const pantryIngredients = userPantry?.pantry.join(",");
+        spoonacularUrl =
+            `https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY}` +
+            `&query=${query}&` +
+            `type=${mealtype}&` +
+            `cuisine=${cuisine}&` +
+            `includeIngredients=${pantryIngredients}&` +
+            `addRecipeInformation=true&` +
+            `fillIngredients=true&` +
+            `number=${maxResults}`;
+    } else {
+        spoonacularUrl =
+            `https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY}` +
+            `&query=${query}&` +
+            `type=${mealtype}&` +
+            `cuisine=${cuisine}&` +
+            `addRecipeInformation=true&` +
+            `fillIngredients=true&` +
+            `number=${maxResults}`;
+    }
+
     console.log(spoonacularUrl);
 
     const spoonacularRecipeResult = await SpoonacularSearchResult.findOne({

@@ -44,7 +44,6 @@ const SearchResults: React.FC = () => {
                 credentials: "include",
             }
         );
-
         if (spoonacularAPIResponse.status === 200) {
             let data = await spoonacularAPIResponse.json();
             setSpoonacularRecipes(data.recipes);
