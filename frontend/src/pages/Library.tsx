@@ -1,11 +1,19 @@
 import { Grid } from "@mui/material";
 import RecipeThumbnail from "../components/RecipeThumbnail";
 import { RecipeType } from "../types";
-import { MANY_KATSU } from "../mockdata";
+import { KATSU, MANY_KATSU } from "../mockdata";
 
 export const Library = () => {
-
-    const favorites = MANY_KATSU;
+    const favorites = [
+        {
+            id: "1",
+            recipe: KATSU,
+        },
+        {
+            id: "2",
+            recipe: KATSU,
+        },
+    ];
 
     return (
         <div>
@@ -22,7 +30,7 @@ export const Library = () => {
             >
                 {favorites.map((recipe) => (
                     <Grid item xs={1} key={recipe.id}>
-                        <RecipeThumbnail recipe={recipe} />
+                        <RecipeThumbnail recipe={recipe.recipe} id={recipe.id} />
                     </Grid>
                 ))}
             </Grid>

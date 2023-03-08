@@ -1,7 +1,6 @@
 import { RecipeType } from "./types";
 
 const katsu: RecipeType = {
-    id: 1,
     title: "Chicken Katsu",
     image: "https://t3.ftcdn.net/jpg/03/69/57/26/360_F_369572634_6m2igusHcoqUhutoFmxtJIMgI1DsxtCt.jpg",
     imageType: "jpg",
@@ -31,7 +30,6 @@ const manyKatsu: RecipeType[] = [];
 for (let i = 0; i < 100; i++) {
     manyKatsu.push({
         ...katsu,
-        id: i,
     });
 }
 

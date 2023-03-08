@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 interface RecipeThumbnailProps {
     recipe: RecipeType;
+    id: string;
 }
 
 export const RecipeThumbnail = (props: RecipeThumbnailProps) => {
@@ -14,7 +15,7 @@ export const RecipeThumbnail = (props: RecipeThumbnailProps) => {
             sx={{ maxWidth: 345 }}
             style={{ cursor: "pointer" }}
             onClick={() => {
-                navigate(`/recipe/${props.recipe.id}`);
+                navigate(`/recipe/${props.id}`);
             }}
         >
             <CardMedia

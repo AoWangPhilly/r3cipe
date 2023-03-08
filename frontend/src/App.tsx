@@ -42,6 +42,7 @@ function App() {
             <Navbar />
             <Routes>
                 <Route path="/" element={<Search />} />
+                <Route path="/recipe/:id" element={<Recipe />} />
                 {isAuth ? (
                     <>
                         <Route path="/circle" element={<Circle />} />
@@ -55,9 +56,14 @@ function App() {
                         />
                         <Route path="/library" element={<Library />} />
                         <Route path="/settings" element={<Settings />} />
-                        <Route path="/recipe/:id" element={<Recipe />} />
-                        <Route path="/create" element={<RecipeInput isEdit={false} />} />
-                        <Route path="/edit/:id" element={<RecipeInput isEdit={true} />} />
+                        <Route
+                            path="/create"
+                            element={<RecipeInput isEdit={false} />}
+                        />
+                        <Route
+                            path="/edit/:id"
+                            element={<RecipeInput isEdit={true} />}
+                        />
                         <Route path="/login" element={<GoHome />} />
                         <Route path="/signup" element={<GoHome />} />
                     </>
@@ -84,8 +90,11 @@ function App() {
                             path="/settings"
                             element={<GoLogin redirect="settings" />}
                         />
-                        <Route path="/recipe/:id" element={<Recipe />} />
 
+                        <Route
+                            path="/edit/:id"
+                            element={<GoLogin redirect="create" />}
+                        />
                         <Route
                             path="/create"
                             element={<GoLogin redirect="create" />}

@@ -9,7 +9,6 @@ export interface RecipeType {
     preparationMinutes: number; // The number of minutes it takes to prepare the recipe
     cookingMinutes: number; // The number of minutes it takes to cook the recipe
     extendedIngredients: Ingredient[];
-    id: number; // spoonacular id 1234 OR user id u1234
     title: string; // The title of the recipe
     servings: number; // How many servings does this recipe yield
     image: string; //link to image

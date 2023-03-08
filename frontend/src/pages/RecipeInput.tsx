@@ -28,7 +28,6 @@ export const RecipeInput = (props: RecipeInputProps) => {
         cookingMinutes: 0,
         sourceUrl: "",
         servings: 0,
-        id: 0,
         cuisines: [],
         dishTypes: [],
     });
@@ -143,7 +142,6 @@ export const RecipeInput = (props: RecipeInputProps) => {
             cookingMinutes: formState.cookingMinutes,
             sourceUrl: formState.sourceUrl,
             servings: formState.servings,
-            id: formState.id,
             cuisines: formState.cuisines,
             dishTypes: formState.dishTypes,
         };
@@ -152,7 +150,8 @@ export const RecipeInput = (props: RecipeInputProps) => {
             isPublic: isPublic,
         }
 
-        //TODO, POST THIS TO THE BACKEND
+        //TODO, POST THIS TO THE BACKEND IF CREATING
+        //TODO, PUT THIS TO THE BACKEND IF EDITING
         console.log(postObject);
     };
 
