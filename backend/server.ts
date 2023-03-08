@@ -11,7 +11,7 @@ import authRouter from "./routes/auth.js";
 import { userProfileRouter } from "./routes/UserProfile.js";
 import { ingredientRouter } from "./routes/Ingredient.js";
 import { socialCircleRouter } from "./routes/SocialCircle.js";
-import spoonacularRecipeRouter from "./routes/SpoonacularRecipe.js";
+import searchRouter from "./routes/search.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -49,10 +49,11 @@ app.use(express.static(path.join(__dirname, "public")));
  * Routes
  */
 app.use("/api/auth", authRouter);
-app.use("/api/user/profiles", userProfileRouter);
+app.use("/api/search", searchRouter);
 app.use("/api/ingredients", ingredientRouter);
 app.use("/api/circles", socialCircleRouter);
-app.use("/api/recipe", spoonacularRecipeRouter); // TODO: change
+
+app.use("/api/user/profiles", userProfileRouter); // TODO: DELETE
 
 app.get("/*", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));

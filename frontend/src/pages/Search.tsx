@@ -1,5 +1,5 @@
 import { Grid, MenuItem } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import ToggleButton from "@mui/material/ToggleButton";
 import TextField from "@mui/material/TextField";
@@ -40,6 +40,22 @@ const Search = () => {
         usersubmitted: false,
         pantry: false,
     });
+
+    /* useEffect(() => {
+        console.log("test authorize middleware");
+        let temp = async () => {
+            console.log("sending");
+            let resp = await fetch("/api/auth/dummy", {
+                method: "GET",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            console.log(resp.status);
+        };
+        temp();
+    }, []); */
 
     const handleSubmit = async (
         event:
