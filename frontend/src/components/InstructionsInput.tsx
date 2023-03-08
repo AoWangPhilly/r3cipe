@@ -89,7 +89,6 @@ const AddInstruction = (props: {
                     name="instruction"
                     variant="outlined"
                     fullWidth
-                    autoFocus
                     id="instruction"
                     label="Instruction"
                     value={formState.instruction}

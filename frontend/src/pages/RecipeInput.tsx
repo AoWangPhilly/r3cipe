@@ -4,12 +4,7 @@ import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import { IngredientSelect } from "../components/IngredientSelect";
 import { InstructionsInput } from "../components/InstructionsInput";
-import {
-    Button,
-    FormControlLabel,
-    Grid,
-    Switch,
-} from "@mui/material";
+import { Button, FormControlLabel, Grid, Switch } from "@mui/material";
 import { useParams } from "react-router-dom";
 
 interface IngredientRaw {
@@ -36,8 +31,8 @@ export const RecipeInput = (props: RecipeInputProps) => {
         id: 0,
         cuisines: [],
         dishTypes: [],
-        isPublic: false,
     });
+    const [isPublic, setIsPublic] = useState<boolean>(false);
 
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>("");
@@ -74,7 +69,8 @@ export const RecipeInput = (props: RecipeInputProps) => {
                     setIngredients(data.recipe.extendedIngredients);
                     setInstructions(data.recipe.instructions.split("\n"));
                     setLoading(false);
-                }).catch((err) => {
+                })
+                .catch((err) => {
                     setError(err);
                     setLoading(false);
                 });
@@ -114,10 +110,7 @@ export const RecipeInput = (props: RecipeInputProps) => {
     };
 
     const handleSwitchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormState((prevState) => ({
-            ...prevState,
-            isPublic: e.target.checked,
-        }));
+        setIsPublic(e.target.checked);
     };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -127,7 +120,7 @@ export const RecipeInput = (props: RecipeInputProps) => {
         for (let i = 0; i < instructions.length; i++) {
             formState.instructions += instructions[i] + "\n";
         }
-        if(formState.instructions === "") {
+        if (formState.instructions === "") {
             alert("Please enter instructions");
             return;
         }
@@ -153,9 +146,14 @@ export const RecipeInput = (props: RecipeInputProps) => {
             id: formState.id,
             cuisines: formState.cuisines,
             dishTypes: formState.dishTypes,
-            isPublic: formState.isPublic,
         };
-        console.log(recipe);
+        const postObject = {
+            recipe: recipe,
+            isPublic: isPublic,
+        }
+
+        //TODO, POST THIS TO THE BACKEND
+        console.log(postObject);
     };
 
     if (props.isEdit && !IS_OWNER) {
@@ -180,8 +178,8 @@ export const RecipeInput = (props: RecipeInputProps) => {
                                         name="title"
                                         value={formState.title}
                                         onChange={handleInputChange}
-                                        autoFocus
                                         required
+                                        autoFocus
                                     />
                                 </Grid>
                                 <Grid item xs={12}>
@@ -190,7 +188,6 @@ export const RecipeInput = (props: RecipeInputProps) => {
                                         name="summary"
                                         value={formState.summary}
                                         onChange={handleInputChange}
-                                        autoFocus
                                         required
                                         sx={{
                                             width: "85%",
@@ -244,7 +241,6 @@ export const RecipeInput = (props: RecipeInputProps) => {
                                         name="image"
                                         value={formState.image}
                                         onChange={handleInputChange}
-                                        autoFocus
                                         required
                                         sx={{
                                             width: "60%",
@@ -255,7 +251,6 @@ export const RecipeInput = (props: RecipeInputProps) => {
                                         name="imageType"
                                         value={formState.imageType}
                                         onChange={handleInputChange}
-                                        autoFocus
                                         sx={{
                                             width: "10%",
                                         }}
@@ -268,7 +263,6 @@ export const RecipeInput = (props: RecipeInputProps) => {
                                         value={formState.preparationMinutes}
                                         onChange={handleInputChange}
                                         type="number"
-                                        autoFocus
                                         required
                                         sx={{
                                             width: "15%",
@@ -280,7 +274,6 @@ export const RecipeInput = (props: RecipeInputProps) => {
                                         name="cookingMinutes"
                                         value={formState.cookingMinutes}
                                         onChange={handleInputChange}
-                                        autoFocus
                                         type="number"
                                         required
                                         sx={{
@@ -292,7 +285,6 @@ export const RecipeInput = (props: RecipeInputProps) => {
                                         name="servings"
                                         value={formState.servings}
                                         onChange={handleInputChange}
-                                        autoFocus
                                         type="number"
                                         required
                                         sx={{
@@ -306,7 +298,6 @@ export const RecipeInput = (props: RecipeInputProps) => {
                                         name="sourceUrl"
                                         value={formState.sourceUrl}
                                         onChange={handleInputChange}
-                                        autoFocus
                                         sx={{
                                             width: "60%",
                                         }}
@@ -331,7 +322,7 @@ export const RecipeInput = (props: RecipeInputProps) => {
                     <FormControlLabel
                         control={
                             <Switch
-                                checked={formState.isPublic}
+                                checked={isPublic}
                                 onChange={handleSwitchChange}
                                 name="isPublic"
                                 inputProps={{ "aria-label": "controlled" }}

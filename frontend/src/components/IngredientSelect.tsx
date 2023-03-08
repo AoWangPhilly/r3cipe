@@ -108,7 +108,6 @@ const AddIngredient = (props: {
                     label="Amount"
                     value={formState.amount}
                     onChange={handleInputChange}
-                    autoFocus
                 />
             </Grid>
             <Grid item display="flex" width="40%">

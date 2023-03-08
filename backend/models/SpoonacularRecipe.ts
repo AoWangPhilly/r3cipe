@@ -4,13 +4,17 @@ import { RecipeType } from "backend/types.js";
 interface ISpoonacularRecipe {
     recipeId: string;
     recipe: RecipeType | any; // will remove "any" after testing
-    createdAt: Date;
+    lastModified: Date;
+    userId: null;
+    isPublic: boolean;
 }
 
 const spoonacularRecipeSchema = new mongoose.Schema<ISpoonacularRecipe>({
     recipeId: { type: String, required: true, unique: true },
     recipe: { type: Object, required: true },
-    createdAt: { type: Date, default: Date.now },
+    lastModified: { type: Date, default: Date.now },
+    userId: { type: String, default: null },
+    isPublic: { type: Boolean, default: true },
 });
 
 export default mongoose.model<ISpoonacularRecipe>(

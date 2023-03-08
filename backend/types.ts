@@ -19,9 +19,7 @@ export interface RecipeType {
     dishTypes: DishType[]; // An array of strings of the dish types the recipe belongs to "main course", "side dish", etc
     instructions: string; // The instructions on how to make the recipe
     sourceUrl: string; // Optional link to the source of the recipe
-    isPublic: boolean; // Whether the recipe is public or not
 }
-
 export interface Ingredient {
     id: number; // 1123
     original: string; // "1 cup of milk"
