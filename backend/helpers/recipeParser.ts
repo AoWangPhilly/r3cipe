@@ -1,4 +1,6 @@
-export function parseRecipes(recipe: any) {
+import { RawRecipeType } from "../types.js";
+
+export function parseRecipe(recipe: any) {
     const {
         preparationMinutes,
         cookingMinutes,
