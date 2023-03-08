@@ -33,7 +33,7 @@ export const SignUp: React.FC = () => {
     });
 
     //use auth contexrt
-    const { setIsAuth } = useContext(AuthContext);
+    const { setIsAuth, setName, setEmail } = useContext(AuthContext);
 
     const navigate = useNavigate();
 
@@ -106,6 +106,8 @@ export const SignUp: React.FC = () => {
             });
             if (response.status === 200) {
                 setIsAuth(true);
+                setName(formState.name);
+                setEmail(formState.email);
                 navigate("/");
             } else {
                 //display error

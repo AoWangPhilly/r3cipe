@@ -26,7 +26,8 @@ export default function Navbar() {
         null
     );
 
-    const { isAuth, setIsAuth } = React.useContext(AuthContext);
+    const { isAuth, setIsAuth, name, setName, setEmail } =
+        React.useContext(AuthContext);
     const navigate = useNavigate();
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -52,13 +53,15 @@ export default function Navbar() {
         });
         if (response.status === 200) {
             setIsAuth(false);
+            setName("");
+            setEmail("");
             navigate("/");
         }
     };
 
     return (
         <AppBar position="static">
-            <Container maxWidth="xl" sx={{height: 70}}>
+            <Container maxWidth="xl" sx={{ height: 70 }}>
                 <Toolbar disableGutters>
                     {/* <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} /> */}
                     <Typography
@@ -206,47 +209,68 @@ export default function Navbar() {
                             </Button>
                         </Box>
                     ) : (
-                        <Box sx={{ flexGrow: 0 }}>
-                            <Tooltip title="User Menu">
-                                <Avatar
-                                    onClick={handleOpenUserMenu}
+                        <>
+                            <Box sx={{ flexGrow: 0 }}>
+                                <Typography
+                                    variant="h6"
+                                    noWrap
+                                    component="a"
                                     sx={{
-                                        width: 50,
-                                        height: 50,
-                                        cursor: "pointer",
-                                        background:
-                                            "linear-gradient(45deg, #2196F3 40%, #21CBF3 80%)",
+                                        mr: 2,
+                                        display: { xs: "none", md: "flex" },
+                                        fontFamily: "monospace",
+                                        fontWeight: 700,
+                                        letterSpacing: ".3rem",
+                                        color: "inherit",
+                                        textDecoration: "none",
                                     }}
                                 >
-                                    {"M"}
-                                </Avatar>
-                            </Tooltip>
-                            <Menu
-                                sx={{ mt: "45px" }}
-                                id="menu-appbar"
-                                anchorEl={anchorElUser}
-                                anchorOrigin={{
-                                    vertical: "top",
-                                    horizontal: "right",
-                                }}
-                                keepMounted
-                                transformOrigin={{
-                                    vertical: "top",
-                                    horizontal: "right",
-                                }}
-                                open={Boolean(anchorElUser)}
-                                onClose={handleCloseUserMenu}
-                            >
-                                <MenuItem onClick={handleCloseUserMenu}>
-                                    <Link to="/settings">Settings</Link>
-                                </MenuItem>
-                                <MenuItem onClick={handleCloseUserMenu}>
-                                    <Link onClick={handleLogout} to="/">
-                                        Logout
-                                    </Link>
-                                </MenuItem>
-                            </Menu>
-                        </Box>
+                                    {name}
+                                </Typography>
+                            </Box>
+
+                            <Box sx={{ flexGrow: 0 }}>
+                                <Tooltip title="User Menu">
+                                    <Avatar
+                                        onClick={handleOpenUserMenu}
+                                        sx={{
+                                            width: 50,
+                                            height: 50,
+                                            cursor: "pointer",
+                                            background:
+                                                "linear-gradient(45deg, #2196F3 40%, #21CBF3 80%)",
+                                        }}
+                                    >
+                                        {name && name[0].toUpperCase()}
+                                    </Avatar>
+                                </Tooltip>
+                                <Menu
+                                    sx={{ mt: "45px" }}
+                                    id="menu-appbar"
+                                    anchorEl={anchorElUser}
+                                    anchorOrigin={{
+                                        vertical: "top",
+                                        horizontal: "right",
+                                    }}
+                                    keepMounted
+                                    transformOrigin={{
+                                        vertical: "top",
+                                        horizontal: "right",
+                                    }}
+                                    open={Boolean(anchorElUser)}
+                                    onClose={handleCloseUserMenu}
+                                >
+                                    <MenuItem onClick={handleCloseUserMenu}>
+                                        <Link to="/settings">Settings</Link>
+                                    </MenuItem>
+                                    <MenuItem onClick={handleCloseUserMenu}>
+                                        <Link onClick={handleLogout} to="/">
+                                            Logout
+                                        </Link>
+                                    </MenuItem>
+                                </Menu>
+                            </Box>
+                        </>
                     )}
                 </Toolbar>
             </Container>
