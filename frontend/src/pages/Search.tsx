@@ -25,7 +25,9 @@ const Search = () => {
     });
 
     const handleSubmit = async (
-        event: React.MouseEvent<SVGSVGElement, MouseEvent>
+        event:
+            | React.MouseEvent<SVGSVGElement, MouseEvent>
+            | React.KeyboardEvent<HTMLInputElement>
     ): Promise<void> => {
         event.preventDefault();
         console.log("Sign up");
@@ -120,6 +122,13 @@ const Search = () => {
                                     style={{ cursor: "pointer" }}
                                 />
                             ),
+                            onKeyDown: (
+                                event: React.KeyboardEvent<HTMLInputElement>
+                            ) => {
+                                if (event.key === "Enter") {
+                                    handleSubmit(event);
+                                }
+                            },
                         }}
                     />
                 </Grid>
