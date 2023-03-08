@@ -25,7 +25,6 @@ const katsu: RecipeType = {
     cuisines: ["test"],
     dishTypes: ["test"],
     summary: "Chicken Katsu the way my grandma makes it",
-    isPublic: true,
 };
 
 const manyKatsu: RecipeType[] = [];
