@@ -44,9 +44,11 @@ function searchSpoonacularRecipes(req: Request, res: Response) {
         .get(spoonacularUrl)
         .then((response) => {
             response.data.results.forEach((recipe: any) => {
+                const { recipeId, ...parsedRecipe } = parseRecipe(recipe);
+                console.log(recipeId);
                 const spoonacularRecipe = new SpoonacularRecipe({
-                    recipeId: recipe.id,
-                    recipe: parseRecipe(recipe),
+                    recipeId: recipeId,
+                    recipe: parsedRecipe,
                     userId: "Spoonacular",
                 });
 
