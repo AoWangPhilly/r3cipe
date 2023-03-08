@@ -20,7 +20,25 @@ const spoonacularRecipeSchema = new mongoose.Schema<ISpoonacularRecipe>(
     { versionKey: false }
 );
 
-export default mongoose.model<ISpoonacularRecipe>(
+interface ISpoontacularSearchResult {
+    searchKey: string;
+    recipeIds: string[];
+}
+
+const spoonacularSearchResultSchema =
+    new mongoose.Schema<ISpoontacularSearchResult>(
+        {
+            searchKey: { type: String, required: true, unique: true },
+            recipeIds: { type: [String], required: true },
+        },
+        { versionKey: false }
+    );
+
+export default (mongoose.model<ISpoonacularRecipe>(
     "SpoonacularRecipe",
     spoonacularRecipeSchema
-);
+),
+mongoose.model<ISpoontacularSearchResult>(
+    "SpoonacularSearchResult",
+    spoonacularSearchResultSchema
+));
