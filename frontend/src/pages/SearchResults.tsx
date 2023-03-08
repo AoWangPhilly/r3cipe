@@ -22,7 +22,7 @@ const SearchResults: React.FC = () => {
     const [userSubmittedRecipes, setUserSubmittedRecipes] = useState<any>([]);
     const [recipes, setRecipes] = useState<any>([]);
 
-    const searchForUserSubmitted = async () => {
+    const searchForRecipes = async () => {
         const apiResponse = await fetch(
             `/api/search?query=${query}&cuisine=${cuisine}&mealtype=${mealType}&pantry=${pantryString}&usersubmitted=${userSubmittedString}`,
             {
@@ -62,7 +62,7 @@ const SearchResults: React.FC = () => {
 
     // if anything in the search form changes, update the search
     useEffect(() => {
-        searchForUserSubmitted();
+        searchForRecipes();
     }, [location]);
 
     return (
