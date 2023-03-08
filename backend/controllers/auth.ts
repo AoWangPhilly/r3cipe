@@ -49,13 +49,9 @@ function checkLogin(req: Request, res: Response) {
     }
     return res.status(400).json({ message: "Unauthenticated" });
 }
-
-// TODO
-// I set this up in the frontend to send a request to this endpoint with:
-// { name: string,  email: string, password: string, }
-// if successful, set cookies
-// else send response message with error
-// -tyler
+/**
+ * creates a new user from email, name, and password
+ */
 async function signup(req: Request, res: Response) {
     let parseResult = createUserProfileSchema.safeParse(req.body);
     if (!parseResult.success) {
