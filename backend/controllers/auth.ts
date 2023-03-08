@@ -32,9 +32,10 @@ function checkLogin(req: Request, res: Response) {
     const tokenStorage = getTokenStorage();
     if (tokenStorage.hasOwnProperty(token)) {
         // check if token is expired
-        if (tokenStorage[token].expiry > new Date()) {
+        if (tokenStorage[token].expiry < new Date()) {
             console.log("token expired");
-            delete tokenStorage[token];
+            deleteToken(token);
+            // delete tokenStorage[token];
             res.clearCookie("token", cookieOptions);
         } else {
             return res
