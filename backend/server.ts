@@ -11,13 +11,12 @@ import authRouter from "./routes/auth.js";
 import { userProfileRouter } from "./routes/UserProfile.js";
 import { ingredientRouter } from "./routes/Ingredient.js";
 import { socialCircleRouter } from "./routes/SocialCircle.js";
+import { inventoryRouter } from "./routes/Inventory.js";
 import searchRouter from "./routes/search.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const API_KEY = process.env.API_KEY;
 
-// console.log(API_KEY);
 dotenv.config({ path: path.join(__dirname, "../.env") });
 
 let app = express();
@@ -53,6 +52,7 @@ app.use("/api/search", searchRouter);
 app.use("/api/ingredients", ingredientRouter);
 app.use("/api/circles", socialCircleRouter);
 app.use("/api/user/profiles", userProfileRouter); // TODO: DELETE
+app.use("/api/user/inventory", inventoryRouter);
 
 app.get("/*", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
