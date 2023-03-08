@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { RecipeType } from "../types";
+import { KATSU } from "../mockdata";
 
 const Recipe: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -10,32 +11,7 @@ const Recipe: React.FC = () => {
 
     //mock data
     useEffect(() => {
-        setRecipe({
-            id: 1,
-            title: "Chicken Katsu",
-            image: "https://t3.ftcdn.net/jpg/03/69/57/26/360_F_369572634_6m2igusHcoqUhutoFmxtJIMgI1DsxtCt.jpg",
-            imageType: "jpg",
-            extendedIngredients: [
-                {
-                    id: 1,
-                    original: "1 cup of milk",
-                    originalName: "milk",
-                },
-                {
-                    id: 2,
-                    original: "1 cup of flour",
-                    originalName: "flour",
-                },
-            ],
-            preparationMinutes: 10,
-            cookingMinutes: 20,
-            sourceUrl: "google.com",
-            instructions: "Mix the milk and flour. Fry the chicken. Eat",
-            servings: 4,
-            cuisines: ["test"],
-            dishTypes: ["test"],
-            summary: "Chicken Katsu the way my grandma makes it",
-        });
+        setRecipe(KATSU);
         setIsLoaded(true);
     }, []);
 

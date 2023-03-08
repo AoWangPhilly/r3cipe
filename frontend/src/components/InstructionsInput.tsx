@@ -95,7 +95,7 @@ const AddInstruction = (props: {
                     value={formState.instruction}
                     onChange={handleInputChange}
                     onKeyDown={(e) => {
-                        if (e.key === "Enter") {
+                        if (e.key === "Enter" && formState.instruction !== "") {
                             addInstructionOnClick();
                         }
                     }}
