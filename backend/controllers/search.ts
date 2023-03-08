@@ -1,5 +1,4 @@
-import { NextFunction, Request, Response } from "express";
-import mongoose from "mongoose";
+import { Request, Response } from "express";
 import SpoonacularRecipe from "../models/SpoonacularRecipe.js";
 
 const fakeRecipe = {
@@ -10,8 +9,13 @@ const fakeRecipe = {
     },
 };
 
-// TODO: input validation
-const createSpoonacularRecipe = () => {
+// TODO: parsing + caching needed
+function searchSpoonacular(req: Request, res: Response) {
+    
+}
+
+// TODO: input validation (actually, DELETE this endpoint?)
+function createSpoonacularRecipe() {
     const spoonacularRecipe = new SpoonacularRecipe({
         recipeId: String(Math.floor(Math.random() * (1000 - 1 + 1) + 1)),
         recipe: fakeRecipe.recipe,
