@@ -1,4 +1,6 @@
-export function parseRecipes(recipe: any) {
+import recipes from "./test.json" assert { type: "json" };
+
+function parseRecipes(recipe) {
     const {
         preparationMinutes,
         cookingMinutes,
@@ -16,18 +18,19 @@ export function parseRecipes(recipe: any) {
     } = recipe;
 
     const instructions = analyzedInstructions[0].steps
-        .map((step: any) => {
+        .map((step) => {
             return step.step;
         })
         .join("\n");
 
-    const ingredients = extendedIngredients.map((ingredient: any) => {
+    const ingredients = extendedIngredients.map((ingredient) => {
         return {
             id: ingredient.id,
             original: ingredient.original,
             originalName: ingredient.originalName,
         };
     });
+
     return {
         preparationMinutes: preparationMinutes,
         cookingMinutes: cookingMinutes,
@@ -44,3 +47,5 @@ export function parseRecipes(recipe: any) {
         recipeId: id,
     };
 }
+
+console.log(parseRecipes(recipes.results[0]));
