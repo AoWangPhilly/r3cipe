@@ -5,3 +5,6 @@ export const inventoryRouter: Router = Router();
 
 inventoryRouter.put("/pantry", controller.updatePantry);
 inventoryRouter.get("/pantry", controller.getPantry);
+inventoryRouter.get("/favorite", controller.getFavoriteRecipes);
+inventoryRouter.put("/favorite/:id", controller.addRecipeToFavorite);
+inventoryRouter.delete("/favorite/:id", controller.removeRecipeFromFavorite);
