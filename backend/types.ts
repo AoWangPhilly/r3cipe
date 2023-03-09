@@ -19,6 +19,8 @@ export interface RecipeType {
     instructions: string; // The instructions on how to make the recipe
     sourceUrl: string; // Optional link to the source of the recipe
 }
+
+export type RecipeTypeWithId = RecipeType & { id: string };
 export interface Ingredient {
     id: number; // 1123
     original: string; // "1 cup of milk"

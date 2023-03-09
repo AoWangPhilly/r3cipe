@@ -1,15 +1,16 @@
+import { RecipeTypeWithId } from "../types.js";
 import mongoose from "mongoose";
 
 interface ISpoontacularSearchResult {
     searchKey: string;
-    recipeIds: string[];
+    recipes: RecipeTypeWithId[];
 }
 
 const spoonacularSearchResultSchema =
     new mongoose.Schema<ISpoontacularSearchResult>(
         {
             searchKey: { type: String, required: true, unique: true },
-            recipeIds: { type: [String], required: true },
+            recipes: { type: [Object], required: true },
         },
         { versionKey: false }
     );

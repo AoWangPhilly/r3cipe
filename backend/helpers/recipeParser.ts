@@ -1,5 +1,3 @@
-import { RawRecipeType } from "../types.js";
-
 export function parseRecipe(recipe: any) {
     const {
         preparationMinutes,
@@ -27,7 +25,6 @@ export function parseRecipe(recipe: any) {
     } else {
         instructions = "";
     }
-    console.log("after", instructions);
     const ingredients = extendedIngredients.map((ingredient: any) => {
         return {
             id: ingredient.id,
