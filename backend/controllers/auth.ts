@@ -14,6 +14,7 @@ import {
     tokenUserInfo,
 } from "../helpers/tokenStorage.js";
 import mongoose from "mongoose";
+import Inventory from "../models/Inventory.js";
 
 const TOKEN_EXPIRY = 3600; // 1 hr (in seconds)
 
@@ -85,16 +86,23 @@ async function signup(req: Request, res: Response) {
             password: hashedPassword,
         });
         const savedUserProfile = await userProfile.save();
-        if (!savedUserProfile) {
+
+        const inventory = await Inventory.create({
+            userId: userProfile._id,
+        });
+        const savedInventory = await inventory.save();
+
+        if (!savedInventory || !savedUserProfile) {
             return res.status(500).json({ errors: ["Internal server error"] });
         }
 
         const token = crypto.randomBytes(32).toString("hex");
+
         const tokenInfo: tokenUserInfo = {
-            id: token,
+            id: savedUserProfile._id.toString(),
             name,
             email,
-            profileUrl: "",
+            profileUrl: savedUserProfile.profileUrl!,
             expiry: new Date(Date.now() + TOKEN_EXPIRY * 1000),
         };
         setToken(token, tokenInfo);

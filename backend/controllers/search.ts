@@ -17,9 +17,6 @@ const fakeRecipe = {
     },
 };
 
-// TODO: parsing + caching needed
-// TODO return more than id, return recipe object
-// TODO my favorite and my recipes, edit and delete
 async function searchSpoonacularRecipes(req: Request, res: Response) {
     const { query, cuisine, mealtype, pantry, usersubmitted } = req.query;
     const key = `${query}-${cuisine}`;
