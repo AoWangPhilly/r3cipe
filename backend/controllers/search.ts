@@ -28,7 +28,7 @@ async function searchSpoonacularRecipes(req: Request, res: Response) {
     if (!query && !cuisine && !mealtype) {
         return res.status(400).json({ error: "no parameters provided" });
     }
-    console.log(query, cuisine, mealtype, pantry);
+    // console.log(query, cuisine, mealtype, pantry);
     let spoonacularUrl = "";
 
     if (pantry === "true" && tokenStorage[token]) {
@@ -54,19 +54,18 @@ async function searchSpoonacularRecipes(req: Request, res: Response) {
             `addRecipeInformation=true&` +
             `fillIngredients=true&` +
             `number=${maxResults}`;
-
         const spoonacularRecipeResult = await SpoonacularSearchResult.findOne({
             searchKey: key,
         });
 
-        if (spoonacularRecipeResult && pantry === "false") {
-            console.log("cache hit");
+        if (spoonacularRecipeResult && (pantry === "false" || pantry === "")) {
+            console.log('Search Cache HIT for key: "' + key + '"');
             // if the key is in the cache, return the cached result
             return res.status(200).json({ spoonacularRecipeResult });
         }
     }
 
-    console.log("cache miss");
+    console.log('Search Cache MISS for key: "' + key + '"');
     // if the key isn't in the cache, make thespoonacularrecipesspoonacularrecipes request
     let recipes: RecipeTypeWithId[] = [];
     axios
@@ -87,12 +86,12 @@ async function searchSpoonacularRecipes(req: Request, res: Response) {
                     recipeId: recipeId,
                 });
                 if (recipeExists) {
-                    console.log("recipe already exists");
+                    console.log("Recipe already exists");
                 } else {
                     await spoonacularRecipe
                         .save()
                         .then((recipe) => {
-                            console.log("recipe saved");
+                            console.log("Recipe saved");
                         })
                         .catch((error) => {
                             console.log(error);
@@ -107,12 +106,11 @@ async function searchSpoonacularRecipes(req: Request, res: Response) {
             });
 
             // Only save when not including pantry
-            if (pantry == "false") {
+            if (pantry === "false" || pantry === "") {
                 await spoonacularRecipeResult
                     .save()
                     .then((result) => {
-                        console.log("result saved");
-                        console.log(recipes);
+                        console.log('Search result save at key: "' + key + '"');
                     })
                     .catch((error) => {
                         console.log(error);

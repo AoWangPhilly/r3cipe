@@ -84,14 +84,16 @@ const Search = () => {
         }
         if (searchFormState.usersubmitted && isLoggedIn) {
             queryParams.append("usersubmitted", "true");
+        } else {
+            queryParams.append("usersubmitted", "false");
         }
         if (searchFormState.pantry && isLoggedIn) {
             queryParams.append("pantry", "true");
+        } else {
+            queryParams.append("pantry", "false");
         }
         const searchUrl = `/search?${queryParams.toString()}`;
         navigate(searchUrl);
-
-        console.log("sending");
     };
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -136,6 +138,7 @@ const Search = () => {
                 spacing={2}
                 justifyContent="center"
                 alignItems="center"
+                sx={{ margin: "auto", width: "70%"}}
             >
                 <Grid item xs={12} justifyContent="center" alignItems="center">
                     <h1>Search</h1>

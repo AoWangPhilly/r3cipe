@@ -68,7 +68,12 @@ const SearchResults: React.FC = () => {
                         No recipes found. Try a different search.
                     </Typography>
                 ) : (
-                    <Grid container spacing={2}>
+                    <Grid container spacing={2} sx={{
+                        display: "flex",
+                        margin: "auto",
+                        justifyContent: "center",
+                        width: "80%",
+                    }}>
                         {recipes.map((recipe: RecipeThumbnailProps) => (
                             <Grid item xs={12} sm={6} md={4} lg={3}>
                                 <RecipeThumbnail
