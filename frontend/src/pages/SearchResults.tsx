@@ -19,6 +19,7 @@ const SearchResults: React.FC = () => {
     const userSubmittedString =
         new URLSearchParams(location.search).get("usersubmitted") || "";
     const [recipes, setRecipes] = useState<any>([]);
+    const [loading, setLoading] = useState(true);
 
     const searchForRecipes = async () => {
         if (userSubmittedString === "true") {
@@ -55,9 +56,12 @@ const SearchResults: React.FC = () => {
 
     // if anything in the search form changes, update the search
     useEffect(() => {
-        searchForRecipes();
+        searchForRecipes().then(() => {
+            setLoading(false);
+        });
     }, [location]);
 
+    if (loading) return <> </>;
     return (
         <div>
             <h1>Search Results</h1>
@@ -68,12 +72,16 @@ const SearchResults: React.FC = () => {
                         No recipes found. Try a different search.
                     </Typography>
                 ) : (
-                    <Grid container spacing={2} sx={{
-                        display: "flex",
-                        margin: "auto",
-                        justifyContent: "center",
-                        width: "80%",
-                    }}>
+                    <Grid
+                        container
+                        spacing={2}
+                        sx={{
+                            display: "flex",
+                            margin: "auto",
+                            justifyContent: "center",
+                            width: "80%",
+                        }}
+                    >
                         {recipes.map((recipe: RecipeThumbnailProps) => (
                             <Grid item xs={12} sm={6} md={4} lg={3}>
                                 <RecipeThumbnail
