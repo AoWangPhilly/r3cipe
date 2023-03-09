@@ -15,6 +15,11 @@ export interface RecipeType {
     sourceUrl: string; // Optional link to the source of the recipe
 }
 
+export interface PantryIngredient {
+    id: number;
+    name: string;
+}
+
 export interface Ingredient {
     id: number; // 1123
     original: string; // "1 cup of milk"

@@ -6,7 +6,7 @@ import { RecipeThumbnail } from "../components/RecipeThumbnail";
 type RecipeThumbnailProps = {
     title: string;
     image: string;
-    id: string;
+    recipeId: string;
 };
 
 const SearchResults: React.FC = () => {
@@ -32,7 +32,7 @@ const SearchResults: React.FC = () => {
             if (apiResponse.status === 200) {
                 let data = await apiResponse.json();
                 // how will the data be formatted from the api?
-                setRecipes(data.recipes);
+                //setRecipes(data.recipes);
             }
         } else {
             const spoonacularAPIResponse = await fetch(
@@ -44,7 +44,7 @@ const SearchResults: React.FC = () => {
             );
             if (spoonacularAPIResponse.status === 200) {
                 let data = await spoonacularAPIResponse.json();
-                setRecipes(data.recipes);
+                setRecipes(data.spoonacularRecipeResult.recipes);
             } else {
                 await spoonacularAPIResponse.json().then((data) => {
                     console.log(data);
@@ -74,7 +74,7 @@ const SearchResults: React.FC = () => {
                                 <RecipeThumbnail
                                     title={recipe.title}
                                     image={recipe.image}
-                                    id={recipe.id}
+                                    id={recipe.recipeId}
                                 />
                             </Grid>
                         ))}

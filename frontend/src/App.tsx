@@ -42,12 +42,13 @@ function App() {
         <Router>
             <Navbar />
             <Routes>
+                {/* OPEN ROUTES */}
                 <Route path="/" element={<Search />} />
                 <Route path="/:query" element={<SearchResults />} />
-
                 <Route path="/recipe/:id" element={<Recipe />} />
                 {isAuth ? (
                     <>
+                        {/* AUTH ROUTES */}
                         <Route path="/circle" element={<Circle />} />
                         <Route
                             path="/circle/:id"
@@ -72,6 +73,7 @@ function App() {
                     </>
                 ) : (
                     <>
+                    {/* NON-AUTH REDIRECTS ROUTES */}
                         <Route
                             path="/circle"
                             element={<GoLogin redirect="circle" />}
