@@ -148,8 +148,37 @@ async function getRecipeById(req: Request, res: Response) {
     const recipe = await SpoonacularRecipe.findOne({ recipeId: id });
     if (recipe) {
         return res.status(200).json({ recipe });
+    } else {
+        let spoonacularUrl = `https://api.spoonacular.com/recipes/${id}/information?apiKey=${API_KEY}&includeNutrition=false`;
+        axios
+            .get(spoonacularUrl)
+            .then(async (response) => {
+                console.log(response.data);
+                const { recipeId, ...parsedRecipe } = parseRecipe(
+                    response.data
+                );
+                const spoonacularRecipe = new SpoonacularRecipe({
+                    recipeId: recipeId,
+                    recipe: parsedRecipe,
+                    userId: "Spoonacular",
+                });
+
+                await spoonacularRecipe
+                    .save()
+                    .then((recipe) => {
+                        console.log("recipe saved");
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+                return res.status(200).json({ recipe: spoonacularRecipe });
+            })
+            .catch((error) => {
+                console.log("error here");
+                console.log(error);
+                return res.status(404).json({ error: "recipe not found" });
+            });
     }
-    return res.status(404).json({ error: "recipe not found" });
 }
 
 export default {

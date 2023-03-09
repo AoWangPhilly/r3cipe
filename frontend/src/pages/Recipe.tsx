@@ -7,37 +7,43 @@ import { Button } from "@mui/material";
 const Recipe: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [recipe, setRecipe] = React.useState<RecipeType>();
-    const [error, setError] = React.useState(null);
+    const [owner, setOwner] = React.useState<string>("")
+    const [error, setError] = React.useState<string>("");
     const [isLoaded, setIsLoaded] = React.useState(false);
     const navigate = useNavigate();
 
-    const CURRENT_USER = "1234";
+    const CURRENT_USER = "Spoonacular";
 
-    const response = {
-        recipeId: id,
-        recipe: KATSU,
-        lastModified: new Date(),
-        ownerId: "1234",
-        isPublic: true,
-    };
+    // const response = {
+    //     recipeId: id,
+    //     recipe: KATSU,
+    //     lastModified: new Date(),
+    //     ownerId: "1234",
+    //     isPublic: true,
+    // };
     //mock data
     useEffect(() => {
-        setRecipe(response.recipe);
-        setIsLoaded(true);
-    }, []);
-
-    // useEffect(() => {
-    //     axios
-    //         .get(`/api/recipe/${id}`)
-    //         .then((response) => {
-    //             setRecipe(response.data);
-    //             setIsLoaded(true);
-    //         })
-    //         .catch((error) => {
-    //             setError(error);
-    //             setIsLoaded(true);
-    //         });
-    // }, []);
+        //fetch recipe from backend
+        fetch(`/api/search/recipe/${id}`, {
+            method: "GET",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+            .then((res) => res.json())
+            .then(
+                (result) => {
+                    setRecipe(result.recipe.recipe);
+                    setOwner(result.recipe.ownerId)
+                    setIsLoaded(true);
+                },
+                (error) => {
+                    setError(error);
+                    setIsLoaded(true);
+                }
+            );
+    }, [id]);
 
     if (error) {
         return <div>Error: {error}</div>;
@@ -52,7 +58,7 @@ const Recipe: React.FC = () => {
                             <h1>{recipe.title}</h1>
                             {
                                 //if the recipe is owned by the current user, show edit button
-                                response.ownerId === CURRENT_USER && (
+                                owner === CURRENT_USER && (
                                     <Button
                                         variant="contained"
                                         color="primary"
@@ -76,14 +82,15 @@ const Recipe: React.FC = () => {
                         <p>{recipe.summary}</p>
                         <h3>Ingredients</h3>
                         <ul>
-                            {recipe.extendedIngredients.map((ingredient) => (
-                                //color the ingredients that are in the pantry
-                                <li key={ingredient.id}>
-                                    <span style={{ color: "orange" }}>
-                                        {ingredient.original}
-                                    </span>
-                                </li>
-                            ))}
+                            {recipe &&
+                                recipe.extendedIngredients.map((ingredient) => (
+                                    //color the ingredients that are in the pantry
+                                    <li key={ingredient.id}>
+                                        <span style={{ color: "orange" }}>
+                                            {ingredient.original}
+                                        </span>
+                                    </li>
+                                ))}
                         </ul>
 
                         <p>

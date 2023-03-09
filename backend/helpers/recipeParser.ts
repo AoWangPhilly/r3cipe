@@ -17,12 +17,17 @@ export function parseRecipe(recipe: any) {
         id,
     } = recipe;
 
-    const instructions = analyzedInstructions[0].steps
-        .map((step: any) => {
-            return step.step;
-        })
-        .join("\n");
-
+    let instructions = analyzedInstructions;
+    if (instructions && instructions.length > 0) {
+        instructions = instructions[0].steps
+            .map((step: any) => {
+                return step.step;
+            })
+            .join("\n");
+    } else {
+        instructions = "";
+    }
+    console.log("after", instructions);
     const ingredients = extendedIngredients.map((ingredient: any) => {
         return {
             id: ingredient.id,
