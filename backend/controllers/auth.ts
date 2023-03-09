@@ -1,19 +1,19 @@
 import { CookieOptions, Request, Response } from "express";
 import * as argon2 from "argon2";
 import crypto from "crypto";
+import { ErrorMsg } from "../types.js";
 import UserProfile, {
     createUserProfileSchema,
     loginSchema,
 } from "../models/UserProfile.js";
-import { ErrorMsg } from "../types.js";
 import { findUserByEmail } from "../helpers/UserProfile.js";
 import {
     deleteToken,
-    getTokenStorage,
+    getTokenStorage, 
     setToken,
     tokenUserInfo,
 } from "../helpers/tokenStorage.js";
-import mongoose from "mongoose";
+import Inventory from "../models/Inventory.js";
 
 const TOKEN_EXPIRY = 3600; // 1 hr (in seconds)
 
@@ -51,6 +51,7 @@ function checkLogin(req: Request, res: Response) {
 }
 /**
  * creates a new user from email, name, and password
+ * also initializes Inventory for that user
  */
 async function signup(req: Request, res: Response) {
     let parseResult = createUserProfileSchema.safeParse(req.body);
@@ -79,22 +80,28 @@ async function signup(req: Request, res: Response) {
         const hashedPassword = await argon2.hash(password);
         // add to mongo
         const userProfile = new UserProfile({
-            _id: new mongoose.Types.ObjectId(),
             name,
             email,
             password: hashedPassword,
         });
         const savedUserProfile = await userProfile.save();
-        if (!savedUserProfile) {
+
+        const inventory = await Inventory.create({
+            userId: userProfile._id,
+        });
+        const savedInventory = await inventory.save();
+
+        if (!savedInventory || !savedUserProfile) {
             return res.status(500).json({ errors: ["Internal server error"] });
         }
 
         const token = crypto.randomBytes(32).toString("hex");
+
         const tokenInfo: tokenUserInfo = {
-            id: token,
+            id: savedUserProfile._id.toString(),
             name,
             email,
-            profileUrl: "",
+            profileUrl: savedUserProfile.profileUrl!,
             expiry: new Date(Date.now() + TOKEN_EXPIRY * 1000),
         };
         setToken(token, tokenInfo);

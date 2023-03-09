@@ -3,6 +3,8 @@ import controller from "../controllers/Inventory.js";
 
 export const inventoryRouter: Router = Router();
 
-inventoryRouter.post("/", controller.createInventory);
 inventoryRouter.put("/pantry", controller.updatePantry);
 inventoryRouter.get("/pantry", controller.getPantry);
+inventoryRouter.get("/favorite", controller.getFavoriteRecipes);
+inventoryRouter.put("/favorite/:id", controller.addRecipeToFavorite);
+inventoryRouter.delete("/favorite/:id", controller.removeRecipeFromFavorite);

@@ -5,6 +5,7 @@ import { getTokenStorage } from "../helpers/tokenStorage.js";
 import axios from "axios";
 import { parseRecipe } from "../helpers/recipeParser.js";
 import Inventory from "../models/Inventory.js";
+import { RecipeTypeWithId } from "../types.js";
 
 const API_KEY = process.env.API_KEY;
 
@@ -16,9 +17,6 @@ const fakeRecipe = {
     },
 };
 
-// TODO: parsing + caching needed
-// TODO return more than id, return recipe object
-// TODO my favorite and my recipes, edit and delete
 async function searchSpoonacularRecipes(req: Request, res: Response) {
     const { query, cuisine, mealtype, pantry, usersubmitted } = req.query;
     const key = `${query}-${cuisine}`;
@@ -33,7 +31,7 @@ async function searchSpoonacularRecipes(req: Request, res: Response) {
     console.log(query, cuisine, mealtype, pantry);
     let spoonacularUrl = "";
 
-    if (pantry && tokenStorage[token]) {
+    if (pantry === "true" && tokenStorage[token]) {
         const userPantry = await Inventory.findOne({
             userId: tokenStorage[token].id,
         });
@@ -56,22 +54,21 @@ async function searchSpoonacularRecipes(req: Request, res: Response) {
             `addRecipeInformation=true&` +
             `fillIngredients=true&` +
             `number=${maxResults}`;
+
+        const spoonacularRecipeResult = await SpoonacularSearchResult.findOne({
+            searchKey: key,
+        });
+
+        if (spoonacularRecipeResult && pantry === "false") {
+            console.log("cache hit");
+            // if the key is in the cache, return the cached result
+            return res.status(200).json({ spoonacularRecipeResult });
+        }
     }
 
-    console.log(spoonacularUrl);
-
-    const spoonacularRecipeResult = await SpoonacularSearchResult.findOne({
-        searchKey: key,
-    });
-
-    if (spoonacularRecipeResult) {
-        console.log("cache hit");
-        // if the key is in the cache, return the cached result
-        return res.status(200).json({ spoonacularRecipeResult });
-    }
     console.log("cache miss");
     // if the key isn't in the cache, make thespoonacularrecipesspoonacularrecipes request
-    let recipes: any[] = [];
+    let recipes: RecipeTypeWithId[] = [];
     axios
         .get(spoonacularUrl)
         .then(async (response) => {
@@ -109,15 +106,18 @@ async function searchSpoonacularRecipes(req: Request, res: Response) {
                 recipes: recipes,
             });
 
-            await spoonacularRecipeResult
-                .save()
-                .then((result) => {
-                    console.log("result saved");
-                    console.log(recipes);
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+            // Only save when not including pantry
+            if (pantry == "false") {
+                await spoonacularRecipeResult
+                    .save()
+                    .then((result) => {
+                        console.log("result saved");
+                        console.log(recipes);
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+            }
             return res.status(200).json({ spoonacularRecipeResult });
         })
         .catch((error) => {
