@@ -101,7 +101,7 @@ const Recipe: React.FC = () => {
                                 alt={recipe.title}
                                 src={recipe.image}
                                 variant="square"
-                                style={{ width: "100%", height: "auto" }}
+                                style={{ width: "60%", height: "100%", margin: "auto" }}
                             />
                         </Grid>
                         <Grid item xs={12} md={6}>
