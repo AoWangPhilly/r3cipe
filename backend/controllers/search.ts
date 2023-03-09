@@ -17,6 +17,8 @@ const fakeRecipe = {
 };
 
 // TODO: parsing + caching needed
+// TODO return more than id, return recipe object
+// TODO my favorite and my recipes, edit and delete
 async function searchSpoonacularRecipes(req: Request, res: Response) {
     const { query, cuisine, mealtype, pantry, usersubmitted } = req.query;
     const key = `${query}-${cuisine}`;
@@ -68,14 +70,13 @@ async function searchSpoonacularRecipes(req: Request, res: Response) {
         return res.status(200).json({ spoonacularRecipeResult });
     }
     console.log("cache miss");
-    // if the key isn't in the cache, make the request
+    // if the key isn't in the cache, make thespoonacularrecipesspoonacularrecipes request
+    let recipes: any[] = [];
     axios
         .get(spoonacularUrl)
-        .then((response) => {
-            let recipeIds: string[] = [];
-            response.data.results.forEach((recipe: any) => {
+        .then(async (response) => {
+            response.data.results.forEach(async (recipe: any) => {
                 const { recipeId, ...parsedRecipe } = parseRecipe(recipe);
-                recipeIds.push(recipeId);
 
                 const spoonacularRecipe = new SpoonacularRecipe({
                     recipeId: recipeId,
@@ -83,30 +84,36 @@ async function searchSpoonacularRecipes(req: Request, res: Response) {
                     userId: "Spoonacular",
                 });
 
-                console.log(spoonacularRecipe);
+                recipes.push({ recipeId, ...parsedRecipe });
 
-                spoonacularRecipe
-                    .save()
-                    .then((recipe) => {
-                        console.log("recipe saved");
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    });
+                const recipeExists = await SpoonacularRecipe.findOne({
+                    recipeId: recipeId,
+                });
+                if (recipeExists) {
+                    console.log("recipe already exists");
+                } else {
+                    await spoonacularRecipe
+                        .save()
+                        .then((recipe) => {
+                            console.log("recipe saved");
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        });
+                }
+                return recipes;
             });
 
             const spoonacularRecipeResult = new SpoonacularSearchResult({
                 searchKey: key,
-                recipeIds: recipeIds,
+                recipes: recipes,
             });
 
-            console.log(key);
-            console.log(recipeIds);
-            console.log(spoonacularRecipeResult);
-            spoonacularRecipeResult
+            await spoonacularRecipeResult
                 .save()
                 .then((result) => {
                     console.log("result saved");
+                    console.log(recipes);
                 })
                 .catch((error) => {
                     console.log(error);
