@@ -5,7 +5,7 @@ const router: Router = Router();
 
 // this is just temporary for testing
 router.get("/recipe/:id", controller.getRecipeById);
-router.post("/spoonacular", controller.searchSpoonacularRecipes);
+router.get("/spoonacular", controller.searchSpoonacularRecipes);
 router.post("/user", (req, res) => {
     // controller.createSpoonacularRecipe();
     res.json();
