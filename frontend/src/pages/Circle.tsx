@@ -19,6 +19,14 @@ const groupMembers = [
         alt: "Abe",
         src: "abe.com",
     },
+    {
+        alt: "z",
+        src: "z.com",
+    },
+    {
+        alt: "b",
+        src: "b.com",
+    },
 ];
 
 const Circle = () => {

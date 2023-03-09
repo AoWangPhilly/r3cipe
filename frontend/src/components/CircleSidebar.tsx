@@ -20,9 +20,30 @@ const CircleSidebar = () => {
             [name]: value,
         }));
     };
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+    const handleSubmit = async (
+        e: React.FormEvent<HTMLFormElement>
+    ): Promise<void> => {
         e.preventDefault();
         console.log("Join Circle for Code: " + formState.Code);
+
+        // Submit signup form here
+        const response = await fetch("/api/circles", {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formState),
+        });
+
+        if (response.status === 200) {
+            console.log("Success");
+        } else {
+            await response.json().then((data) => {
+                console.log(data);
+            });
+        }
+
         // Get code from form and submit to backend
         //  if code is invalid, display error message
         // axios.post("/api/circle/join", { Code: formState.Code }).then((res) => {
