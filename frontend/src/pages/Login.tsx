@@ -27,7 +27,7 @@ export const Login: React.FC = () => {
     });
 
     const [error, setError] = useState<string>("");
-    const { isAuth, setIsAuth, setName, setEmail } = useContext(AuthContext);
+    const { isAuth, setIsAuth, setName, setUserId } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const [searchParams] = useSearchParams();
@@ -66,7 +66,7 @@ export const Login: React.FC = () => {
             if (result.message === "Authenticated") {
                 setIsAuth(true);
                 setName(result.user.name);
-                setEmail(result.user.email);
+                setUserId(result.user.id);
                 if (searchParams.get("redirect") !== null) {
                     navigate("/" + searchParams.get("redirect"));
                 } else {

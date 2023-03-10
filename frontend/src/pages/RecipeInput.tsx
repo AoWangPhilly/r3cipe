@@ -55,7 +55,7 @@ export const RecipeInput = (props: RecipeInputProps) => {
                 setAllIngredients(data.ingredients);
             });
         if (props.isEdit) {
-            fetch(`/api/recipes/${id}`, {
+            fetch(`/api/recipe/${id}`, {
                 method: "GET",
                 credentials: "include",
                 headers: {

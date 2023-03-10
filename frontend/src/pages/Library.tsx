@@ -1,89 +1,14 @@
 import RecipeThumbnail from "../components/RecipeThumbnail";
-import {
-    Tabs,
-    Tab,
-    Grid,
-    Box,
-    Typography,
-    makeStyles,
-    createStyles,
-    Theme,
-} from "@mui/material";
-import { useState } from "react";
+import { Tabs, Tab, Grid, Box, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
 
 type LibraryTab = "favorites" | "recipes";
 
-const requestFavoritesFromBackend = async () => {
-    await fetch("/api/inventory/favorites", {
-        method: "GET",
-        credentials: "include",
-    })
-        .then((response) => response.json())
-        .then((data) => {
-            console.log(data);
-        });
-};
-
-const requestUsersRecipesFromBackend = async () => {
-    await fetch("/api/inventory/usersrecipes", {
-        method: "GET",
-        credentials: "include",
-    })
-        .then((response) => response.json())
-        .then((data) => {
-            console.log(data);
-        });
-};
-
-const sampleFavoritesResponse = [
-    {
-        id: "156",
-        title: "Pasta",
-        image: "https://spoonacular.com/recipeImages/716429-556x370.jpg",
-    },
-    {
-        id: "24",
-        title: "Pasta 2",
-        image: "https://spoonacular.com/recipeImages/716429-556x370.jpg",
-    },
-    {
-        id: "u32",
-        title: "Abe's Pasta",
-        image: "https://cdn.spoonacular2.com/asdasdasdasdasasda",
-    },
-    {
-        id: "u324",
-        title: "big pasta",
-        image: "https://spoonacular.com/recipeImages/716429-556x370.jpg",
-    },
-    {
-        id: "u325",
-        title: "Pasta",
-        image: "https://spoonacular.com/recipeImages/716429-556x370.jpg",
-    },
-
-];
-
-const sampleUsersRecipesResponse = [
-    {
-        id: "u156",
-        title: "Pasta",
-        image: "https://spoonacular.com/recipeImages/716429-556x370.jpg",
-    },
-    {
-        id: "u24",
-        title: "Pasta 2",
-        image: "https://spoonacular.com/recipeImages/716429-556x370.jpg",
-    },
-    {
-        id: "u32",
-        title: "My Pasta",
-        image: "https://cdn.spoonacular2.com/asdasdasdasdasasda",
-    },
-];
-
 export const Library = () => {
     const [activeTab, setActiveTab] = useState<LibraryTab>("favorites");
+    const [recipes, setRecipes] = useState<any>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string>("");
 
     const handleTabChange = (
         event: React.SyntheticEvent,
@@ -92,18 +17,60 @@ export const Library = () => {
         setActiveTab(newValue);
     };
 
-    const recipes =
-        activeTab === "favorites"
-            ? sampleFavoritesResponse
-            : sampleUsersRecipesResponse;
+    const requestFavoritesFromBackend = async () => {
+        await fetch("/api/user/inventory/favorite", {
+            method: "GET",
+            credentials: "include",
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+                setRecipes(data);
+                setLoading(false);
+            })
+            .catch((err) => {
+                setError(err);
+            });
+    };
 
+    const requestUsersRecipesFromBackend = async () => {
+        await fetch("/api/user/inventory/usersrecipes", {
+            method: "GET",
+            credentials: "include",
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+                setRecipes(data);
+                setLoading(false);
+            })
+            .catch((err) => {
+                setError(err);
+            });
+    };
+
+    useEffect(() => {
+        if (activeTab === "favorites") {
+            requestFavoritesFromBackend();
+        } else {
+            requestUsersRecipesFromBackend();
+        }
+    }, [activeTab]);
+
+    if (loading) {
+        return <div>Loading...</div>;
+    } else if (error) {
+        return <div>error</div>;
+    } else if (!recipes) {
+        return <div>No recipes found</div>;
+    }
     return (
         <Box sx={{ width: "100%" }}>
             <Tabs value={activeTab} onChange={handleTabChange} centered>
                 <Tab label="My Favorites" value="favorites" />
                 <Tab label="My Recipes" value="recipes" />
             </Tabs>
-            {recipes.length > 0 ? (
+            {recipes && recipes.length > 0 ? (
                 <Grid
                     container
                     direction="row"
@@ -116,12 +83,12 @@ export const Library = () => {
                         margin: 2,
                     }}
                 >
-                    {recipes.map((recipe) => (
-                        <Grid item xs={1} key={recipe.id}>
+                    {recipes.map((recipe: any) => (
+                        <Grid item xs={1} key={recipe.recipeId}>
                             <RecipeThumbnail
-                                title={recipe.title}
-                                id={recipe.id}
-                                image={recipe.image}
+                                title={recipe.recipe.title}
+                                id={recipe.recipeId}
+                                image={recipe.recipe.image}
                             />
                         </Grid>
                     ))}

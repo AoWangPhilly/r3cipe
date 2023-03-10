@@ -5,8 +5,8 @@ interface AuthContextProps {
     setIsAuth: React.Dispatch<React.SetStateAction<boolean>>;
     name: string;
     setName: React.Dispatch<React.SetStateAction<string>>;
-    email: string;
-    setEmail: React.Dispatch<React.SetStateAction<string>>;
+    userId: string;
+    setUserId: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export const AuthContext = createContext<AuthContextProps>({
@@ -14,8 +14,8 @@ export const AuthContext = createContext<AuthContextProps>({
     setIsAuth: () => {},
     name: "",
     setName: () => {},
-    email: "",
-    setEmail: () => {},
+    userId: "",
+    setUserId: () => {},
 });
 
 interface AuthContextProviderProps {
@@ -35,7 +35,7 @@ export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({
 }) => {
     const [isAuth, setIsAuth] = useState(false);
     const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
+    const [userId, setUserId] = useState("");
     const [loading, setLoading] = useState(true);
 
     React.useEffect(() => {
@@ -44,7 +44,7 @@ export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({
             if (data.message === "Authenticated") {
                 setIsAuth(true);
                 setName(data.user.name);
-                setEmail(data.user.email);
+                setUserId(data.user.id);
             } else {
                 setIsAuth(false);
             }
@@ -65,8 +65,8 @@ export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({
                 setIsAuth,
                 name,
                 setName,
-                email,
-                setEmail,
+                userId,
+                setUserId,
             }}
         >
             {children}

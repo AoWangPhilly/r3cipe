@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -15,7 +15,7 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import KitchenIcon from "@mui/icons-material/Kitchen";
 import { Link, redirect, useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
+import { AuthContext, checkAuth } from "../context/AuthContext";
 import PantryModal from "./PantryModal";
 
 //use MUI navbar component
@@ -30,8 +30,9 @@ export default function Navbar() {
 
     const [pantryOpen, setPantryOpen] = React.useState(false);
 
-    const { isAuth, setIsAuth, name, setName, setEmail } =
+    const { isAuth, setIsAuth, name, setName, setUserId } =
         React.useContext(AuthContext);
+    const [profileUrl, setProfileUrl] = React.useState<string | null>(null);
     const navigate = useNavigate();
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -58,6 +59,20 @@ export default function Navbar() {
         setPantryOpen(false);
     };
 
+    useEffect(() => {
+        checkAuth().then((data) => {
+            console.log(data);
+            if (data.message === "Authenticated") {
+                setIsAuth(true);
+                setName(data.user.name);
+                setUserId(data.user.id);
+                setProfileUrl(data.user.profileUrl);
+            } else {
+                setIsAuth(false);
+            }
+        });
+    }, [isAuth]);
+
     const handleLogout = async () => {
         let response = await fetch("/api/auth/logout", {
             method: "POST",
@@ -66,7 +81,7 @@ export default function Navbar() {
         if (response.status === 200) {
             setIsAuth(false);
             setName("");
-            setEmail("");
+            setUserId("");
             navigate("/");
         }
     };
@@ -273,7 +288,23 @@ export default function Navbar() {
                                                     "linear-gradient(45deg, #2196F3 40%, #21CBF3 80%)",
                                             }}
                                         >
-                                            {name && name[0].toUpperCase()}
+                                            {profileUrl ? (
+                                                <img
+                                                    src={profileUrl}
+                                                    alt="profile"
+                                                    style={{
+                                                        width: "100%",
+                                                        height: "100%",
+                                                        objectFit: "cover",
+                                                        borderRadius: "50%",
+                                                    }}
+                                                />
+                                            ) : (
+                                                <>
+                                                    {name &&
+                                                        name[0].toUpperCase()}
+                                                </>
+                                            )}
                                         </Avatar>
                                     </Tooltip>
                                     <Menu
@@ -307,7 +338,10 @@ export default function Navbar() {
                     </Toolbar>
                 </Container>
             </AppBar>
-            <PantryModal pantryOpen={pantryOpen} handlePantryClose={handlePantryClose} />
+            <PantryModal
+                pantryOpen={pantryOpen}
+                handlePantryClose={handlePantryClose}
+            />
         </>
     );
 }

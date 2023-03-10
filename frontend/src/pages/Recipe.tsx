@@ -1,30 +1,100 @@
 import React, { useContext, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { RecipeType } from "../types";
-import { KATSU } from "../mockdata";
-import { Avatar, Button, Grid, Typography } from "@mui/material";
+import { Avatar, Button, Grid, IconButton, Typography } from "@mui/material";
 import { stripHtml } from "string-strip-html";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { AuthContext } from "../context/AuthContext";
+
+const addFavorite = (id: string) => {
+    fetch(`/api/user/inventory/favorite/${id}`, {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+        .then((res) => res.json())
+        .then((data) => {
+            console.log("add favorite", data);
+        });
+};
+
+const removeFavorite = (id: string) => {
+    fetch(`/api/user/inventory/favorite/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+        .then((res) => res.json())
+        .then((data) => {
+            console.log("remove favorite", data);
+        });
+};
 
 const Recipe: React.FC = () => {
     const { id } = useParams<{ id: string }>();
-    const { isAuth } = useContext(AuthContext);
+    const { isAuth, userId } = useContext(AuthContext);
     const [recipe, setRecipe] = React.useState<RecipeType>();
     const [owner, setOwner] = React.useState<string>("");
     const [error, setError] = React.useState<string>("");
     const [isLoaded, setIsLoaded] = React.useState(false);
+    const [isFavorite, setIsFavorite] = React.useState(false);
+    const [isClicked, setIsClicked] = React.useState(false);
     const navigate = useNavigate();
 
-    const CURRENT_USER = "Spoonacular";
-
-    // const response = {
-    //     recipeId: id,
-    //     recipe: KATSU,
-    //     lastModified: new Date(),
-    //     ownerId: "1234",
-    //     isPublic: true,
-    // };
+    useEffect(() => {
+        if (isAuth) {
+        }
+    }, [isAuth]);
     //mock data
+
+    useEffect(() => {
+        if (isAuth) {
+            fetch(`/api/user/inventory/pantry`, {
+                method: "GET",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+                .then((res) => res.json())
+                .then(
+                    (result) => {
+                        console.log("pantry", result);
+                    },
+                    (error) => {
+                        setError(error);
+                    }
+                );
+            fetch(`/api/user/inventory/favorite`, {
+                method: "GET",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+                .then((res) => res.json())
+                .then(
+                    (result) => {
+                        console.log("favorites", result);
+                        //results is an array of objects with id property
+                        //check if id is in array
+                        const isFav = result.some(
+                            (fav: { recipeId: string }) => fav.recipeId === id
+                        );
+                        setIsFavorite(isFav);
+                    },
+                    (error) => {
+                        setError(error);
+                    }
+                );
+        }
+    }, [isAuth]);
     useEffect(() => {
         //fetch recipe from backend
         fetch(`/api/search/recipe/${id}`, {
@@ -47,27 +117,6 @@ const Recipe: React.FC = () => {
                 }
             );
     }, [id]);
-
-    useEffect(() => {
-        if (isAuth) {
-            fetch(`/api/user/inventory/pantry`, {
-                method: "GET",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            })
-                .then((res) => res.json())
-                .then(
-                    (result) => {
-                        console.log(result);
-                    },
-                    (error) => {
-                        setError(error);
-                    }
-                );
-        }
-    }, [isAuth]);
 
     if (error) {
         return <div>Error: {error}</div>;
@@ -94,6 +143,43 @@ const Recipe: React.FC = () => {
                                 gutterBottom
                             >
                                 {recipe.title}
+                                {owner === userId && (
+                                    <IconButton
+                                        onClick={() => navigate(`/edit/${id}`)}
+                                    >
+                                        <BorderColorIcon
+                                            style={{ color: "lightblue" }}
+                                        />
+                                    </IconButton>
+                                )}
+                                {isFavorite ? (
+                                    <IconButton
+                                        onClick={() => {
+                                            removeFavorite(id!);
+                                            setIsFavorite(false);
+                                        }}
+                                    >
+                                        <FavoriteIcon
+                                            style={{ color: "red" }}
+                                        />
+                                    </IconButton>
+                                ) : (
+                                    <IconButton
+                                        onClick={() => {
+                                            addFavorite(id!);
+                                            setIsFavorite(true);
+                                            setIsClicked(true);
+                                            setTimeout(() => {
+                                                setIsClicked(false);
+                                            }, 300);
+                                        }}
+                                        className={isClicked ? "pop" : ""}
+                                    >
+                                        <FavoriteBorderIcon
+                                            style={{ color: "red" }}
+                                        />
+                                    </IconButton>
+                                )}
                             </Typography>
                         </Grid>
                         <Grid item xs={12} md={6}>
@@ -101,7 +187,11 @@ const Recipe: React.FC = () => {
                                 alt={recipe.title}
                                 src={recipe.image}
                                 variant="square"
-                                style={{ width: "60%", height: "100%", margin: "auto" }}
+                                style={{
+                                    width: "60%",
+                                    height: "100%",
+                                    margin: "auto",
+                                }}
                             />
                         </Grid>
                         <Grid item xs={12} md={6}>
@@ -144,7 +234,7 @@ const Recipe: React.FC = () => {
                                 {stripHtml(recipe.summary).result}
                             </Typography>
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item xs={12} md={6}>
                             <Typography variant="subtitle1" gutterBottom>
                                 Ingredients:
                             </Typography>
@@ -159,13 +249,14 @@ const Recipe: React.FC = () => {
                             </ul>
                         </Grid>
                         {recipe.instructions && (
-                            <Grid item xs={12}>
+                            <Grid item xs={12} md={6}>
                                 <Typography variant="subtitle1" gutterBottom>
                                     Instructions:
                                 </Typography>
                                 <ol>
                                     {recipe.instructions
-                                        .split(".")
+                                        //split by ". " or ".\n"
+                                        .split(/\. |\.\n/)
                                         .filter((step) => step !== "")
                                         .map((step) => (
                                             <li key={step}>{step}</li>

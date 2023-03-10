@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, SetStateAction } from "react";
 import {
     Avatar,
     Button,
@@ -10,7 +10,7 @@ import {
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
+import { AuthContext, checkAuth } from "../context/AuthContext";
 
 type FormState = {
     name: string;
@@ -33,7 +33,8 @@ export const SignUp: React.FC = () => {
     });
 
     //use auth contexrt
-    const { setIsAuth, setName, setEmail } = useContext(AuthContext);
+    const { setIsAuth, setName, setUserId } =
+        useContext(AuthContext);
 
     const navigate = useNavigate();
 
@@ -104,19 +105,21 @@ export const SignUp: React.FC = () => {
                     password: formState.password,
                 }),
             });
-            if (response.status === 200) {
-                setIsAuth(true);
-                setName(formState.name);
-                setEmail(formState.email);
-                navigate("/");
-            } else {
-                //display error
+            if (response.status !== 200) {
                 await response
                     .json()
                     .then((data) => setBackendError(data.errors[0]));
             }
-        } else {
-            return;
+            checkAuth().then((result: any) => {
+                if (result.message === "Authenticated") {
+                    setIsAuth(true);
+                    setName(result.user.name);
+                    setUserId(result.user.id);
+                    navigate("/");
+                } else {
+                    setBackendError("Invalid username or password");
+                }
+            });
         }
     };
 
