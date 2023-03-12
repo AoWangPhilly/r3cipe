@@ -11,11 +11,11 @@ interface IUserRecipe {
 
 const userRecipeSchema = new mongoose.Schema<IUserRecipe>(
     {
-        recipeId: { type: String, required: true, unique: true },
+        recipeId: { type: String, unique: true },
         recipe: { type: Object, required: true },
         lastModified: { type: Date, default: Date.now },
-        userId: { type: String, default: null },
-        isPublic: { type: Boolean, default: true },
+        userId: { type: String, required: true },
+        isPublic: { type: Boolean, required: true },
     },
     { versionKey: false }
 );
