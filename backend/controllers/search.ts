@@ -132,7 +132,14 @@ async function getRecipeById(req: Request, res: Response) {
     if (recipe) {
         return res.status(200).json({ recipe });
     } else {
-        let spoonacularUrl = `https://api.spoonacular.com/recipes/${id}/information?apiKey=${API_KEY}&includeNutrition=false`;
+        let spoonacularUrl = buildUrl("https://api.spoonacular.com", {
+            path: `recipes/${id}/information`,
+            queryParams: {
+                apiKey: API_KEY,
+                includeNutrition: "false",
+            },
+        });
+
         axios
             .get(spoonacularUrl)
             .then(async (response) => {
