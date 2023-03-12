@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
+import { buildUrl } from "build-url-ts";
+import axios from "axios";
+
 import SpoonacularRecipe from "../models/SpoonacularRecipe.js";
 import SpoonacularSearchResult from "../models/SearchResults.js";
 import { getTokenStorage } from "../helpers/tokenStorage.js";
-import axios from "axios";
 import { parseRecipe } from "../helpers/recipeParser.js";
 import Inventory from "../models/Inventory.js";
 import { RecipeTypeWithId } from "../types.js";
@@ -27,25 +29,34 @@ async function searchSpoonacularRecipes(req: Request, res: Response) {
         const userPantry = await Inventory.findOne({
             userId: tokenStorage[token].id,
         });
-        const pantryIngredients = userPantry?.pantry.join(",");
-        spoonacularUrl =
-            `https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY}` +
-            `&query=${query}&` +
-            `type=${mealtype}&` +
-            `cuisine=${cuisine}&` +
-            `includeIngredients=${pantryIngredients}&` +
-            `addRecipeInformation=true&` +
-            `fillIngredients=true&` +
-            `number=${maxResults}`;
+
+        spoonacularUrl = buildUrl("https://api.spoonacular.com", {
+            path: "recipes/complexSearch",
+            queryParams: {
+                apiKey: API_KEY,
+                query: query as string,
+                type: mealtype as string,
+                cuisine: cuisine as string,
+                includeIngredients: userPantry?.pantry,
+                addRecipeInformation: "true",
+                fillIngredients: "true",
+                number: maxResults,
+            },
+        });
     } else {
-        spoonacularUrl =
-            `https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY}` +
-            `&query=${query}&` +
-            `type=${mealtype}&` +
-            `cuisine=${cuisine}&` +
-            `addRecipeInformation=true&` +
-            `fillIngredients=true&` +
-            `number=${maxResults}`;
+        spoonacularUrl = buildUrl("https://api.spoonacular.com", {
+            path: "recipes/complexSearch",
+            queryParams: {
+                apiKey: API_KEY,
+                query: query as string,
+                type: mealtype as string,
+                cuisine: cuisine as string,
+                addRecipeInformation: "true",
+                fillIngredients: "true",
+                number: maxResults,
+            },
+        });
+
         const spoonacularRecipeResult = await SpoonacularSearchResult.findOne({
             searchKey: key,
         });
