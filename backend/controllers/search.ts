@@ -9,14 +9,6 @@ import { RecipeTypeWithId } from "../types.js";
 
 const API_KEY = process.env.API_KEY;
 
-const fakeRecipe = {
-    recipe: {
-        title: "fake pasta",
-        servings: 5,
-        extendedIngredients: ["basil", "pasta"],
-    },
-};
-
 async function searchSpoonacularRecipes(req: Request, res: Response) {
     const { query, cuisine, mealtype, pantry, usersubmitted } = req.query;
     const key = `${query}-${cuisine}`;
@@ -123,31 +115,6 @@ async function searchSpoonacularRecipes(req: Request, res: Response) {
         });
 }
 
-// TODO: parsing + caching needed
-function searchUserRecipes(req: Request, res: Response) {
-    const { query, cuisine, pantry } = req.params;
-    const key = `${query}-${cuisine}-${pantry}`;
-}
-
-// TODO: input validation (actually, DELETE this endpoint?)
-function createSpoonacularRecipe() {
-    const spoonacularRecipe = new SpoonacularRecipe({
-        recipeId: String(Math.floor(Math.random() * (1000 - 1 + 1) + 1)),
-        recipe: fakeRecipe.recipe,
-    });
-
-    return spoonacularRecipe
-        .save()
-        .then((recipe) => {
-            console.log("recipe saved");
-            // res.status(201).json({ spoonacularRecipe });
-        })
-        .catch((error) => {
-            console.log(error);
-            // res.status(500).json({ error });
-        });
-}
-
 async function getRecipeById(req: Request, res: Response) {
     const { id } = req.params;
     const recipe = await SpoonacularRecipe.findOne({ recipeId: id });
@@ -187,8 +154,6 @@ async function getRecipeById(req: Request, res: Response) {
 }
 
 export default {
-    createSpoonacularRecipe,
     searchSpoonacularRecipes,
-    searchUserRecipes,
     getRecipeById,
 };
