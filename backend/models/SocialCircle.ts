@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 export interface IPost {
     userId: string;
+    recipeId: string;
     timestamp: Date;
     comment: string;
 }
