@@ -158,10 +158,34 @@ const getFavoriteRecipes = async (
     }
 };
 
+const getMyRecipes = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const { token } = req.cookies;
+        const tokenStorage = getTokenStorage();
+        if (!tokenStorage[token]) {
+            return res.status(401).json({ message: "Invalid token" });
+        }
+        const inventory = await Inventory.findOne({
+            userId: tokenStorage[token].id,
+        });
+        if (!inventory) {
+            return res.status(404).json({ message: "Inventory not found" });
+        }
+        res.status(201).json(inventory.myRecipes);
+    } catch (error) {
+        return res.status(500).json({ message: "Internal server error" });
+    }
+};
+
 export default {
     updatePantry,
     getPantry,
     addRecipeToFavorite,
     removeRecipeFromFavorite,
     getFavoriteRecipes,
+    getMyRecipes,
 };
