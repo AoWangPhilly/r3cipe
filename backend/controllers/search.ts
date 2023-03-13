@@ -7,7 +7,8 @@ import SpoonacularSearchResult from "../models/SearchResults.js";
 import { getTokenStorage } from "../helpers/tokenStorage.js";
 import { parseRecipe } from "../helpers/recipeParser.js";
 import Inventory from "../models/Inventory.js";
-import { RecipeTypeWithId } from "../types.js";
+import { RecipeType, RecipeTypeWithId } from "../types.js";
+import UserRecipe from "../models/UserRecipe.js";
 
 const API_KEY = process.env.API_KEY;
 
@@ -22,6 +23,40 @@ async function searchSpoonacularRecipes(req: Request, res: Response) {
     if (!query && !cuisine && !mealtype) {
         return res.status(400).json({ error: "no parameters provided" });
     }
+    if (usersubmitted === "true") {
+        const allRecipes = await UserRecipe.find();
+        const filteredRecipes = allRecipes.filter(async (recipe) => {
+            const recipeContent = recipe.recipe as RecipeType;
+            const queryMatch = recipeContent.title.includes(query as string);
+            const recipeMatch = recipeContent.cuisines.includes(
+                cuisine as string
+            );
+            const mealMatch = recipeContent.dishTypes.includes(
+                mealtype as string
+            );
+            if (pantry === "true") {
+                const userPantry = await Inventory.findOne({
+                    userId: tokenStorage[token].id,
+                });
+                const pantryMatch = userPantry?.pantry.every((ingredient) => {
+                    return recipeContent.extendedIngredients.some(
+                        (recipeIngredient) => {
+                            return recipeIngredient.originalName === ingredient;
+                        }
+                    );
+                });
+                if (queryMatch && recipeMatch && mealMatch && pantryMatch) {
+                    return true;
+                }
+            } else {
+                if (queryMatch && recipeMatch && mealMatch) {
+                    return true;
+                }
+            }
+        });
+        return res.status(200).json({ recipes: filteredRecipes });
+    }
+
     // console.log(query, cuisine, mealtype, pantry);
     let spoonacularUrl = "";
 
