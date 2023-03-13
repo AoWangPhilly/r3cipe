@@ -3,6 +3,63 @@ import UserRecipe from "../models/UserRecipe.js";
 import { v4 as uuidv4 } from "uuid";
 import { getTokenStorage } from "../helpers/tokenStorage.js";
 import Inventory from "../models/Inventory.js";
+import { RecipeType } from "../types.js";
+
+const queryRecipes = async (req: Request, res: Response) => {
+    const { query, cuisine, mealtype, pantry } = req.query;
+    const { token } = req.cookies;
+    const tokenStorage = getTokenStorage();
+
+    let userPantry: string[] = [];
+    if (pantry === "true" && tokenStorage[token] !== undefined) {
+        userPantry = (await Inventory.findOne({
+            userId: tokenStorage[token].id,
+        })) as string[];
+    }
+    // search for user submitted recipes
+    const allRecipes = await UserRecipe.find();
+    const filteredRecipes = allRecipes.filter((recipe) => {
+        const recipeContent = recipe.recipe as RecipeType;
+        const queryMatch =
+            recipeContent.title
+                .toLowerCase()
+                .includes(String(query).toLowerCase()) ||
+            recipeContent.summary
+                .toLowerCase()
+                .includes(String(query).toLowerCase());
+        const cuisineMatch = recipeContent.cuisines.some(
+            (cuisineName) =>
+                cuisineName.toLowerCase() === String(cuisine).toLowerCase()
+        );
+        const mealMatch = recipeContent.dishTypes.some(
+            (mealTypeName) =>
+                mealTypeName.toLowerCase() === String(mealtype).toLowerCase()
+        );
+        if (pantry === "true") {
+            const pantryMatch = userPantry.every((ingredient) => {
+                return recipeContent.extendedIngredients.some(
+                    (recipeIngredient) => {
+                        return (
+                            recipeIngredient.originalName.toLowerCase() ===
+                            ingredient.toLowerCase()
+                        );
+                    }
+                );
+            });
+            if (queryMatch && cuisineMatch && mealMatch && pantryMatch) {
+                console.log("reached 1");
+                return true;
+            }
+        } else {
+            if (queryMatch && cuisineMatch && mealMatch) {
+                console.log("reached 2");
+                return true;
+            }
+        }
+        return false;
+    });
+    return res.status(200).json({ recipes: filteredRecipes });
+};
 
 const createRecipe = async (req: Request, res: Response) => {
     try {
@@ -130,4 +187,5 @@ export default {
     createRecipe,
     editRecipe,
     deleteRecipe,
+    queryRecipes,
 };

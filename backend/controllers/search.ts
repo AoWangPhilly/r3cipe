@@ -7,13 +7,13 @@ import SpoonacularSearchResult from "../models/SearchResults.js";
 import { getTokenStorage } from "../helpers/tokenStorage.js";
 import { parseRecipe } from "../helpers/recipeParser.js";
 import Inventory from "../models/Inventory.js";
-import { RecipeType, RecipeTypeWithId } from "../types.js";
+import { RecipeTypeWithId } from "../types.js";
 import UserRecipe from "../models/UserRecipe.js";
 
 const API_KEY = process.env.API_KEY;
 
 async function searchSpoonacularRecipes(req: Request, res: Response) {
-    const { query, cuisine, mealtype, pantry, usersubmitted } = req.query;
+    const { query, cuisine, mealtype, pantry } = req.query;
     const key = `${query}-${cuisine}`;
     const maxResults: number = 10;
     const { token } = req.cookies;
@@ -23,43 +23,11 @@ async function searchSpoonacularRecipes(req: Request, res: Response) {
     if (!query && !cuisine && !mealtype) {
         return res.status(400).json({ error: "no parameters provided" });
     }
-    if (usersubmitted === "true") {
-        const allRecipes = await UserRecipe.find();
-        const filteredRecipes = allRecipes.filter(async (recipe) => {
-            const recipeContent = recipe.recipe as RecipeType;
-            const queryMatch = recipeContent.title.includes(query as string);
-            const recipeMatch = recipeContent.cuisines.includes(
-                cuisine as string
-            );
-            const mealMatch = recipeContent.dishTypes.includes(
-                mealtype as string
-            );
-            if (pantry === "true") {
-                const userPantry = await Inventory.findOne({
-                    userId: tokenStorage[token].id,
-                });
-                const pantryMatch = userPantry?.pantry.every((ingredient) => {
-                    return recipeContent.extendedIngredients.some(
-                        (recipeIngredient) => {
-                            return recipeIngredient.originalName === ingredient;
-                        }
-                    );
-                });
-                if (queryMatch && recipeMatch && mealMatch && pantryMatch) {
-                    return true;
-                }
-            } else {
-                if (queryMatch && recipeMatch && mealMatch) {
-                    return true;
-                }
-            }
-        });
-        return res.status(200).json({ recipes: filteredRecipes });
-    }
 
     // console.log(query, cuisine, mealtype, pantry);
     let spoonacularUrl = "";
 
+    // search for spoonacular recipes
     if (pantry === "true" && tokenStorage[token]) {
         const userPantry = await Inventory.findOne({
             userId: tokenStorage[token].id,
@@ -96,6 +64,7 @@ async function searchSpoonacularRecipes(req: Request, res: Response) {
             searchKey: key,
         });
 
+        // if the key is in the cache, return the cached result
         if (spoonacularRecipeResult && (pantry === "false" || pantry === "")) {
             console.log('Search Cache HIT for key: "' + key + '"');
             // if the key is in the cache, return the cached result
@@ -104,7 +73,8 @@ async function searchSpoonacularRecipes(req: Request, res: Response) {
     }
 
     console.log('Search Cache MISS for key: "' + key + '"');
-    // if the key isn't in the cache, make thespoonacularrecipesspoonacularrecipes request
+
+    // if the key isn't in the cache, make thespoonacularrecipes request
     let recipes: RecipeTypeWithId[] = [];
     axios
         .get(spoonacularUrl)
@@ -163,6 +133,8 @@ async function searchSpoonacularRecipes(req: Request, res: Response) {
 
 async function getRecipeById(req: Request, res: Response) {
     const { id } = req.params;
+
+    // Check if the recipe is a user recipe
     if (id.startsWith("u")) {
         const recipe = await UserRecipe.findOne({ recipeId: id });
 
@@ -173,6 +145,7 @@ async function getRecipeById(req: Request, res: Response) {
         }
     }
 
+    // Check if the recipe is a spoonacular recipe
     const recipe = await SpoonacularRecipe.findOne({ recipeId: id });
     if (recipe) {
         return res.status(200).json({ recipe });
@@ -185,6 +158,7 @@ async function getRecipeById(req: Request, res: Response) {
             },
         });
 
+        // If the recipe isn't in the database, make the request to spoonacular and save it to the database
         axios
             .get(spoonacularUrl)
             .then(async (response) => {
