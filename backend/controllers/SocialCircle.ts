@@ -1,3 +1,4 @@
+import { getTokenStorage } from "../helpers/tokenStorage.js";
 import { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
 import SocialCircle, { ISocialCircle } from "../models/SocialCircle.js";
@@ -7,12 +8,31 @@ const createSocialCircle = async (
     res: Response,
     next: NextFunction
 ) => {
+    const { token } = req.cookies;
+    const tokenStorage = getTokenStorage();
+    if (!tokenStorage[token]) {
+        return res.status(401).json({ message: "Invalid token" });
+    }
+
     try {
-        const { ownerId, name } = req.body;
+        const userId = tokenStorage[token].id;
+        const { name } = req.body;
+
+        // check if social circle already exists
+        const existingSocialCircle = await SocialCircle.findOne({
+            name,
+        });
+        if (existingSocialCircle) {
+            return res
+                .status(400)
+                .json({ message: "Social circle already exists" });
+        }
+
         const socialCircle = new SocialCircle({
             _id: new mongoose.Types.ObjectId(),
             name,
-            ownerId,
+            ownerId: userId,
+            members: [userId],
         });
         const savedSocialCircle = await socialCircle.save();
         res.status(201).json({ socialCircle: savedSocialCircle });
@@ -33,7 +53,6 @@ const getSocialCircle = (req: Request, res: Response, next: NextFunction) => {
             res.status(500).json({ error });
         });
 };
-
 
 const getAllSocialCircle = (
     req: Request,
