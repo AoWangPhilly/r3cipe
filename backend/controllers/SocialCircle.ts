@@ -41,6 +41,57 @@ const createSocialCircle = async (
     }
 };
 
+const getSocialCirclesByUserId = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const { token } = req.cookies;
+    const tokenStorage = getTokenStorage();
+    if (!tokenStorage[token]) {
+        return res.status(401).json({ message: "Invalid token" });
+    }
+    const userId = tokenStorage[token].id;
+    try {
+        const socialCircles = await SocialCircle.find({
+            members: { $in: [userId] },
+        });
+        res.status(200).json({ socialCircles });
+    } catch (error: any) {
+        res.status(400).json({ message: error.message });
+    }
+};
+
+const joinSocialCircle = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const { token } = req.cookies;
+    const tokenStorage = getTokenStorage();
+    if (!tokenStorage[token]) {
+        return res.status(401).json({ message: "Invalid token" });
+    }
+    const userId = tokenStorage[token].id;
+    const { id } = req.params;
+    try {
+        const socialCircle = await SocialCircle.findById(id);
+        if (!socialCircle) {
+            return res.status(404).json({ message: "Social circle not found" });
+        }
+        if (socialCircle.members.includes(userId)) {
+            return res
+                .status(400)
+                .json({ message: "You are already a member of this circle" });
+        }
+        socialCircle.members.push(userId);
+        const savedSocialCircle = await socialCircle.save();
+        res.status(200).json({ socialCircle: savedSocialCircle });
+    } catch (error: any) {
+        res.status(400).json({ message: error.message });
+    }
+};
+
 const getSocialCircle = (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     return SocialCircle.findById(id)
@@ -236,14 +287,16 @@ const getPosts = async (req: Request, res: Response, next: NextFunction) => {
 
 export default {
     createSocialCircle,
-    getSocialCircle,
-    getAllSocialCircle,
-    updateSocialCircle,
-    deleteSocialCircle,
-    addMember,
-    removeMember,
-    changeOwner,
-    addPost,
-    removePost,
-    getPosts,
+    getSocialCirclesByUserId,
+    joinSocialCircle,
+    // getSocialCircle,
+    // getAllSocialCircle,
+    // updateSocialCircle,
+    // deleteSocialCircle,
+    // addMember,
+    // removeMember,
+    // changeOwner,
+    // addPost,
+    // removePost,
+    // getPosts,
 };
