@@ -105,56 +105,31 @@ const getSocialCircle = (req: Request, res: Response, next: NextFunction) => {
         });
 };
 
-const getAllSocialCircle = (
+const deleteSocialCircle = async (
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
-    return SocialCircle.find()
-        .then((socialCircle) => res.status(200).json({ socialCircle }))
-        .catch((error) => {
-            res.status(500).json({ error });
-        });
-};
-
-const updateSocialCircle = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    const { id } = req.params;
-    const { name, ownerId, posts, members, profileUrl } = req.body;
-    try {
-        const socialCircle: ISocialCircle | null =
-            await SocialCircle.findByIdAndUpdate(id, {
-                name,
-                ownerId,
-                posts,
-                members,
-                profileUrl,
-            });
-
-        if (!socialCircle) {
-            res.status(404).json({ message: "Not found" });
-        }
-        return res.status(200).json({ socialCircle });
-    } catch (error: any) {
-        res.status(400).json({ message: error.message });
+    const { token } = req.cookies;
+    const tokenStorage = getTokenStorage();
+    if (!tokenStorage[token]) {
+        return res.status(401).json({ message: "Invalid token" });
     }
-};
 
-const deleteSocialCircle = (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+    const userId = tokenStorage[token].id;
     const { id } = req.params;
+
+    // check if user is owner of social circle
+    const socialCircle = await SocialCircle.findById(id);
+    if (!socialCircle) {
+        return res.status(404).json({ message: "Social circle not found" });
+    }
+    if (socialCircle.ownerId !== userId) {
+        return res.status(401).json({ message: "Not authorized" });
+    }
+
     return SocialCircle.findByIdAndDelete(id)
-        .then((socialCircle) =>
-            socialCircle
-                ? res.status(200).json({ socialCircle })
-                : res.status(404).json({ message: "Not found" })
-        )
+        .then((socialCircle) => res.status(200).json({ socialCircle }))
         .catch((error) => {
             res.status(500).json({ error });
         });
@@ -289,6 +264,7 @@ export default {
     createSocialCircle,
     getSocialCirclesByUserId,
     joinSocialCircle,
+    deleteSocialCircle,
     // getSocialCircle,
     // getAllSocialCircle,
     // updateSocialCircle,

@@ -6,7 +6,7 @@ export const socialCircleRouter: Router = Router();
 socialCircleRouter.post("/", controller.createSocialCircle);
 socialCircleRouter.get("/", controller.getSocialCirclesByUserId);
 socialCircleRouter.put("/:id", controller.joinSocialCircle);
-
+socialCircleRouter.delete("/:id", controller.deleteSocialCircle);
 // socialCircleRouter.get("/", controller.getAllSocialCircle);
 // socialCircleRouter.get("/:id", controller.getSocialCircle);
 // socialCircleRouter.put("/:id", controller.updateSocialCircle);
