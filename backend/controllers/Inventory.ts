@@ -89,6 +89,12 @@ const addRecipeToFavorite = async (
             recipeId: id,
             date: new Date(),
         });
+
+        // sort the favorite recipes
+        inventory.favoritedRecipes.sort(
+            (a, b) => a.date.getTime() - b.date.getTime()
+        );
+
         inventory.save();
         // Send response
         res.status(201).json(inventory);
@@ -118,6 +124,12 @@ const removeRecipeFromFavorite = async (
         inventory.favoritedRecipes = inventory.favoritedRecipes.filter(
             (recipe) => recipe.recipeId !== id
         );
+
+        // sort the favorite recipes
+        inventory.favoritedRecipes.sort(
+            (a, b) => a.date.getTime() - b.date.getTime()
+        );
+
         inventory.save();
         // Send response
         res.status(201).json(inventory);
