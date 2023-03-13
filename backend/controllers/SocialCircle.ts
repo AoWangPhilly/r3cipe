@@ -2,6 +2,7 @@ import { getTokenStorage } from "../helpers/tokenStorage.js";
 import { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
 import SocialCircle, { ISocialCircle } from "../models/SocialCircle.js";
+import UserProfile from "../models/UserProfile.js";
 
 const createSocialCircle = async (
     req: Request,
@@ -62,7 +63,65 @@ const getSocialCirclesByUserId = async (
     }
 };
 
-const joinSocialCircle = async (
+const joinCircleByCode = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const { token } = req.cookies;
+    const tokenStorage = getTokenStorage();
+    if (!tokenStorage[token]) {
+        return res.status(401).json({ message: "Invalid token" });
+    }
+    const userId = tokenStorage[token].id;
+    const { id } = req.body;
+    try {
+        const socialCircle = await SocialCircle.findById(id);
+        if (!socialCircle) {
+            return res.status(404).json({ message: "Social circle not found" });
+        }
+        if (socialCircle.members.includes(userId)) {
+            return res
+                .status(400)
+                .json({ message: "You are already a member of this circle" });
+        }
+        socialCircle.members.push(userId);
+        const savedSocialCircle = await socialCircle.save();
+        res.status(200).json({ socialCircle: savedSocialCircle });
+    } catch (error: any) {
+        res.status(400).json({ message: error.message });
+    }
+};
+
+const getCircleById = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const { token } = req.cookies;
+    const tokenStorage = getTokenStorage();
+    if (!tokenStorage[token]) {
+        return res.status(401).json({ message: "Invalid token" });
+    }
+    const userId = tokenStorage[token].id;
+    const { id } = req.params;
+    try {
+        const socialCircle = await SocialCircle.findById(id);
+        if (!socialCircle) {
+            return res.status(404).json({ message: "Social circle not found" });
+        }
+        if (!socialCircle.members.includes(userId)) {
+            return res
+                .status(401)
+                .json({ message: "You are not a member of this circle" });
+        }
+        res.status(200).json({ socialCircle });
+    } catch (error: any) {
+        res.status(400).json({ message: error.message });
+    }
+};
+
+const addUserToSocialCircle = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -86,23 +145,10 @@ const joinSocialCircle = async (
         }
         socialCircle.members.push(userId);
         const savedSocialCircle = await socialCircle.save();
-        res.status(200).json({ socialCircle: savedSocialCircle });
+        return res.status(200).json({ socialCircle: savedSocialCircle });
     } catch (error: any) {
-        res.status(400).json({ message: error.message });
+        return res.status(400).json({ message: error.message });
     }
-};
-
-const getSocialCircle = (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
-    return SocialCircle.findById(id)
-        .then((socialCircle) =>
-            socialCircle
-                ? res.status(200).json({ socialCircle })
-                : res.status(404).json({ message: "Not found" })
-        )
-        .catch((error) => {
-            res.status(500).json({ error });
-        });
 };
 
 const deleteSocialCircle = async (
@@ -135,144 +181,43 @@ const deleteSocialCircle = async (
         });
 };
 
-const addMember = async (req: Request, res: Response, next: NextFunction) => {
+const getMembersBySocialCircleId = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const { token } = req.cookies;
+    const tokenStorage = getTokenStorage();
+    if (!tokenStorage[token]) {
+        return res.status(401).json({ message: "Invalid token" });
+    }
+    const userId = tokenStorage[token].id;
     const { id } = req.params;
-    const { memberId } = req.body;
     try {
-        // check if member already exists
-        const existingMember = await SocialCircle.findOne({
-            _id: id,
-            members: { $in: [memberId] },
-        });
-        if (existingMember) {
-            return res.status(400).json({ message: "Member already exists" });
-        }
-
-        const socialCircle: ISocialCircle | null =
-            await SocialCircle.findByIdAndUpdate(id, {
-                $push: { members: memberId },
-            });
-
+        const socialCircle = await SocialCircle.findById(id);
         if (!socialCircle) {
-            return res.status(404).json({ message: "Not found" });
+            return res.status(404).json({ message: "Social circle not found" });
         }
-        return res.status(200).json({ socialCircle });
+        if (!socialCircle.members.includes(userId)) {
+            return res.status(401).json({ message: "Not authorized" });
+        }
+
+        const members = await UserProfile.find({
+            _id: { $in: socialCircle.members },
+        });
+
+        return res.status(200).json({ members: members });
     } catch (error: any) {
         return res.status(400).json({ message: error.message });
     }
 };
 
-const removeMember = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    const { id } = req.params;
-    const { memberId } = req.body;
-    try {
-        const socialCircle: ISocialCircle | null =
-            await SocialCircle.findByIdAndUpdate(id, {
-                $pull: { members: memberId },
-            }); // $pull removes the first instance of the value
-
-        if (!socialCircle) {
-            res.status(404).json({ message: "Not found" });
-        }
-        return res.status(200).json({ socialCircle });
-    } catch (error: any) {
-        res.status(400).json({ message: error.message });
-    }
-};
-
-const changeOwner = async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
-    const { ownerId } = req.body;
-    try {
-        const getSocialCircle = await SocialCircle.findById(id);
-        const originalOwnerId = getSocialCircle?.ownerId;
-
-        if (originalOwnerId === ownerId) {
-            return res
-                .status(400)
-                .json({ message: "You are already the owner" });
-        }
-
-        const socialCircle: ISocialCircle | null =
-            await SocialCircle.findByIdAndUpdate(id, {
-                ownerId,
-            });
-
-        if (!socialCircle) {
-            res.status(404).json({ message: "Not found" });
-        }
-
-        await SocialCircle.findByIdAndUpdate(id, {
-            $pull: { members: ownerId },
-        });
-
-        await SocialCircle.findByIdAndUpdate(id, {
-            $push: { members: originalOwnerId },
-        });
-        return res.status(200).json({ socialCircle });
-    } catch (error: any) {
-        res.status(400).json({ message: error.message });
-    }
-};
-
-const addPost = async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
-    const { postId } = req.body;
-    try {
-        const socialCircle: ISocialCircle | null =
-            await SocialCircle.findByIdAndUpdate(id, {
-                $push: { posts: postId },
-            });
-    } catch (error: any) {
-        res.status(400).json({ message: error.message });
-    }
-};
-
-const removePost = async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
-    const { postId } = req.body;
-    try {
-        const socialCircle: ISocialCircle | null =
-            await SocialCircle.findByIdAndUpdate(id, {
-                $pull: { posts: postId },
-            });
-    } catch (error: any) {
-        res.status(400).json({ message: error.message });
-    }
-};
-
-const getPosts = async (req: Request, res: Response, next: NextFunction) => {
-    //     const { id } = req.params;
-    //     try {
-    //         const socialCircle: ISocialCircle | null =
-    //             await SocialCircle.findById(id);
-    //         if (!socialCircle) {
-    //             res.status(404).json({ message: "Not found" });
-    //         }
-    //         const posts = await Post.find({ _id: { $in: socialCircle?.posts } });
-    //         return res.status(200).json({ posts });
-    //     } catch (error: any) {
-    //         res.status(400).json({ message: error.message });
-    //     }
-};
-
 export default {
     createSocialCircle,
     getSocialCirclesByUserId,
-    joinSocialCircle,
+    joinCircleByCode,
+    getCircleById,
+    addUserToSocialCircle,
     deleteSocialCircle,
-    // getSocialCircle,
-    // getAllSocialCircle,
-    // updateSocialCircle,
-    // deleteSocialCircle,
-    // addMember,
-    // removeMember,
-    // changeOwner,
-    // addPost,
-    // removePost,
-    // getPosts,
+    getMembersBySocialCircleId,
 };
