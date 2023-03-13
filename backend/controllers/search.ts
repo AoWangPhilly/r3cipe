@@ -163,6 +163,16 @@ async function searchSpoonacularRecipes(req: Request, res: Response) {
 
 async function getRecipeById(req: Request, res: Response) {
     const { id } = req.params;
+    if (id.startsWith("u")) {
+        const recipe = await UserRecipe.findOne({ recipeId: id });
+
+        if (recipe) {
+            return res.status(200).json({ recipe });
+        } else {
+            return res.status(404).json({ error: "user recipe not found" });
+        }
+    }
+
     const recipe = await SpoonacularRecipe.findOne({ recipeId: id });
     if (recipe) {
         return res.status(200).json({ recipe });
