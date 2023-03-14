@@ -7,12 +7,13 @@ import {
     Grid,
     Typography,
     Container,
+    CircularProgress,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 interface FormState {
     name: string;
     description: string;
-    ownerUsername: string;
     confirm: string;
 }
 
@@ -20,9 +21,12 @@ const CircleSignUp = () => {
     const [formState, setFormState] = useState<FormState>({
         name: "",
         description: "",
-        ownerUsername: "",
         confirm: "",
     });
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState("");
+
+    const navigate = useNavigate();
 
     const handleInputChange = (
         e: React.ChangeEvent<HTMLInputElement>
@@ -39,25 +43,37 @@ const CircleSignUp = () => {
     ): Promise<void> => {
         e.preventDefault();
         console.log("Sign up");
-        // Submit signup form here
-        const response = await fetch("/api/circles", {
-            method: "POST",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(formState),
-        });
+        setIsLoading(true);
 
-        if (response.status === 200) {
-            console.log("Success");
-        } else {
-            await response.json().then((data) => {
-                console.log(data);
+        try {
+            const response = await fetch("/api/circles", {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formState),
             });
+            setIsLoading(false);
+
+            if (response.status === 200) {
+                const data = await response.json();
+                console.log(data);
+
+                // Redirect to circle page
+                const id = data.socialCircle.id;
+                const circleUrl = `/circle/${id}`;
+                navigate(circleUrl);
+            } else {
+                const errorData = await response.json();
+                console.log(errorData);
+                setError(errorData.message);
+            }
+        } catch (error) {
+            console.log(error);
+            setError("An error occurred! Please try again");
         }
     };
-
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline />
@@ -76,7 +92,9 @@ const CircleSignUp = () => {
                         background:
                             "linear-gradient(45deg, #2196F3 40%, #21CBF3 80%)",
                     }}
-                ></Avatar>
+                >
+                    {formState.name.charAt(0).toUpperCase()}
+                </Avatar>
                 <br />
                 <Typography
                     component="h1"
@@ -114,35 +132,27 @@ const CircleSignUp = () => {
                                 onChange={handleInputChange}
                             />
                         </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                variant="outlined"
-                                margin="normal"
-                                required
-                                fullWidth
-                                id="ownerUsername"
-                                label="Owner Username"
-                                name="ownerUsername"
-                                autoComplete="off"
-                                value={formState.ownerUsername}
-                                onChange={handleInputChange}
-                            />
-                        </Grid>
                     </Grid>
-                    <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        color="primary"
-                        sx={{
-                            background:
-                                "linear-gradient(45deg, #2196F3 40%, #21CBF3 80%)",
-                            marginTop: "20px",
-                            marginBottom: "10px",
-                        }}
-                    >
-                        Sign Up
-                    </Button>
+                    {isLoading ? (
+                        <CircularProgress
+                            sx={{ marginTop: "20px", marginBottom: "10px" }}
+                        />
+                    ) : (
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            color="primary"
+                            sx={{
+                                background:
+                                    "linear-gradient(45deg, #2196F3 40%, #21CBF3 80%)",
+                                marginTop: "20px",
+                                marginBottom: "10px",
+                            }}
+                        >
+                            Sign Up
+                        </Button>
+                    )}
                 </form>
             </div>
         </Container>

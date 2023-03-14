@@ -50,7 +50,7 @@ export const Login: React.FC = () => {
             alert("Please fill in all fields");
             return;
         }
-        const resposne = await fetch("/api/auth/login", {
+        const response = await fetch("/api/auth/login", {
             method: "POST",
             credentials: "include",
             headers: {
@@ -58,7 +58,7 @@ export const Login: React.FC = () => {
             },
             body: JSON.stringify(formState),
         });
-        if(resposne.status !== 200) {
+        if (response.status !== 200) {
             setError("Invalid username or password");
             return;
         }
