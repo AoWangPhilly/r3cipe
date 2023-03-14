@@ -1,14 +1,12 @@
 import { Button, Grid, MenuItem } from "@mui/material";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import ToggleButton from "@mui/material/ToggleButton";
 import TextField from "@mui/material/TextField";
 import SearchIcon from "@mui/icons-material/Search";
 import { CUISINES, DISH_TYPES } from "../types";
 import { useNavigate } from "react-router-dom";
-
-// find a way to check if the user is logged in - set to true for now
-const isLoggedIn = true;
+import { AuthContext } from "../context/AuthContext";
 
 export type SearchFormState = {
     query: string;
@@ -34,6 +32,8 @@ const mealTypes: Option[] = DISH_TYPES.map((mealType: string) => ({
 }));
 
 const Search = () => {
+    const { isAuth } = useContext(AuthContext);
+
     const [searchFormState, setSearchFormState] = useState<SearchFormState>({
         query: "",
         cuisine: "",
@@ -90,12 +90,12 @@ const Search = () => {
         if (searchFormState.mealtype !== "") {
             queryParams.append("mealtype", searchFormState.mealtype);
         }
-        if (searchFormState.usersubmitted && isLoggedIn) {
+        if (searchFormState.usersubmitted && isAuth) {
             queryParams.append("usersubmitted", "true");
         } else {
             queryParams.append("usersubmitted", "false");
         }
-        if (searchFormState.pantry && isLoggedIn) {
+        if (searchFormState.pantry && isAuth) {
             queryParams.append("pantry", "true");
         } else {
             queryParams.append("pantry", "false");
@@ -220,7 +220,7 @@ const Search = () => {
                             ))}
                         </Select>
                     </Grid>
-                    {isLoggedIn && (
+                    {isAuth && (
                         <Grid item xs={3}>
                             <ToggleButton
                                 color="primary"
@@ -233,7 +233,7 @@ const Search = () => {
                             </ToggleButton>
                         </Grid>
                     )}
-                    {isLoggedIn && (
+                    {isAuth && (
                         <Grid item xs={3}>
                             <ToggleButton
                                 color="primary"
