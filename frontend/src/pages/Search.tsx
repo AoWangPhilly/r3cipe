@@ -1,5 +1,5 @@
-import { Grid, MenuItem } from "@mui/material";
-import { useEffect, useState } from "react";
+import { Button, Grid, MenuItem } from "@mui/material";
+import { useState } from "react";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import ToggleButton from "@mui/material/ToggleButton";
 import TextField from "@mui/material/TextField";
@@ -58,6 +58,14 @@ const Search = () => {
         };
         temp();
     }, []); */
+
+    const handleFeelingHungryClick = () => {
+        const queryParams = new URLSearchParams();
+        queryParams.append("feelinghungry", "true");
+
+        const searchUrl = `/search?${queryParams.toString()}`;
+        navigate(searchUrl);
+    };
 
     const handleSubmit = async (
         event:
@@ -138,7 +146,7 @@ const Search = () => {
                 spacing={2}
                 justifyContent="center"
                 alignItems="center"
-                sx={{ margin: "auto", width: "70%"}}
+                sx={{ margin: "auto", width: "70%" }}
             >
                 <Grid item xs={12} justifyContent="center" alignItems="center">
                     <h1>Search</h1>
@@ -238,6 +246,35 @@ const Search = () => {
                             </ToggleButton>
                         </Grid>
                     )}
+                </Grid>
+                <Grid
+                    container
+                    spacing={2}
+                    justifyContent="center"
+                    alignItems="center"
+                    sx={{ margin: "auto", width: "90%" }}
+                >
+                    <Grid item xs={3}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handleFeelingHungryClick}
+                            startIcon={
+                                <span role="img" aria-label="hungry-face">
+                                    🍽️
+                                </span>
+                            }
+                            sx={{
+                                borderRadius: "10px",
+                                padding: "8px 16px",
+                                margin: "auto",
+                                color: "#fff",
+                                textTransform: "capitalize",
+                            }}
+                        >
+                            I am feeling hungry
+                        </Button>
+                    </Grid>
                 </Grid>
             </Grid>
         </form>

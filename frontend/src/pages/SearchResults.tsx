@@ -18,10 +18,25 @@ const SearchResults: React.FC = () => {
     const mealType = new URLSearchParams(location.search).get("mealtype") || "";
     const userSubmittedString =
         new URLSearchParams(location.search).get("usersubmitted") || "";
+    const feelingHungry =
+        new URLSearchParams(location.search).get("feelinghungry") || "";
+
     const [recipes, setRecipes] = useState<any>([]);
     const [loading, setLoading] = useState(true);
 
     const searchForRecipes = async () => {
+        if (feelingHungry === "true") {
+            const apiResponse = await fetch(`/api/search/random`, {
+                method: "GET",
+                credentials: "include",
+            });
+            if (apiResponse.status === 200) {
+                let data = await apiResponse.json();
+                setRecipes(data.recipe);
+            }
+            return;
+        }
+
         if (userSubmittedString === "true") {
             const apiResponse = await fetch(
                 `/api/search/user?query=${query}&cuisine=${cuisine}&mealtype=${mealType}&pantry=${pantryString}&usersubmitted=${userSubmittedString}`,
