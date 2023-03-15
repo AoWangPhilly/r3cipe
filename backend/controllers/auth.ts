@@ -1,31 +1,21 @@
-import { CookieOptions, Request, Response } from "express";
+import { Request, Response } from "express";
 import * as argon2 from "argon2";
-import crypto from "crypto";
 import { ErrorMsg } from "../types.js";
 import UserProfile, {
     createUserProfileSchema,
     loginSchema,
 } from "../models/UserProfile.js";
+import Inventory from "../models/Inventory.js";
 import { findUserByEmail } from "../helpers/UserProfile.js";
 import {
+    cookieOptions,
     deleteToken,
+    generateToken,
+    generateTokenExpiry,
     getTokenStorage,
     setToken,
     tokenUserInfo,
 } from "../helpers/tokenStorage.js";
-import Inventory from "../models/Inventory.js";
-
-const TOKEN_EXPIRY = 3600; // 1 hr (in seconds)
-
-export const clientCookieOptions: CookieOptions = {
-    // secure: true, // comment out for Dev in Postman!!!
-    sameSite: "strict",
-};
-export const cookieOptions: CookieOptions = {
-    ...clientCookieOptions,
-    httpOnly: true,
-    maxAge: TOKEN_EXPIRY * 1000,
-};
 
 /**
  * check if user is logged in for React app to update state
@@ -99,14 +89,14 @@ async function signup(req: Request, res: Response) {
             return res.status(500).json({ errors: ["Internal server error"] });
         }
 
-        const token = crypto.randomBytes(32).toString("hex");
+        const token = generateToken();
 
         const tokenInfo: tokenUserInfo = {
             id: savedUserProfile._id.toString(),
             name,
             email,
             profileUrl: savedUserProfile.profileUrl!,
-            expiry: new Date(Date.now() + TOKEN_EXPIRY * 1000),
+            expiry: generateTokenExpiry(),
         };
         setToken(token, tokenInfo);
 
@@ -177,10 +167,10 @@ async function login(
         name: user.userProfile.name,
         email: user.userProfile.email,
         profileUrl: user.userProfile.profileUrl!,
-        expiry: new Date(Date.now() + TOKEN_EXPIRY * 1000),
+        expiry: generateTokenExpiry(),
     };
 
-    const token = crypto.randomBytes(32).toString("hex");
+    const token = generateToken();
     setToken(token, tokenInfo);
 
     return res

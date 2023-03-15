@@ -1,6 +1,6 @@
 import { NextFunction, Request, RequestHandler, Response } from "express";
 import { ErrorMsg } from "../types.js";
-import { cookieOptions } from "../controllers/auth.js";
+import { cookieOptions } from "../helpers/tokenStorage.js";
 import { deleteToken, getTokenStorage } from "../helpers/tokenStorage.js";
 
 export const authorize: RequestHandler = (
