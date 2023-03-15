@@ -152,33 +152,41 @@ const Recipe: React.FC = () => {
                                         />
                                     </IconButton>
                                 )}
-                                {isFavorite ? (
-                                    <IconButton
-                                        onClick={() => {
-                                            removeFavorite(id!);
-                                            setIsFavorite(false);
-                                        }}
-                                    >
-                                        <FavoriteIcon
-                                            style={{ color: "red" }}
-                                        />
-                                    </IconButton>
+                                {isAuth ? (
+                                    <>
+                                        {isFavorite ? (
+                                            <IconButton
+                                                onClick={() => {
+                                                    removeFavorite(id!);
+                                                    setIsFavorite(false);
+                                                }}
+                                            >
+                                                <FavoriteIcon
+                                                    style={{ color: "red" }}
+                                                />
+                                            </IconButton>
+                                        ) : (
+                                            <IconButton
+                                                onClick={() => {
+                                                    addFavorite(id!);
+                                                    setIsFavorite(true);
+                                                    setIsClicked(true);
+                                                    setTimeout(() => {
+                                                        setIsClicked(false);
+                                                    }, 300);
+                                                }}
+                                                className={
+                                                    isClicked ? "pop" : ""
+                                                }
+                                            >
+                                                <FavoriteBorderIcon
+                                                    style={{ color: "red" }}
+                                                />
+                                            </IconButton>
+                                        )}
+                                    </>
                                 ) : (
-                                    <IconButton
-                                        onClick={() => {
-                                            addFavorite(id!);
-                                            setIsFavorite(true);
-                                            setIsClicked(true);
-                                            setTimeout(() => {
-                                                setIsClicked(false);
-                                            }, 300);
-                                        }}
-                                        className={isClicked ? "pop" : ""}
-                                    >
-                                        <FavoriteBorderIcon
-                                            style={{ color: "red" }}
-                                        />
-                                    </IconButton>
+                                    <></>
                                 )}
                             </Typography>
                         </Grid>
