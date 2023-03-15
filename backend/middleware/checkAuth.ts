@@ -3,13 +3,16 @@ import { ErrorMsg } from "../types.js";
 import { cookieOptions } from "../helpers/tokenStorage.js";
 import { deleteToken, getTokenStorage } from "../helpers/tokenStorage.js";
 
+/**
+ * only allow access if user logged in
+ * send error response if they're not
+ */
+
 export const authorize: RequestHandler = (
     req: Request,
     res: Response<ErrorMsg>,
     next: NextFunction
 ) => {
-    /* only allow access if user logged in
-    send error response if they're not */
     const token = req.cookies.token;
     const tokenStorage = getTokenStorage();
 
