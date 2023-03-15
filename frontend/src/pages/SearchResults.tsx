@@ -98,7 +98,14 @@ const SearchResults: React.FC = () => {
                         }}
                     >
                         {recipes.map((recipe: RecipeThumbnailProps) => (
-                            <Grid item xs={12} sm={6} md={4} lg={3}>
+                            <Grid
+                                item
+                                xs={12}
+                                sm={6}
+                                md={4}
+                                lg={3}
+                                key={recipe.recipeId}
+                            >
                                 <RecipeThumbnail
                                     title={recipe.title}
                                     image={recipe.image}
