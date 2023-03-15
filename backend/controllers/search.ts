@@ -207,7 +207,7 @@ async function getRandomSpoonacularRecipe(req: Request, res: Response) {
         path: "recipes/random",
         queryParams: {
             apiKey: API_KEY,
-            number: 2, // can set to anything
+            number: 4, // can set to anything
         },
     });
 
@@ -216,14 +216,37 @@ async function getRandomSpoonacularRecipe(req: Request, res: Response) {
         return res.status(500).json({ error: "Could not get random recipe" });
     }
 
-    const randomRecipeList: RecipeTypeWithId = response.data.recipes.map(
+    const randomRecipeList: RecipeTypeWithId[] = response.data.recipes.map(
         (recipe: RecipeType) => {
             const { ...parsedRecipe } = parseRecipe(recipe);
             return parsedRecipe;
         }
     );
 
-    // cache recipe if not already stored
+    // Cache recipe if not already stored
+    randomRecipeList.forEach(async (recipe) => {
+        const recipeExists = await SpoonacularRecipe.findOne({
+            recipeId: recipe.recipeId,
+        });
+
+        if (recipeExists) {
+            console.log("Random recipe exists in cache");
+        } else {
+            const spoonacularRecipe = new SpoonacularRecipe({
+                recipeId: recipe.recipeId,
+                recipe: recipe,
+                userId: "Spoonacular",
+            });
+            spoonacularRecipe
+                .save()
+                .then((recipe) => {
+                    console.log(`Random recipe ${recipe.recipeId} saved`);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
+    });
 
     res.json({ randomRecipeList });
 }
