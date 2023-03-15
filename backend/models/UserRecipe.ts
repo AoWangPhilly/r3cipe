@@ -3,8 +3,8 @@ import { RecipeType } from "../types.js";
 
 interface IUserRecipe {
     recipeId: string;
-    recipe: RecipeType | null; // will remove "any" after testing
-    userId: null;
+    recipe: RecipeType | null; // TODO?: remove null?
+    userId: null; // TODO?: should be a ref to UserProfile's mongoid
     isPublic: boolean;
     lastModified: Date;
 }

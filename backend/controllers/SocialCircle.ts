@@ -30,7 +30,6 @@ const createSocialCircle = async (
         }
 
         const socialCircle = new SocialCircle({
-            _id: new mongoose.Types.ObjectId(),
             name,
             ownerId: userId,
             members: [userId],

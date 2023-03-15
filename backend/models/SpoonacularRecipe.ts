@@ -5,7 +5,7 @@ import { RecipeType } from "../types.js";
 interface ISpoonacularRecipe {
     recipeId: string;
     recipe: RecipeType | null; // TODO?: remove null?
-    userId: null;
+    userId: null; // will be "Spoonacular" here
     isPublic: boolean;
     lastModified: Date;
 }
