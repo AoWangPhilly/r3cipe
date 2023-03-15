@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 
 interface ISpoontacularSearchResult {
     searchKey: string;
-    recipes: RecipeTypeWithId[];
+    recipes: RecipeTypeWithId[]; // stores the whole Recipe object
 }
 
 const spoonacularSearchResultSchema =

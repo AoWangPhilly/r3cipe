@@ -3,6 +3,7 @@
  * Get, Set, Delete tokens here
  */
 
+// this Object is sent to the client for AuthContext purposes
 export interface tokenUserInfo {
     id: string;
     name: string;

@@ -1,6 +1,9 @@
 import mongoose, { Document, Schema } from "mongoose";
 import * as z from "zod";
 
+/**
+ * Zod validation for Login/Signup
+ */
 export const loginSchema = z.object({
     email: z
         .string({ required_error: "Email is required" })
@@ -20,8 +23,10 @@ export const createUserProfileSchema = z.object({
         .string({ required_error: "Password is required" })
         .min(6, { message: "Password must have at least 6 characters" }),
     profileUrl: z.string().optional(),
+    createdAt: z.date().optional(),
 });
 
+// TODO: Delete?
 export const updateUserProfileSchema = z.object({
     name: z.string().min(2).optional(),
     email: z.string().email().optional(),
@@ -39,6 +44,7 @@ const UserProfileSchema: Schema = new Schema<IUserProfile>(
         email: { type: String, required: true, unique: true },
         password: { type: String, required: true },
         profileUrl: { type: String, default: "" },
+        createdAt: { type: Date, default: Date.now },
     },
     { versionKey: false }
 );

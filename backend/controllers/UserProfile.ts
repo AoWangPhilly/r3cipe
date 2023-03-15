@@ -7,6 +7,8 @@ import UserProfile, {
 } from "../models/UserProfile.js";
 import * as argon2 from "argon2";
 
+// TODO: Delete this file
+
 const createUserProfile = async (
     req: Request,
     res: Response,
