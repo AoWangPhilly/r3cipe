@@ -3,7 +3,7 @@ import { RecipeType } from "../types.js";
 
 // Defines the filtered Recipe from Spoonacular API that's cached in MongoDB
 interface ISpoonacularRecipe {
-    recipeId: string;
+    recipeId: string; // Spoonacular's "id"
     recipe: RecipeType | null; // TODO?: remove null?
     userId: null; // will be "Spoonacular" here
     isPublic: boolean;

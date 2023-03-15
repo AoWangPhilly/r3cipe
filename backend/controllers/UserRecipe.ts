@@ -61,6 +61,10 @@ const queryRecipes = async (req: Request, res: Response) => {
     return res.status(200).json({ recipes: filteredRecipes });
 };
 
+/**
+ * Create custom User recipe
+ * NOTE: these recipes start with a "u" to distinguish from Spoonacular
+ */
 const createRecipe = async (req: Request, res: Response) => {
     try {
         const { recipe, isPublic } = req.body;

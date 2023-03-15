@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { RecipeType } from "../types.js";
 
 interface IUserRecipe {
-    recipeId: string;
+    recipeId: string; // starts with a "u"
     recipe: RecipeType | null; // TODO?: remove null?
     userId: null; // TODO?: should be a ref to UserProfile's mongoid
     isPublic: boolean;

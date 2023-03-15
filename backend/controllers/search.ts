@@ -131,6 +131,9 @@ async function searchSpoonacularRecipes(req: Request, res: Response) {
         });
 }
 
+/**
+ * Returns Recipe from 1 of 3 places: User/Spoonacular Recipe, or Spoonacular API
+ */
 async function getRecipeById(req: Request, res: Response) {
     const { id } = req.params;
 
