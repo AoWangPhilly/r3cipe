@@ -7,11 +7,17 @@ import SpoonacularSearchResult from "../models/SearchResults.js";
 import { getTokenStorage } from "../helpers/tokenStorage.js";
 import { parseRecipe } from "../helpers/recipeParser.js";
 import Inventory from "../models/Inventory.js";
-import { RecipeTypeWithId } from "../types.js";
+import { RecipeType, RecipeTypeWithId } from "../types.js";
 import UserRecipe from "../models/UserRecipe.js";
 
 const API_KEY = process.env.API_KEY;
 
+/**
+ * Spoonacular's complexSearch endpoint
+ * Search by query, cuisine, meal type, and pantry
+ * Performs 2 caches to save API reqs: Search results & Recipes
+ * If search/recipe found in cache, use that. otherwise, make API req
+ */
 async function searchSpoonacularRecipes(req: Request, res: Response) {
     const { query, cuisine, mealtype, pantry } = req.query;
     const key = `${query}-${cuisine}`;
@@ -108,6 +114,7 @@ async function searchSpoonacularRecipes(req: Request, res: Response) {
                 return recipes;
             });
 
+            // Cache the search result
             const spoonacularRecipeResult = new SpoonacularSearchResult({
                 searchKey: key,
                 recipes: recipes,
@@ -133,6 +140,7 @@ async function searchSpoonacularRecipes(req: Request, res: Response) {
 
 /**
  * Returns Recipe from 1 of 3 places: User/Spoonacular Recipe, or Spoonacular API
+ * If not in cache, store in MongoDB
  */
 async function getRecipeById(req: Request, res: Response) {
     const { id } = req.params;
@@ -161,11 +169,12 @@ async function getRecipeById(req: Request, res: Response) {
             },
         });
 
-        // If the recipe isn't in the database, make the request to spoonacular and save it to the database
+        // If recipe isn't in cache, API req to spoonacular and save to DB
         axios
             .get(spoonacularUrl)
             .then(async (response) => {
-                console.log(response.data);
+                console.log("Recipe not in cache, making API req");
+                // console.log(response.data);
                 const { recipeId, ...parsedRecipe } = parseRecipe(
                     response.data
                 );
@@ -193,7 +202,34 @@ async function getRecipeById(req: Request, res: Response) {
     }
 }
 
+async function getRandomSpoonacularRecipe(req: Request, res: Response) {
+    const spoonacularUrl = buildUrl("https://api.spoonacular.com", {
+        path: "recipes/random",
+        queryParams: {
+            apiKey: API_KEY,
+            number: 2, // can set to anything
+        },
+    });
+
+    const response = await axios.get(spoonacularUrl);
+    if (response.status >= 400) {
+        return res.status(500).json({ error: "Could not get random recipe" });
+    }
+
+    const randomRecipeList: RecipeTypeWithId = response.data.recipes.map(
+        (recipe: RecipeType) => {
+            const { ...parsedRecipe } = parseRecipe(recipe);
+            return parsedRecipe;
+        }
+    );
+
+    // cache recipe if not already stored
+
+    res.json({ randomRecipeList });
+}
+
 export default {
     searchSpoonacularRecipes,
     getRecipeById,
+    getRandomSpoonacularRecipe,
 };
