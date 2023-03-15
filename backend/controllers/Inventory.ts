@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import { getTokenStorage } from "../helpers/tokenStorage.js";
 import SpoonacularRecipe from "../models/SpoonacularRecipe.js";
 
+// we update the whole Pantry instead of adding elements to it
 const updatePantry = async (
     req: Request,
     res: Response,

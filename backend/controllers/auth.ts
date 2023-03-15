@@ -9,7 +9,7 @@ import UserProfile, {
 import { findUserByEmail } from "../helpers/UserProfile.js";
 import {
     deleteToken,
-    getTokenStorage, 
+    getTokenStorage,
     setToken,
     tokenUserInfo,
 } from "../helpers/tokenStorage.js";
@@ -86,9 +86,13 @@ async function signup(req: Request, res: Response) {
         });
         const savedUserProfile = await userProfile.save();
 
-        const inventory = await Inventory.create({
+        // Initialize Inventory
+        console.log(savedUserProfile._id);
+        const inventory = new Inventory({ userId: savedUserProfile._id });
+
+        /* await Inventory.create({
             userId: userProfile._id,
-        });
+        }); */
         const savedInventory = await inventory.save();
 
         if (!savedInventory || !savedUserProfile) {
