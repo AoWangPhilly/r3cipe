@@ -1,3 +1,8 @@
+/**
+ * Parses extremely long Spoonacular recipe object into smaller object
+ * Although not used here, these follow the types defined in types.ts
+ */
+
 export function parseRecipe(recipe: any) {
     const {
         preparationMinutes,

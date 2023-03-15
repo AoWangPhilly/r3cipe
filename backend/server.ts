@@ -8,12 +8,13 @@ import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 
 import authRouter from "./routes/auth.js";
-import { userProfileRouter } from "./routes/UserProfile.js";
 import { ingredientRouter } from "./routes/Ingredient.js";
-import { socialCircleRouter } from "./routes/SocialCircle.js";
 import { inventoryRouter } from "./routes/Inventory.js";
-import { userRecipeRouter } from "./routes/UserRecipe.js";
 import searchRouter from "./routes/search.js";
+import { userRecipeRouter } from "./routes/UserRecipe.js";
+import { socialCircleRouter } from "./routes/SocialCircle.js";
+
+import { userProfileRouter } from "./routes/UserProfile.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -35,6 +36,7 @@ mongoose
         console.log("DB connection failed");
     });
 
+/* Middleware */
 app.use(
     cors({
         origin: ["http://localhost:3000", "http://localhost:3001"],
@@ -46,15 +48,16 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
 /**
- * Routes
+ * Express REST API endpoints
  */
 app.use("/api/auth", authRouter);
-app.use("/api/search", searchRouter);
 app.use("/api/ingredients", ingredientRouter);
-app.use("/api/circles", socialCircleRouter);
-app.use("/api/user/profiles", userProfileRouter); // TODO: DELETE
 app.use("/api/user/inventory", inventoryRouter);
+app.use("/api/search", searchRouter);
 app.use("/api/user/recipes", userRecipeRouter);
+app.use("/api/circles", socialCircleRouter);
+
+app.use("/api/user/profiles", userProfileRouter); // TODO: DELETE
 
 // run server
 const port = 3000;
