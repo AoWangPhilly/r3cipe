@@ -21,18 +21,18 @@ const SearchResults: React.FC = () => {
     const feelingHungry =
         new URLSearchParams(location.search).get("feelinghungry") || "";
 
-    const [recipes, setRecipes] = useState<any>([]);
+    const [recipes, setRecipes] = useState<any>([]); // TODO?: could use RecipeType
     const [loading, setLoading] = useState(true);
 
     const searchForRecipes = async () => {
         if (feelingHungry === "true") {
-            const apiResponse = await fetch(`/api/search/random`, {
+            const apiResponse = await fetch(`/api/search/spoonacular/random`, {
                 method: "GET",
                 credentials: "include",
             });
             if (apiResponse.status === 200) {
                 let data = await apiResponse.json();
-                setRecipes(data.recipe);
+                setRecipes(data.randomRecipeList);
             }
             return;
         }
