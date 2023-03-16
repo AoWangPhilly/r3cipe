@@ -9,9 +9,9 @@ import cookieParser from "cookie-parser";
 
 import authRouter from "./routes/auth.js";
 import { ingredientRouter } from "./routes/Ingredient.js";
-import { inventoryRouter } from "./routes/Inventory.js";
+import { inventoryRouter } from "./routes/inventory.js";
 import searchRouter from "./routes/search.js";
-import { userRecipeRouter } from "./routes/UserRecipe.js";
+import { userRecipeRouter } from "./routes/userRecipe.js";
 import { socialCircleRouter } from "./routes/circles.js";
 
 import { userProfileRouter } from "./routes/UserProfile.js";
@@ -21,7 +21,7 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.join(__dirname, "../.env") });
 
-let app = express();
+const app = express();
 
 /**
  * Connect to MongoDB
