@@ -1,5 +1,5 @@
 import { RecipeType, Ingredient, CUISINES, DISH_TYPES } from "../types";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import { IngredientSelect } from "../components/IngredientSelect";
@@ -7,6 +7,7 @@ import { InstructionsInput } from "../components/InstructionsInput";
 import { Button, FormControlLabel, Grid, Switch } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
 interface IngredientRaw {
     id: number;
@@ -33,7 +34,8 @@ export const RecipeInput = (props: RecipeInputProps) => {
         dishTypes: [],
     });
     const [isPublic, setIsPublic] = useState<boolean>(false);
-
+    const { userId } = useContext(AuthContext);
+    const [owner, setOwner] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>("");
     const [allIngredients, setAllIngredients] = useState<IngredientRaw[]>([]);
@@ -68,13 +70,17 @@ export const RecipeInput = (props: RecipeInputProps) => {
                 .then((data) => {
                     setFormState(data.recipe.recipe);
                     setIngredients(data.recipe.recipe.extendedIngredients);
-                    let instructions = data.recipe.recipe.instructions.split(
-                        "\n"
-                    );
+                    let instructions =
+                        data.recipe.recipe.instructions.split("\n");
                     // remove empty string at end
                     instructions.pop();
                     setInstructions(instructions);
-                    console.log("Instructions set after api call: ", instructions);
+                    setIsPublic(data.recipe.isPublic);
+                    setOwner(data.recipe.userId);
+                    console.log(
+                        "Instructions set after api call: ",
+                        instructions
+                    );
                     setLoading(false);
                 })
                 .catch((err) => {
@@ -120,6 +126,18 @@ export const RecipeInput = (props: RecipeInputProps) => {
         setIsPublic(e.target.checked);
     };
 
+    const handleDelete = async () => {
+        await fetch("/api/user/recipes/" + id, {
+            method: "DELETE",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        }).then((res) => {
+            navigate("/library");
+        });
+    };
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         // prevent default form submission behavior
         e.preventDefault();
@@ -128,8 +146,11 @@ export const RecipeInput = (props: RecipeInputProps) => {
             formState.instructions += instructions[i] + "\n";
         }
         console.log("Instructions set before update/save call: ", instructions);
-        console.log("Instructions set before update/save call: ", formState.instructions);
-        
+        console.log(
+            "Instructions set before update/save call: ",
+            formState.instructions
+        );
+
         if (formState.instructions === "") {
             alert("Please enter instructions");
             return;
@@ -189,7 +210,7 @@ export const RecipeInput = (props: RecipeInputProps) => {
                 .then((res) => {
                     res.json().then((data) => {
                         console.log(data);
-                        navigate(`/recipe/${data.recipeId}`);
+                        navigate(`/recipe/${data.userRecipe.recipeId}`);
                     });
                 })
                 .catch((err) => {
@@ -198,12 +219,10 @@ export const RecipeInput = (props: RecipeInputProps) => {
         }
     };
 
-    if (props.isEdit && !IS_OWNER) {
-        return <h1>403 Forbidden</h1>;
-    }
-
     if (loading) {
         return <h1>Loading...</h1>;
+    } else if (props.isEdit && userId !== owner) {
+        return <h1>Not authorized to edit this recipe</h1>;
     } else if (error) {
         console.log(error);
         return <h1>Error</h1>;
@@ -363,6 +382,15 @@ export const RecipeInput = (props: RecipeInputProps) => {
                             <Button variant="contained" type="submit">
                                 {props.isEdit ? "Save" : "Create Recipe"}
                             </Button>
+                            {props.isEdit ? (
+                                <Button
+                                    variant="contained"
+                                    color="error"
+                                    onClick={handleDelete}
+                                >
+                                    Delete
+                                </Button>
+                            ) : null}
                         </Grid>
                         <Grid item xs={12} md={6}>
                             <IngredientSelect
