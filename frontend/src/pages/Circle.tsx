@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import CircularProgress from "@mui/material/CircularProgress";
 import CircleSidebar from "../components/CircleSidebar";
 import GroupCard from "../components/GroupCard";
 import NoCircleJoined from "../components/NoCirclesJoined";
@@ -11,7 +12,7 @@ interface CircleData {
 
 const Circle = () => {
     const [circles, setCircles] = useState<CircleData[]>([]);
-
+    const [loading, setLoading] = useState(true);
     //  this is to convert the members array to the format that GroupCard expects
     // api curently returns an array of strings for members and not an array of objects with alt(name) and src(picture)
     const avatarMembers = (members: string[]) => {
@@ -24,6 +25,7 @@ const Circle = () => {
     useEffect(() => {
         const fetchCircles = async () => {
             try {
+                setLoading(true);
                 const response = await fetch("/api/circles", {
                     method: "GET",
                     credentials: "include",
@@ -40,10 +42,23 @@ const Circle = () => {
             } catch (error) {
                 console.log(error);
             }
+            setLoading(false);
         };
 
         fetchCircles();
     }, []);
+
+    if (loading) {
+        return (
+            <div>
+                <h1>Circle</h1>
+                <CircleSidebar />
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                    <CircularProgress />
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div>
