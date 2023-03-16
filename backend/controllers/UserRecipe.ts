@@ -137,9 +137,10 @@ const editRecipe = async (req: Request, res: Response) => {
             existingRecipe.isPublic = isPublic;
         }
 
-        if (recipe || isPublic !== undefined) {
+        // OLD: now using mongoose to automatically update
+        /* if (recipe || isPublic !== undefined) {
             existingRecipe.lastModified = new Date();
-        }
+        } */
 
         const savedRecipe = await existingRecipe.save();
         res.status(201).json({ userRecipe: savedRecipe });

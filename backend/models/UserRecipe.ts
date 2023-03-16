@@ -6,7 +6,9 @@ interface IUserRecipe {
     recipe: RecipeType | null; // TODO?: remove null?
     userId: null; // TODO?: should be a ref to UserProfile's mongoid
     isPublic: boolean;
-    lastModified: Date;
+    createdAt: Date;
+    updatedAt: Date;
+    // lastModified: Date;
 }
 
 const userRecipeSchema = new mongoose.Schema<IUserRecipe>(
@@ -15,8 +17,7 @@ const userRecipeSchema = new mongoose.Schema<IUserRecipe>(
         recipe: { type: Object, required: true },
         userId: { type: String, required: true },
         isPublic: { type: Boolean, required: true },
-        lastModified: { type: Date, default: Date.now },
     },
-    { versionKey: false }
+    { versionKey: false, timestamps: true }
 );
 export default mongoose.model<IUserRecipe>("UserRecipe", userRecipeSchema);
