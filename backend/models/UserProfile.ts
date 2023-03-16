@@ -35,6 +35,7 @@ export const updateUserProfileSchema = z.object({
 });
 
 export type IUserProfile = z.infer<typeof createUserProfileSchema>;
+export type UserProfileId = IUserProfile & {_id: mongoose.Schema.Types.ObjectId};
 
 export type IUserProfileModel = IUserProfile & Document;
 
