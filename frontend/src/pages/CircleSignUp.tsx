@@ -55,13 +55,10 @@ const CircleSignUp = () => {
                 body: JSON.stringify(formState),
             });
             setIsLoading(false);
-
-            if (response.status === 200) {
+            if (response.ok) {
                 const data = await response.json();
-                console.log(data);
-
                 // Redirect to circle page
-                const id = data.socialCircle.id;
+                const id = data.socialCircle._id;
                 const circleUrl = `/circle/${id}`;
                 navigate(circleUrl);
             } else {
