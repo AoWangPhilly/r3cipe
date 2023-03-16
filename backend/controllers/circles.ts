@@ -9,13 +9,8 @@ import { filterMemberContent } from "../helpers/circles.js";
  * Create social circle with User as the owner
  */
 const createSocialCircle = async (req: Request, res: Response) => {
-    const { token } = req.cookies;
-    const tokenStorage = getTokenStorage();
-    if (!tokenStorage[token]) {
-        return res.status(401).json({ message: "Invalid token" });
-    }
+    const user = req.user;
 
-    const userId = tokenStorage[token].id;
     const { name } = req.body;
     const { description } = req.body;
     if (!name || !description) {
@@ -36,13 +31,13 @@ const createSocialCircle = async (req: Request, res: Response) => {
         const socialCircle = new SocialCircle({
             name: name,
             description: description,
-            ownerId: userId,
-            members: [userId],
+            ownerId: user.id,
+            members: [user.id],
         });
         const savedSocialCircle = await socialCircle.save();
         res.status(201).json({ socialCircle: savedSocialCircle });
     } catch (error: any) {
-        res.status(400).json({ message: error.message });
+        res.status(400).json({ error: error.message });
     }
 };
 
@@ -50,20 +45,15 @@ const createSocialCircle = async (req: Request, res: Response) => {
  * Return the social circles that the User is in
  */
 const getSocialCirclesByUserId = async (req: Request, res: Response) => {
-    const { token } = req.cookies;
-    const tokenStorage = getTokenStorage();
-    if (!tokenStorage[token]) {
-        return res.status(401).json({ message: "Invalid token" });
-    }
-    const userId = tokenStorage[token].id;
+    const user = req.user;
     try {
         const socialCircles = await SocialCircle.find({
             // select documents that contain userId in members array
-            members: { $in: [userId] },
+            members: { $in: [user.id] },
         });
         res.status(200).json({ socialCircles });
     } catch (error: any) {
-        res.status(400).json({ message: error.message });
+        res.status(400).json({ error: error.message });
     }
 };
 
@@ -74,28 +64,24 @@ const getSocialCirclesByUserId = async (req: Request, res: Response) => {
  */
 const joinCircleByCode = async (req: Request, res: Response) => {
     console.log("here1");
-    const { token } = req.cookies;
-    const tokenStorage = getTokenStorage();
-    if (!tokenStorage[token]) {
-        return res.status(401).json({ message: "Invalid token" });
-    }
-    const userId = tokenStorage[token].id;
+
+    const user = req.user;
     const { id } = req.body;
     try {
         const socialCircle = await SocialCircle.findById(id);
         if (!socialCircle) {
-            return res.status(404).json({ message: "Social circle not found" });
+            return res.status(404).json({ error: "Social circle not found" });
         }
-        if (socialCircle.members.includes(userId)) {
+        if (socialCircle.members.includes(user.id)) {
             return res
                 .status(400)
-                .json({ message: "You are already a member of this circle" });
+                .json({ error: "You are already a member of this circle" });
         }
-        socialCircle.members.push(userId);
+        socialCircle.members.push(user.id);
         const savedSocialCircle = await socialCircle.save();
         res.status(200).json({ socialCircle: savedSocialCircle });
     } catch (error: any) {
-        res.status(400).json({ message: error.message });
+        res.status(400).json({ error: error.message });
     }
 };
 
@@ -103,12 +89,7 @@ const joinCircleByCode = async (req: Request, res: Response) => {
  * Return circle by mongo id
  */
 const getCircleById = async (req: Request, res: Response) => {
-    const { token } = req.cookies;
-    const tokenStorage = getTokenStorage();
-    if (!tokenStorage[token]) {
-        return res.status(401).json({ message: "Invalid token" });
-    }
-    const userId = tokenStorage[token].id;
+    const user = req.user;
     const { id } = req.params;
     try {
         const socialCircle = await SocialCircle.findById(id)
@@ -122,7 +103,7 @@ const getCircleById = async (req: Request, res: Response) => {
         // check if socialCircle.members contains userId
         let memberIdList = socialCircle.members.map((member) => member._id);
         for (let id of memberIdList) {
-            if (id.toString() === userId) {
+            if (id.toString() === user.id) {
                 // Filter content sent to client
                 const filtOwner = filterMemberContent([
                     socialCircle.ownerId,
@@ -143,9 +124,9 @@ const getCircleById = async (req: Request, res: Response) => {
         }
         return res
             .status(401)
-            .json({ message: "You're not a member of this circle" });
+            .json({ error: "You're not a member of this circle" });
     } catch (error: any) {
-        res.status(400).json({ message: error.message });
+        res.status(400).json({ error: error.message });
     }
 };
 
@@ -155,28 +136,24 @@ const getCircleById = async (req: Request, res: Response) => {
  */
 const addUserToSocialCircle = async (req: Request, res: Response) => {
     console.log("here2");
-    const { token } = req.cookies;
-    const tokenStorage = getTokenStorage();
-    if (!tokenStorage[token]) {
-        return res.status(401).json({ message: "Invalid token" });
-    }
-    const userId = tokenStorage[token].id;
+
+    const user = req.user;
     const { id } = req.params;
     try {
         const socialCircle = await SocialCircle.findById(id);
         if (!socialCircle) {
-            return res.status(404).json({ message: "Social circle not found" });
+            return res.status(404).json({ error: "Social circle not found" });
         }
-        if (socialCircle.members.includes(userId)) {
+        if (socialCircle.members.includes(user.id)) {
             return res
                 .status(400)
-                .json({ message: "You are already a member of this circle" });
+                .json({ error: "You are already a member of this circle" });
         }
-        socialCircle.members.push(userId);
+        socialCircle.members.push(user.id);
         const savedSocialCircle = await socialCircle.save();
         return res.status(200).json({ socialCircle: savedSocialCircle });
     } catch (error: any) {
-        return res.status(400).json({ message: error.message });
+        return res.status(400).json({ error: error.message });
     }
 };
 
@@ -184,26 +161,18 @@ const addUserToSocialCircle = async (req: Request, res: Response) => {
  * Nuke the social circle by mongo id; need to be owner of circle
  */
 const deleteSocialCircle = async (req: Request, res: Response) => {
-    const { token } = req.cookies;
-    const tokenStorage = getTokenStorage();
-    if (!tokenStorage[token]) {
-        return res.status(401).json({ message: "Invalid token" });
-    }
-
-    const userId = tokenStorage[token].id;
+    const user = req.user;
     const { id } = req.params;
 
     // check if circle exists
     const socialCircle = await SocialCircle.findById(id);
     if (!socialCircle) {
-        return res.status(404).json({ message: "Social circle not found" });
+        return res.status(404).json({ error: "Social circle not found" });
     }
 
     // check if user is owner of social circle
-    if (socialCircle.ownerId.toString() !== userId) {
-        return res
-            .status(401)
-            .json({ message: "Unauthorized to delete circle" });
+    if (socialCircle.ownerId.toString() !== user.id) {
+        return res.status(401).json({ error: "Unauthorized to delete circle" });
     }
 
     return SocialCircle.findByIdAndDelete(id)
