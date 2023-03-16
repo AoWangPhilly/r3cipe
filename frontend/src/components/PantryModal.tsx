@@ -27,6 +27,7 @@ const PantryModal = (props: PantryModalProps) => {
             <DialogContent>
                 <DialogContentText id="alert-dialog-description">
                     {/* Pantry Add Stuff */}
+
                     <Button variant="contained" color="primary">
                         Save Pantry
                     </Button>
