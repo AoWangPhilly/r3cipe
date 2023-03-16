@@ -7,12 +7,13 @@ import {
     ListItem,
     ListItemAvatar,
     ListItemText,
-    CircularProgress,
+    CircularProgress,IconButton, Tooltip
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import JoinCircleModal from "../components/JoinCircleModal";
 import RecipeThumbnail from "../components/RecipeThumbnail";
+import FileCopyIcon from '@mui/icons-material/FileCopy';
 
 interface CircleData {
     _id: string;
@@ -48,11 +49,17 @@ const CircleSelected = () => {
         posts: [{}],
     });
     const [loading, setLoading] = useState(true);
+    const [isCopied, setIsCopied] = useState(false);
     const [joinCircleModalOpen, setJoinCircleModalOpen] = useState(false);
 
     const handleJoinCircleModalOpen = () => {
         setJoinCircleModalOpen(true);
     };
+
+    const handleCopyLink = () => {
+        navigator.clipboard.writeText(window.location.href);
+        setIsCopied(true);
+      };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -98,6 +105,11 @@ const CircleSelected = () => {
         <Grid container spacing={4}>
             {/* Left Side of Page */}
             <Grid item xs={12} md={4}>
+            <Tooltip title={isCopied ? 'Link copied!' : 'Copy link to clipboard'}>
+      <IconButton onClick={handleCopyLink} size="large">
+        Invite<FileCopyIcon />
+      </IconButton>
+    </Tooltip>
                 <Box
                     sx={{
                         padding: "20px",
@@ -116,11 +128,12 @@ const CircleSelected = () => {
                         }}
                     />
                     <Typography variant="h5" gutterBottom>
-                        Group Name: {circleData.name}
+                        {circleData.name}
                     </Typography>
-                    {/* <Typography variant="body1" gutterBottom>
-                        Description: {circleData.description}
-                    </Typography> */}
+
+                    <Typography variant="body1" gutterBottom>
+                        {circleData.description}
+                    </Typography>
                     <Typography variant="body1" gutterBottom>
                         Owner: {circleData.owner.name}
                     </Typography>
@@ -151,6 +164,7 @@ const CircleSelected = () => {
                         marginBottom: "20px",
                     }}
                 >
+                                    
                     <Typography variant="h5" gutterBottom>
                         Posts
                     </Typography>
@@ -181,7 +195,9 @@ const CircleSelected = () => {
                         )
                     }
                 </Box>
+
             </Grid>
+            
         </Grid>
         <JoinCircleModal 
             joinCircleModalOpen={joinCircleModalOpen}
