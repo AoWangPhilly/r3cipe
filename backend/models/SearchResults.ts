@@ -1,4 +1,4 @@
-import { RecipeTypeWithId } from "../types.js";
+import { RecipeTypeWithId } from "../types/types.js";
 import mongoose from "mongoose";
 
 interface ISpoontacularSearchResult {

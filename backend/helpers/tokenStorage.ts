@@ -5,15 +5,8 @@
 
 import crypto from "crypto";
 import { CookieOptions } from "express";
+import { UserInfo } from "../types/types.js";
 
-// this Object is sent to the client for AuthContext purposes
-export interface tokenUserInfo {
-    id: string;
-    name: string;
-    email: string;
-    profileUrl: string;
-    expiry: Date;
-}
 
 const TOKEN_EXPIRY = 3600; // 1 hr (in seconds)
 export const clientCookieOptions: CookieOptions = {
@@ -27,13 +20,13 @@ export const cookieOptions: CookieOptions = {
 };
 
 // TODO?: check if user is already in tokenStorage & how to handle duplicates
-let tokenStorage: { [key: string]: tokenUserInfo } = {};
+let tokenStorage: { [key: string]: UserInfo } = {};
 
 export function getTokenStorage() {
     return tokenStorage;
 }
 
-export function setToken(token: string, tokenInfo: tokenUserInfo) {
+export function setToken(token: string, tokenInfo: UserInfo) {
     tokenStorage[token] = tokenInfo;
 }
 

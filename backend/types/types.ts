@@ -1,3 +1,12 @@
+// this Object is sent to the client for AuthContext purposes
+export interface UserInfo {
+    id: string;
+    name: string;
+    email: string;
+    profileUrl: string;
+    expiry: Date;
+}
+
 export type ErrorMsg = { errors: string[] };
 
 /**
@@ -149,7 +158,7 @@ export type PostType = {
 // e.g.
 // {
 //     "message": {
-//         "_id": "5f9f1b0b0b9b9b0017a1b0b9",   
+//         "_id": "5f9f1b0b0b9b9b0017a1b0b9",
 //         "userInfo": {
 //             "name": "John Doe",
 //             "userId": "5f9f1b0b0b9b9b0017a1b0b9",

@@ -7,7 +7,7 @@ import SpoonacularSearchResult from "../models/SearchResults.js";
 import { getTokenStorage } from "../helpers/tokenStorage.js";
 import { parseRecipe } from "../helpers/recipeParser.js";
 import Inventory from "../models/Inventory.js";
-import { RecipeType, RecipeTypeWithId } from "../types.js";
+import { RecipeType, RecipeTypeWithId } from "../types/types.js";
 import UserRecipe from "../models/UserRecipe.js";
 
 const API_KEY = process.env.API_KEY;

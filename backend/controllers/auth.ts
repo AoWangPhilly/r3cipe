@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import * as argon2 from "argon2";
-import { ErrorMsg } from "../types.js";
+import { ErrorMsg, UserInfo } from "../types/types.js";
 import UserProfile, {
     createUserProfileSchema,
     loginSchema,
@@ -14,7 +14,6 @@ import {
     generateTokenExpiry,
     getTokenStorage,
     setToken,
-    tokenUserInfo,
 } from "../helpers/tokenStorage.js";
 
 /**
@@ -91,7 +90,7 @@ async function signup(req: Request, res: Response) {
 
         const token = generateToken();
 
-        const tokenInfo: tokenUserInfo = {
+        const tokenInfo: UserInfo = {
             id: savedUserProfile._id.toString(),
             name,
             email,
@@ -162,7 +161,7 @@ async function login(
     }
 
     // create user info for token
-    const tokenInfo: tokenUserInfo = {
+    const tokenInfo: UserInfo = {
         id: user.userProfile.id,
         name: user.userProfile.name,
         email: user.userProfile.email,

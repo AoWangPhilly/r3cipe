@@ -3,7 +3,7 @@ import UserRecipe from "../models/UserRecipe.js";
 import { v4 as uuidv4 } from "uuid";
 import { getTokenStorage } from "../helpers/tokenStorage.js";
 import Inventory from "../models/Inventory.js";
-import { RecipeType } from "../types.js";
+import { RecipeType } from "../types/types.js";
 
 const queryRecipes = async (req: Request, res: Response) => {
     const { query, cuisine, mealtype, pantry } = req.query;
