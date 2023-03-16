@@ -86,7 +86,7 @@ export const Library = () => {
                     {recipes.map((recipe: RecipeThumbnailType) => (
                         <Grid item xs={1} key={recipe.id}>
                             <RecipeThumbnail
-                                reicpeThumbnail={recipe}
+                                recipeThumbnail={recipe}
                             />
                         </Grid>
                     ))}

@@ -5,13 +5,13 @@ import { MessageType, RecipeThumbnailType } from "../types";
 
 
 interface RecipeThumbnailProps {
-    reicpeThumbnail: RecipeThumbnailType;
+    recipeThumbnail: RecipeThumbnailType;
     message?: MessageType;
 }
 
 export const RecipeThumbnail = (props: RecipeThumbnailProps) => {
     const navigate = useNavigate();
-    const { title, image, id } = props.reicpeThumbnail;
+    const { title, image, id } = props.recipeThumbnail;
     console.log(props);
     if(props.message) {
         const { userInfo, message, timestamp } = props.message;

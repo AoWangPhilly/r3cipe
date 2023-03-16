@@ -122,7 +122,7 @@ const CircleSelected = () => {
                                     (post: PostType) => (
                                         <Grid item xs={12} sm={6} md={4} lg={3} id={post.message._id}>
                                             <RecipeThumbnail
-                                                reicpeThumbnail={post.recipeThumbnail}
+                                                recipeThumbnail={post.recipeThumbnail}
                                                 message={post.message}
                                             />
                                         </Grid>

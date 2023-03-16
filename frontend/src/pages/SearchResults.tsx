@@ -40,7 +40,7 @@ const SearchResults: React.FC = () => {
 
         if (userSubmittedString === "true") {
             const apiResponse = await fetch(
-                `/api/search/user?query=${query}&cuisine=${cuisine}&mealtype=${mealType}&pantry=${pantryString}&usersubmitted=${userSubmittedString}`,
+                `/api/user/recipes?query=${query}&cuisine=${cuisine}&mealtype=${mealType}&pantry=${pantryString}&usersubmitted=${userSubmittedString}`,
                 {
                     method: "GET",
                     credentials: "include",
@@ -48,8 +48,7 @@ const SearchResults: React.FC = () => {
             );
             if (apiResponse.status === 200) {
                 let data = await apiResponse.json();
-                // how will the data be formatted from the api?
-                //setRecipes(data.recipes);
+                setRecipes(convertFullRecipesToThumbnails(data.recipes));
             }
         } else {
             const spoonacularAPIResponse = await fetch(
@@ -112,7 +111,7 @@ const SearchResults: React.FC = () => {
                                 key={recipe.id}
                             >
                                 <RecipeThumbnail
-                                    reicpeThumbnail={recipe}
+                                    recipeThumbnail={recipe}
                                 />
                             </Grid>
                         ))}
