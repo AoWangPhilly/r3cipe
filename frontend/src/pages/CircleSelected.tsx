@@ -15,22 +15,37 @@ import JoinCircleModal from "../components/JoinCircleModal";
 import RecipeThumbnail from "../components/RecipeThumbnail";
 
 interface CircleData {
-    ownerId: string;
-    description?: string;
-    members: string[];
-    posts: string[];
+    _id: string;
     name: string;
+    description: string;
     profileUrl: string;
+    owner: {
+        _id: string;
+        name: string;
+        profileUrl: string;
+    }
+    members: {
+        _id: string;
+        name: string;
+        profileUrl: string;
+    }[]
+    posts: {}[];
 }
 
 const CircleSelected = () => {
     const { id } = useParams<{ id: string }>();
     const [circleData, setCircleData] = useState<CircleData>({
-        ownerId: "",
-        members: [],
-        posts: [],
+        _id: "",
         name: "",
+        description: "",
         profileUrl: "",
+        owner: {
+            _id: "",
+            name: "",
+            profileUrl: "",
+        },
+        members: [],
+        posts: [{}],
     });
     const [loading, setLoading] = useState(true);
     const [joinCircleModalOpen, setJoinCircleModalOpen] = useState(false);
@@ -103,22 +118,22 @@ const CircleSelected = () => {
                     <Typography variant="h5" gutterBottom>
                         Group Name: {circleData.name}
                     </Typography>
-                    <Typography variant="body1" gutterBottom>
+                    {/* <Typography variant="body1" gutterBottom>
                         Description: {circleData.description}
-                    </Typography>
+                    </Typography> */}
                     <Typography variant="body1" gutterBottom>
-                        Owner: {circleData.ownerId}
+                        Owner: {circleData.owner.name}
                     </Typography>
                     <Typography variant="body1" gutterBottom>
                         Members:
                     </Typography>
                     <List sx={{ width: "100%" }}>
                         {circleData.members.map((member) => (
-                            <ListItem key={member}>
+                            <ListItem key={member._id}>
                                 <ListItemAvatar>
                                     <Avatar />
                                 </ListItemAvatar>
-                                <ListItemText primary={member} />
+                                <ListItemText primary={member.name} />
                             </ListItem>
                         ))}
                     </List>
@@ -141,7 +156,7 @@ const CircleSelected = () => {
                     </Typography>
                     {
                         // if there are no posts, display a message
-                        circleData.posts.length === 0 ? (
+                        !circleData.posts ? (
                             <Typography variant="h6">No posts found</Typography>
                         ) : (
                             <Grid container spacing={2}>
