@@ -12,7 +12,7 @@ import { ingredientRouter } from "./routes/Ingredient.js";
 import { inventoryRouter } from "./routes/Inventory.js";
 import searchRouter from "./routes/search.js";
 import { userRecipeRouter } from "./routes/UserRecipe.js";
-import { socialCircleRouter } from "./routes/SocialCircle.js";
+import { socialCircleRouter } from "./routes/circles.js";
 
 import { userProfileRouter } from "./routes/UserProfile.js";
 
