@@ -68,6 +68,7 @@ const getSocialCirclesByUserId = async (req: Request, res: Response) => {
  * Gets id from req.body
  */
 const joinCircleByCode = async (req: Request, res: Response) => {
+    console.log("here1");
     const { token } = req.cookies;
     const tokenStorage = getTokenStorage();
     if (!tokenStorage[token]) {
@@ -129,7 +130,7 @@ const getCircleById = async (req: Request, res: Response) => {
                         profileUrl: socialCircle.profileUrl,
                         owner: filtOwner,
                         members: filtMembers,
-                        // TODO: return posts too!
+                        posts: [], // TODO: return posts too!
                     },
                 });
             }
@@ -153,6 +154,7 @@ const getCircleById = async (req: Request, res: Response) => {
  * Gets id from req.params
  */
 const addUserToSocialCircle = async (req: Request, res: Response) => {
+    console.log("here2");
     const { token } = req.cookies;
     const tokenStorage = getTokenStorage();
     if (!tokenStorage[token]) {
