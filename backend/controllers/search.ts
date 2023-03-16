@@ -161,7 +161,7 @@ async function getRecipeById(req: Request, res: Response) {
     if (recipe) {
         return res.status(200).json({ recipe });
     } else {
-        let spoonacularUrl = buildUrl("https://api.spoonacular.com", {
+        const spoonacularUrl = buildUrl("https://api.spoonacular.com", {
             path: `recipes/${id}/information`,
             queryParams: {
                 apiKey: API_KEY,
