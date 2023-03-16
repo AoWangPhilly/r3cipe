@@ -4,11 +4,13 @@ import mongoose from "mongoose";
 import SocialCircle, { ISocialCircle } from "../models/SocialCircle.js";
 import UserProfile from "../models/UserProfile.js";
 
-const createSocialCircle = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+// TODO!: we might need to filter info sent to frontend for Security
+
+// TODO: check if exists based on id, not name
+/**
+ * Create social circle with User as the owner
+ */
+const createSocialCircle = async (req: Request, res: Response) => {
     const { token } = req.cookies;
     const tokenStorage = getTokenStorage();
     if (!tokenStorage[token]) {
@@ -41,11 +43,10 @@ const createSocialCircle = async (
     }
 };
 
-const getSocialCirclesByUserId = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+/**
+ * Return the social circles that the User is in
+ */
+const getSocialCirclesByUserId = async (req: Request, res: Response) => {
     const { token } = req.cookies;
     const tokenStorage = getTokenStorage();
     if (!tokenStorage[token]) {
@@ -54,6 +55,7 @@ const getSocialCirclesByUserId = async (
     const userId = tokenStorage[token].id;
     try {
         const socialCircles = await SocialCircle.find({
+            // select documents that contain userId in members array
             members: { $in: [userId] },
         });
         res.status(200).json({ socialCircles });
@@ -62,11 +64,12 @@ const getSocialCirclesByUserId = async (
     }
 };
 
-const joinCircleByCode = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+/**
+ * TODO: DELETE? doesn't seem to be used
+ * Add User to a circle based on the circle's mongo id
+ * Gets id from req.body
+ */
+const joinCircleByCode = async (req: Request, res: Response) => {
     const { token } = req.cookies;
     const tokenStorage = getTokenStorage();
     if (!tokenStorage[token]) {
@@ -92,11 +95,10 @@ const joinCircleByCode = async (
     }
 };
 
-const getCircleById = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+/**
+ * Return circle by mongo id
+ */
+const getCircleById = async (req: Request, res: Response) => {
     const { token } = req.cookies;
     const tokenStorage = getTokenStorage();
     if (!tokenStorage[token]) {
@@ -120,11 +122,11 @@ const getCircleById = async (
     }
 };
 
-const addUserToSocialCircle = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+/**
+ * Add User to a circle based on the circle's mongo id
+ * Gets id from req.params
+ */
+const addUserToSocialCircle = async (req: Request, res: Response) => {
     const { token } = req.cookies;
     const tokenStorage = getTokenStorage();
     if (!tokenStorage[token]) {
@@ -150,11 +152,10 @@ const addUserToSocialCircle = async (
     }
 };
 
-const deleteSocialCircle = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+/**
+ * Nuke the social circle by mongo id; need to be owner of circle
+ */
+const deleteSocialCircle = async (req: Request, res: Response) => {
     const { token } = req.cookies;
     const tokenStorage = getTokenStorage();
     if (!tokenStorage[token]) {
@@ -164,13 +165,17 @@ const deleteSocialCircle = async (
     const userId = tokenStorage[token].id;
     const { id } = req.params;
 
-    // check if user is owner of social circle
+    // check if circle exists
     const socialCircle = await SocialCircle.findById(id);
     if (!socialCircle) {
         return res.status(404).json({ message: "Social circle not found" });
     }
-    if (socialCircle.ownerId !== userId) {
-        return res.status(401).json({ message: "Not authorized" });
+
+    // check if user is owner of social circle
+    if (socialCircle.ownerId.toString() !== userId) {
+        return res
+            .status(401)
+            .json({ message: "Unauthorized to delete circle" });
     }
 
     return SocialCircle.findByIdAndDelete(id)
@@ -180,11 +185,10 @@ const deleteSocialCircle = async (
         });
 };
 
-const getMembersBySocialCircleId = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+/**
+ * Get list of members in circle
+ */
+const getMembersBySocialCircleId = async (req: Request, res: Response) => {
     const { token } = req.cookies;
     const tokenStorage = getTokenStorage();
     if (!tokenStorage[token]) {
