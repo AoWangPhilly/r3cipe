@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import JoinCircleModal from "../components/JoinCircleModal";
 import RecipeThumbnail from "../components/RecipeThumbnail";
 
 interface CircleData {
@@ -32,6 +33,11 @@ const CircleSelected = () => {
         profileUrl: "",
     });
     const [loading, setLoading] = useState(true);
+    const [joinCircleModalOpen, setJoinCircleModalOpen] = useState(false);
+
+    const handleJoinCircleModalOpen = () => {
+        setJoinCircleModalOpen(true);
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -45,8 +51,8 @@ const CircleSelected = () => {
                 if (response.ok) {
                     const { socialCircle } = await response.json();
                     setCircleData(socialCircle);
-                } else {
-                    console.log("Error occurred while fetching circle data");
+                } else if (response.status === 401) {
+                    handleJoinCircleModalOpen();
                 }
             } catch (error) {
                 console.log(error);
@@ -73,6 +79,7 @@ const CircleSelected = () => {
     }
 
     return (
+        <>
         <Grid container spacing={4}>
             {/* Left Side of Page */}
             <Grid item xs={12} md={4}>
@@ -161,6 +168,11 @@ const CircleSelected = () => {
                 </Box>
             </Grid>
         </Grid>
+        <JoinCircleModal 
+            joinCircleModalOpen={joinCircleModalOpen}
+            circleId={id!}
+        />
+        </>
     );
 };
 

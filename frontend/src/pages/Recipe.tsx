@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { CircleType, RecipeType } from "../types";
-import { Avatar, Button, Dialog, DialogTitle, FormControl, Grid, IconButton, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
+import { Avatar, Grid, IconButton, Typography } from "@mui/material";
 import { stripHtml } from "string-strip-html";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import SendIcon from '@mui/icons-material/Send';
