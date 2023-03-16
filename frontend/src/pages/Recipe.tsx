@@ -1,12 +1,17 @@
 import React, { useContext, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { RecipeType } from "../types";
-import { Avatar, Button, Grid, IconButton, Typography } from "@mui/material";
+import { CircleType, RecipeType } from "../types";
+import { Avatar, Grid, IconButton, Typography } from "@mui/material";
 import { stripHtml } from "string-strip-html";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
+import SendIcon from '@mui/icons-material/Send';
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { AuthContext } from "../context/AuthContext";
+import ShareModal from "../components/ShareModal";
+
+
+
 
 const addFavorite = (id: string) => {
     fetch(`/api/user/inventory/favorite/${id}`, {
@@ -36,6 +41,7 @@ const removeFavorite = (id: string) => {
         });
 };
 
+
 const Recipe: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const { isAuth, userId } = useContext(AuthContext);
@@ -45,6 +51,18 @@ const Recipe: React.FC = () => {
     const [isLoaded, setIsLoaded] = React.useState(false);
     const [isFavorite, setIsFavorite] = React.useState(false);
     const [isClicked, setIsClicked] = React.useState(false);
+    const [shareModalOpen, setShareModalOpen] = React.useState(false);
+    const [circles, setCircles] = React.useState<CircleType[]>([]);
+    const [selectedCircle, setSelectedCircle] = React.useState<string>("");
+
+    const handleShareModalOpen = () => {
+        setShareModalOpen(true);
+    };
+
+    const handleShareModalClose = () => {
+        setShareModalOpen(false);
+    };
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -93,6 +111,20 @@ const Recipe: React.FC = () => {
                         setError(error);
                     }
                 );
+            fetch(`/api/circles`, {
+                method: "GET",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                    },
+                    })
+                    .then((res) => res.json())
+                    .then(
+                        (result) => {
+                            console.log("circles", result);
+                            setCircles(result.socialCircles);
+                        }
+                    );
         }
     }, [isAuth]);
     useEffect(() => {
@@ -117,8 +149,6 @@ const Recipe: React.FC = () => {
                 }
             );
     }, [id]);
-    console.log("owner", owner);
-    console.log("userId", userId);
     if (error) {
         return <div>Error: {error}</div>;
     } else if (!isLoaded) {
@@ -185,6 +215,13 @@ const Recipe: React.FC = () => {
                                                 />
                                             </IconButton>
                                         )}
+                                        <IconButton
+                                            onClick={handleShareModalOpen}
+                                        >
+                                            <SendIcon
+                                                style={{ color: "blueviolet"}}
+                                            />
+                                        </IconButton>
                                     </>
                                 ) : (
                                     <></>
@@ -287,6 +324,14 @@ const Recipe: React.FC = () => {
                         </Grid>
                     </Grid>
                 )}
+                <ShareModal
+                    shareModalOpen={shareModalOpen}
+                    handleShareModalClose={handleShareModalClose}
+                    recipeId={id!}
+                    circles={circles}
+                    selectedCircle={selectedCircle}
+                    setSelectedCircle={setSelectedCircle}
+                />
             </>
         );
     }

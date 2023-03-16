@@ -145,6 +145,15 @@ export type PostType = {
     message: MessageType;
     recipeThumbnail: RecipeThumbnailType;
 };
+
+export interface CircleType {
+    _id: string;
+    name: string;
+    ownerId: string;
+    members: string[];
+    posts: PostType[];
+    profileUrl: string;
+}
 // e.g.
 // {
 //     "message": {

@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { RecipeType } from "../types.js";
+import { RecipeType } from "../types/types.js";
 
 interface IUserRecipe {
     recipeId: string; // starts with a "u"

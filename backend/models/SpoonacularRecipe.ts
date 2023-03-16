@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { RecipeType } from "../types.js";
+import { RecipeType } from "../types/types.js";
 
 // Defines the filtered Recipe from Spoonacular API that's cached in MongoDB
 interface ISpoonacularRecipe {

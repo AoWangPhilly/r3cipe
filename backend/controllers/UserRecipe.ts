@@ -3,8 +3,12 @@ import UserRecipe from "../models/UserRecipe.js";
 import { v4 as uuidv4 } from "uuid";
 import { getTokenStorage } from "../helpers/tokenStorage.js";
 import Inventory from "../models/Inventory.js";
-import { RecipeType } from "../types.js";
+import { RecipeType } from "../types/types.js";
 
+/**
+ * TODO!: needs to be fixed
+ * Returns all User submitted recipes (not just currently logged in user)
+ */
 const queryRecipes = async (req: Request, res: Response) => {
     const { query, cuisine, mealtype, pantry } = req.query;
     const { token } = req.cookies;
@@ -70,20 +74,21 @@ const createRecipe = async (req: Request, res: Response) => {
         const { recipe, isPublic } = req.body;
         const recipeId = `u${uuidv4()}`;
 
-        const { token } = req.cookies;
+        /* const { token } = req.cookies;
         const tokenStorage = getTokenStorage();
-        const userId = tokenStorage[token].id;
+        const userId = tokenStorage[token].id; */
+        const user = req.user;
 
         const userRecipe = new UserRecipe({
             recipeId: recipeId,
             recipe: recipe,
-            userId: userId,
+            userId: user.id,
             isPublic: isPublic,
         });
 
         // don't add when recipe exists with the same title
         const existingRecipe = await UserRecipe.findOne({
-            userId: userId,
+            userId: user.id,
             "recipe.title": recipe.title,
         });
         if (existingRecipe) {
@@ -93,7 +98,7 @@ const createRecipe = async (req: Request, res: Response) => {
         const savedUserRecipe = await userRecipe.save();
 
         const inventory = await Inventory.findOne({
-            userId: userId,
+            userId: user.id,
         });
 
         if (!inventory) {
@@ -112,8 +117,9 @@ const createRecipe = async (req: Request, res: Response) => {
 const editRecipe = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { recipe, isPublic } = req.body;
-    const { token } = req.cookies;
-    const tokenStorage = getTokenStorage();
+    /* const { token } = req.cookies;
+    const tokenStorage = getTokenStorage(); */
+    const user = req.user;
 
     try {
         let existingRecipe = await UserRecipe.findOne({ recipeId: id });
@@ -125,7 +131,7 @@ const editRecipe = async (req: Request, res: Response) => {
                 .status(401)
                 .json({ message: "Cannot edit spoontacular recipes" });
         }
-        if (existingRecipe.userId !== tokenStorage[token].id) {
+        if (existingRecipe.userId !== user.id) {
             return res.status(401).json({ message: "Not owner of recipe" });
         }
 
@@ -151,10 +157,12 @@ const editRecipe = async (req: Request, res: Response) => {
 
 const deleteRecipe = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { token } = req.cookies;
-    const tokenStorage = getTokenStorage();
+    /* const { token } = req.cookies;
+    const tokenStorage = getTokenStorage(); */
+
+    const user = req.user;
     try {
-        const userId = tokenStorage[token].id;
+        const userId = user.id;
         let existingRecipe = await UserRecipe.findOne({ recipeId: id });
         if (!existingRecipe) {
             return res.status(404).json({ message: "Recipe not found" });

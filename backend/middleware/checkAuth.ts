@@ -1,5 +1,5 @@
 import { NextFunction, Request, RequestHandler, Response } from "express";
-import { ErrorMsg } from "../types.js";
+import { ErrorMsg } from "../types/types.js";
 import { cookieOptions } from "../helpers/tokenStorage.js";
 import { deleteToken, getTokenStorage } from "../helpers/tokenStorage.js";
 
@@ -7,7 +7,6 @@ import { deleteToken, getTokenStorage } from "../helpers/tokenStorage.js";
  * only allow access if user logged in
  * send error response if they're not
  */
-
 export const authorize: RequestHandler = (
     req: Request,
     res: Response<ErrorMsg>,
@@ -36,5 +35,9 @@ export const authorize: RequestHandler = (
                 .json({ errors: ["Unauthorized: token expired"] });
         }
     }
+
+    // add authenticated User info to Request
+    req.user = tokenStorage[token];
+
     next();
 };

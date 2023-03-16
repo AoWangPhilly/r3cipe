@@ -3,6 +3,11 @@ import { NextFunction, Request, Response } from "express";
 import { getTokenStorage } from "../helpers/tokenStorage.js";
 import SpoonacularRecipe from "../models/SpoonacularRecipe.js";
 import UserRecipe from "../models/UserRecipe.js";
+import { buildUrl } from "build-url-ts";
+import axios from "axios";
+import { parseRecipe } from "../helpers/recipeParser.js";
+
+const API_KEY = process.env.API_KEY;
 
 // we update the whole Pantry instead of adding elements to it
 const updatePantry = async (
@@ -65,7 +70,7 @@ const addRecipeToFavorite = async (
         }
 
         const { id } = req.params;
-        console.log(id);
+        // console.log(id);
         const recipe = SpoonacularRecipe.findOne({ id });
         if (!recipe) {
             return res.status(404).json({ message: "Recipe not found" });
@@ -160,7 +165,7 @@ const getFavoriteRecipes = async (
         let allRecipes = [];
         for (let i = 0; i < inventory.favoritedRecipes.length; i++) {
             //check if id prefaced with "u"
-            console.log(inventory.favoritedRecipes[i].recipeId);
+            // console.log(inventory.favoritedRecipes[i].recipeId);
             const recipeId = inventory.favoritedRecipes[i].recipeId;
             let recipe;
             if (recipeId[0] === "u") {
@@ -171,12 +176,42 @@ const getFavoriteRecipes = async (
                 recipe = await SpoonacularRecipe.findOne({
                     recipeId: inventory.favoritedRecipes[i].recipeId,
                 });
+
+                // console.log(!recipe ? recipe : "present");
+                const idTemp = inventory.favoritedRecipes[i].recipeId;
+                if (!recipe) {
+                    const spoonacularUrl = buildUrl(
+                        "https://api.spoonacular.com",
+                        {
+                            path: `recipes/${idTemp}/information`,
+                            queryParams: {
+                                apiKey: API_KEY,
+                                includeNutrition: "false",
+                            },
+                        }
+                    );
+
+                    console.log("Recipe not in cache, making API req");
+                    const { data } = await axios.get(spoonacularUrl);
+                    // TODO: might need error catching here?
+
+                    // console.log(response.data);
+                    const { recipeId, ...parsedRecipe } = parseRecipe(data);
+                    const spoonacularRecipe = new SpoonacularRecipe({
+                        recipeId: recipeId,
+                        recipe: parsedRecipe,
+                        userId: "Spoonacular",
+                    });
+
+                    spoonacularRecipe.save();
+                    recipe = spoonacularRecipe;
+                }
             }
             allRecipes.push(recipe);
         }
 
         // Send response
-        res.status(201).json(allRecipes);
+        return res.status(201).json(allRecipes);
     } catch (error) {
         return res.status(500).json({ message: "Internal server error" });
     }
@@ -207,7 +242,6 @@ const getMyRecipes = async (
             allRecipes.push(recipe);
         }
         res.status(201).json(allRecipes);
-
     } catch (error) {
         return res.status(500).json({ message: "Internal server error" });
     }
