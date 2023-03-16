@@ -7,6 +7,7 @@ import {
     ListItem,
     ListItemAvatar,
     ListItemText,
+    CircularProgress,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -21,12 +22,6 @@ interface CircleData {
     profileUrl: string;
 }
 
-type RecipeThumbnailProps = {
-    title: string;
-    image: string;
-    id: string;
-};
-
 const CircleSelected = () => {
     const { id } = useParams<{ id: string }>();
     const [circleData, setCircleData] = useState<CircleData>({
@@ -36,6 +31,7 @@ const CircleSelected = () => {
         name: "",
         profileUrl: "",
     });
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -55,10 +51,26 @@ const CircleSelected = () => {
             } catch (error) {
                 console.log(error);
             }
+            setLoading(false);
         };
 
         fetchData();
     }, [id]);
+
+    if (loading) {
+        return (
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100vh",
+                }}
+            >
+                <CircularProgress />
+            </Box>
+        );
+    }
 
     return (
         <Grid container spacing={4}>
