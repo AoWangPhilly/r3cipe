@@ -1,16 +1,22 @@
 import { RecipeType } from "../types";
-import { Card, CardContent, CardMedia, Typography } from "@mui/material";
+import { Card, CardContent, CardMedia, Chip, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { MessageType, RecipeThumbnailType } from "../types";
+
 
 interface RecipeThumbnailProps {
-    title: string;
-    image: string;
-    id: string;
+    reicpeThumbnail: RecipeThumbnailType;
+    message?: MessageType;
 }
 
 export const RecipeThumbnail = (props: RecipeThumbnailProps) => {
     const navigate = useNavigate();
-    const { title, image, id } = props;
+    const { title, image, id } = props.reicpeThumbnail;
+    console.log(props);
+    if(props.message) {
+        const { userInfo, message, timestamp } = props.message;
+    }
+    const isUserRecipe = id.startsWith("u");
 
     return (
         <Card
@@ -29,6 +35,9 @@ export const RecipeThumbnail = (props: RecipeThumbnailProps) => {
                 <Typography gutterBottom variant="h5" component="div">
                     {title}
                 </Typography>
+                {isUserRecipe && (
+                    <Chip label="User Submitted" color="primary" />
+                )}
             </CardContent>
         </Card>
     );

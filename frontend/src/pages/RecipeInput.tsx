@@ -6,6 +6,7 @@ import { IngredientSelect } from "../components/IngredientSelect";
 import { InstructionsInput } from "../components/InstructionsInput";
 import { Button, FormControlLabel, Grid, Switch } from "@mui/material";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 interface IngredientRaw {
     id: number;
@@ -39,6 +40,7 @@ export const RecipeInput = (props: RecipeInputProps) => {
     const [ingredients, setIngredients] = useState<Ingredient[]>([]);
     const [instructions, setInstructions] = useState<string[]>([]);
     const { id } = useParams<{ id: string }>();
+    const navigate = useNavigate();
 
     const IS_OWNER = true; //TODO: check
 
@@ -55,7 +57,7 @@ export const RecipeInput = (props: RecipeInputProps) => {
                 setAllIngredients(data.ingredients);
             });
         if (props.isEdit) {
-            fetch(`/api/recipe/${id}`, {
+            fetch(`/api/search/recipe/${id}`, {
                 method: "GET",
                 credentials: "include",
                 headers: {
@@ -64,9 +66,15 @@ export const RecipeInput = (props: RecipeInputProps) => {
             })
                 .then((res) => res.json())
                 .then((data) => {
-                    setFormState(data.recipe);
-                    setIngredients(data.recipe.extendedIngredients);
-                    setInstructions(data.recipe.instructions.split("\n"));
+                    setFormState(data.recipe.recipe);
+                    setIngredients(data.recipe.recipe.extendedIngredients);
+                    let instructions = data.recipe.recipe.instructions.split(
+                        "\n"
+                    );
+                    // remove empty string at end
+                    instructions.pop();
+                    setInstructions(instructions);
+                    console.log("Instructions set after api call: ", instructions);
                     setLoading(false);
                 })
                 .catch((err) => {
@@ -119,6 +127,9 @@ export const RecipeInput = (props: RecipeInputProps) => {
         for (let i = 0; i < instructions.length; i++) {
             formState.instructions += instructions[i] + "\n";
         }
+        console.log("Instructions set before update/save call: ", instructions);
+        console.log("Instructions set before update/save call: ", formState.instructions);
+        
         if (formState.instructions === "") {
             alert("Please enter instructions");
             return;
@@ -145,14 +156,46 @@ export const RecipeInput = (props: RecipeInputProps) => {
             cuisines: formState.cuisines,
             dishTypes: formState.dishTypes,
         };
-        const postObject = {
+        const requestObject = {
             recipe: recipe,
             isPublic: isPublic,
+        };
+        if (props.isEdit) {
+            await fetch("/api/user/recipes/" + id, {
+                method: "PUT",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(requestObject),
+            })
+                .then((res) => {
+                    if (res.status === 201) {
+                        navigate(`/recipe/${id}`);
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        } else {
+            await fetch("/api/user/recipes/", {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(requestObject),
+            })
+                .then((res) => {
+                    res.json().then((data) => {
+                        console.log(data);
+                        navigate(`/recipe/${data.recipeId}`);
+                    });
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
         }
-
-        //TODO, POST THIS TO THE BACKEND IF CREATING
-        //TODO, PUT THIS TO THE BACKEND IF EDITING
-        console.log(postObject);
     };
 
     if (props.isEdit && !IS_OWNER) {
@@ -162,6 +205,7 @@ export const RecipeInput = (props: RecipeInputProps) => {
     if (loading) {
         return <h1>Loading...</h1>;
     } else if (error) {
+        console.log(error);
         return <h1>Error</h1>;
     } else {
         return (
@@ -303,6 +347,22 @@ export const RecipeInput = (props: RecipeInputProps) => {
                                     />
                                 </Grid>
                             </Grid>
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={isPublic}
+                                        onChange={handleSwitchChange}
+                                        name="isPublic"
+                                        inputProps={{
+                                            "aria-label": "controlled",
+                                        }}
+                                    />
+                                }
+                                label="Public?"
+                            />
+                            <Button variant="contained" type="submit">
+                                {props.isEdit ? "Save" : "Create Recipe"}
+                            </Button>
                         </Grid>
                         <Grid item xs={12} md={6}>
                             <IngredientSelect
@@ -317,21 +377,6 @@ export const RecipeInput = (props: RecipeInputProps) => {
                         </Grid>
                     </Grid>
                     <br />
-
-                    <FormControlLabel
-                        control={
-                            <Switch
-                                checked={isPublic}
-                                onChange={handleSwitchChange}
-                                name="isPublic"
-                                inputProps={{ "aria-label": "controlled" }}
-                            />
-                        }
-                        label="Public?"
-                    />
-                    <Button variant="contained" type="submit">
-                        {props.isEdit ? "Save" : "Create Recipe"}
-                    </Button>
                 </form>
             </div>
         );

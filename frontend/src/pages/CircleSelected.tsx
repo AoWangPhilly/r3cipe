@@ -11,6 +11,7 @@ import {
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import RecipeThumbnail from "../components/RecipeThumbnail";
+import { PostType, RecipeThumbnailType } from "../types";
 
 interface CircleData {
     name: string;
@@ -18,14 +19,10 @@ interface CircleData {
     imageUrl: string;
     owner: string;
     members: string[];
-    recipes: any[];
+    posts: PostType[];
 }
 
-type RecipeThumbnailProps = {
-    title: string;
-    image: string;
-    id: string;
-};
+
 
 const CircleSelected = () => {
     const { id } = useParams<{ id: string }>();
@@ -35,7 +32,7 @@ const CircleSelected = () => {
         imageUrl: "",
         owner: "",
         members: [],
-        recipes: [],
+        posts: [],
     });
 
     useEffect(() => {
@@ -46,10 +43,12 @@ const CircleSelected = () => {
             .then((res) => res.json())
             .then((result) => {
                 setCircleData(result);
+
             })
             .catch((error) => {
                 console.log(error);
             });
+        
     }, [id]);
 
     return (
@@ -114,17 +113,17 @@ const CircleSelected = () => {
                     </Typography>
                     {
                         // if there are no posts, display a message
-                        circleData.recipes.length === 0 ? (
+                        circleData.posts.length === 0 ? (
                             <Typography variant="h6">No posts found</Typography>
                         ) : (
                             <Grid container spacing={2}>
-                                {circleData.recipes.map(
-                                    (recipe: RecipeThumbnailProps) => (
-                                        <Grid item xs={12} sm={6} md={4} lg={3}>
+                                {
+                                circleData.posts.map(
+                                    (post: PostType) => (
+                                        <Grid item xs={12} sm={6} md={4} lg={3} id={post.message._id}>
                                             <RecipeThumbnail
-                                                title={recipe.title}
-                                                image={recipe.image}
-                                                id={recipe.id}
+                                                reicpeThumbnail={post.recipeThumbnail}
+                                                message={post.message}
                                             />
                                         </Grid>
                                     )

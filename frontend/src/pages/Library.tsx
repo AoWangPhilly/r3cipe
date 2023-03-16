@@ -1,6 +1,8 @@
 import RecipeThumbnail from "../components/RecipeThumbnail";
 import { Tabs, Tab, Grid, Box, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
+import { RecipeThumbnailType } from "../types";
+import { convertFullRecipesToThumbnails } from "../util";
 
 type LibraryTab = "favorites" | "recipes";
 
@@ -24,8 +26,7 @@ export const Library = () => {
         })
             .then((response) => response.json())
             .then((data) => {
-                console.log(data);
-                setRecipes(data);
+                setRecipes(convertFullRecipesToThumbnails(data));
                 setLoading(false);
             })
             .catch((err) => {
@@ -34,14 +35,13 @@ export const Library = () => {
     };
 
     const requestUsersRecipesFromBackend = async () => {
-        await fetch("/api/user/inventory/usersrecipes", {
+        await fetch("/api/user/inventory/myrecipes", {
             method: "GET",
             credentials: "include",
         })
             .then((response) => response.json())
             .then((data) => {
-                console.log(data);
-                setRecipes(data);
+                setRecipes(convertFullRecipesToThumbnails(data));
                 setLoading(false);
             })
             .catch((err) => {
@@ -83,12 +83,10 @@ export const Library = () => {
                         margin: 2,
                     }}
                 >
-                    {recipes.map((recipe: any) => (
-                        <Grid item xs={1} key={recipe.recipeId}>
+                    {recipes.map((recipe: RecipeThumbnailType) => (
+                        <Grid item xs={1} key={recipe.id}>
                             <RecipeThumbnail
-                                title={recipe.recipe.title}
-                                id={recipe.recipeId}
-                                image={recipe.recipe.image}
+                                reicpeThumbnail={recipe}
                             />
                         </Grid>
                     ))}

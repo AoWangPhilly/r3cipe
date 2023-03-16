@@ -108,7 +108,7 @@ const Recipe: React.FC = () => {
             .then(
                 (result) => {
                     setRecipe(result.recipe.recipe);
-                    setOwner(result.recipe.ownerId);
+                    setOwner(result.recipe.userId);
                     setIsLoaded(true);
                 },
                 (error) => {
@@ -117,7 +117,8 @@ const Recipe: React.FC = () => {
                 }
             );
     }, [id]);
-
+    console.log("owner", owner);
+    console.log("userId", userId);
     if (error) {
         return <div>Error: {error}</div>;
     } else if (!isLoaded) {
@@ -263,8 +264,8 @@ const Recipe: React.FC = () => {
                                 </Typography>
                                 <ol>
                                     {recipe.instructions
-                                        //split by ". " or ".\n"
-                                        .split(/\. |\.\n/)
+                                        //split by ". " or "\n"
+                                        .split(/\. |\n/)
                                         .filter((step) => step !== "")
                                         .map((step) => (
                                             <li key={step}>{step}</li>

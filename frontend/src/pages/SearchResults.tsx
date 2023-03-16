@@ -2,12 +2,10 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Grid, Typography } from "@mui/material";
 import { RecipeThumbnail } from "../components/RecipeThumbnail";
+import { RecipeThumbnailType } from "../types";
+import { convertFullRecipesToThumbnails, convertSearchResultsToThumbnails } from "../util";
 
-type RecipeThumbnailProps = {
-    title: string;
-    image: string;
-    recipeId: string;
-};
+
 
 const SearchResults: React.FC = () => {
     const location = useLocation();
@@ -32,7 +30,10 @@ const SearchResults: React.FC = () => {
             });
             if (apiResponse.status === 200) {
                 let data = await apiResponse.json();
-                setRecipes(data.randomRecipeList);
+                console.log(data);
+                setRecipes(
+                    convertSearchResultsToThumbnails(data.randomRecipeList)
+                );
             }
             return;
         }
@@ -60,7 +61,11 @@ const SearchResults: React.FC = () => {
             );
             if (spoonacularAPIResponse.status === 200) {
                 let data = await spoonacularAPIResponse.json();
-                setRecipes(data.spoonacularRecipeResult.recipes);
+                setRecipes(
+                    convertSearchResultsToThumbnails(
+                        data.spoonacularRecipeResult.recipes
+                    )
+                );
             } else {
                 await spoonacularAPIResponse.json().then((data) => {
                     console.log(data);
@@ -97,19 +102,17 @@ const SearchResults: React.FC = () => {
                             width: "80%",
                         }}
                     >
-                        {recipes.map((recipe: RecipeThumbnailProps) => (
+                        {recipes.map((recipe: RecipeThumbnailType) => (
                             <Grid
                                 item
                                 xs={12}
                                 sm={6}
                                 md={4}
                                 lg={3}
-                                key={recipe.recipeId}
+                                key={recipe.id}
                             >
                                 <RecipeThumbnail
-                                    title={recipe.title}
-                                    image={recipe.image}
-                                    id={recipe.recipeId}
+                                    reicpeThumbnail={recipe}
                                 />
                             </Grid>
                         ))}
