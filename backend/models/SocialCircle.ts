@@ -11,6 +11,7 @@ export interface IPost {
 
 export interface ISocialCircle {
     name: string;
+    description: string;
     ownerId: mongoose.Schema.Types.ObjectId; // corresponds to User's mongo id
     members: string[]; // list of User mongo ids; TODO: change to ObjectId[]
     posts: IPost[];
@@ -21,6 +22,7 @@ export type ISocialCircleModel = ISocialCircle & Document;
 
 const SocialCircleSchema = new mongoose.Schema<ISocialCircle>({
     name: { type: String, required: true },
+    description: { type: String, required: true, maxlength: 150 },
     ownerId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "UserProfile",

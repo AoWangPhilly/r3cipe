@@ -15,10 +15,14 @@ const createSocialCircle = async (req: Request, res: Response) => {
         return res.status(401).json({ message: "Invalid token" });
     }
 
-    try {
-        const userId = tokenStorage[token].id;
-        const { name } = req.body;
+    const userId = tokenStorage[token].id;
+    const { name } = req.body;
+    const { description } = req.body;
+    if (!name || !description) {
+        return res.status(400).json({ message: "Missing required fields" });
+    }
 
+    try {
         // check if social circle already exists
         const existingSocialCircle = await SocialCircle.findOne({
             name,
@@ -30,7 +34,8 @@ const createSocialCircle = async (req: Request, res: Response) => {
         }
 
         const socialCircle = new SocialCircle({
-            name,
+            name: name,
+            description: description,
             ownerId: userId,
             members: [userId],
         });
@@ -126,6 +131,7 @@ const getCircleById = async (req: Request, res: Response) => {
                 return res.status(200).json({
                     socialCircle: {
                         _id: socialCircle._id,
+                        description: socialCircle.description,
                         name: socialCircle.name,
                         profileUrl: socialCircle.profileUrl,
                         owner: filtOwner,
@@ -138,12 +144,6 @@ const getCircleById = async (req: Request, res: Response) => {
         return res
             .status(401)
             .json({ message: "You're not a member of this circle" });
-        /* if (!socialCircle.members.includes(userId)) {
-            return res
-                .status(401)
-                .json({ message: "You are not a member of this circle" });
-        } */
-        // res.status(200).json({ socialCircle });
     } catch (error: any) {
         res.status(400).json({ message: error.message });
     }
