@@ -12,17 +12,18 @@ const getMembersBySocialCircleId = async (req: Request, res: Response) => {
     const { token } = req.cookies;
     const tokenStorage = getTokenStorage();
     if (!tokenStorage[token]) {
-        return res.status(401).json({ message: "Invalid token" });
+        return res.status(401).json({ error: "Invalid token" });
     }
     const userId = tokenStorage[token].id;
     const { id } = req.params;
     try {
         const socialCircle = await SocialCircle.findById(id);
         if (!socialCircle) {
-            return res.status(404).json({ message: "Social circle not found" });
+            return res.status(404).json({ error: "Social circle not found" });
         }
+        // Check if user is a member of the circle
         if (!socialCircle.members.includes(userId)) {
-            return res.status(401).json({ message: "Not authorized" });
+            return res.status(401).json({ error: "Not authorized" });
         }
 
         const members = await UserProfile.find({
@@ -31,7 +32,7 @@ const getMembersBySocialCircleId = async (req: Request, res: Response) => {
 
         return res.status(200).json({ members: members });
     } catch (error: any) {
-        return res.status(400).json({ message: error.message });
+        return res.status(400).json({ error: error.message });
     }
 };
 
@@ -39,60 +40,80 @@ const getMembersBySocialCircleId = async (req: Request, res: Response) => {
  * Remove a member from a circle by memberId
  * 4 cases: Owner removes self, Owner removes member, Member removes self, Member removes other member
  */
-function removeMemberFromCircle(req: Request, res: Response) {
-    const { token } = req.cookies;
-    const tokenStorage = getTokenStorage();
-    if (!tokenStorage[token]) {
-        return res.status(401).json({ message: "Invalid token" });
+async function removeMemberFromCircle(req: Request, res: Response) {
+    const user = req.user;
+    const { id } = req.params;
+    const { memberId } = req.body;
+
+    if (!id || !memberId) {
+        return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const userId = tokenStorage[token].id;
-    const { id, memberId } = req.params;
-    SocialCircle.findById(id)
-        .then((socialCircle) => {
-            if (!socialCircle) {
-                return res
-                    .status(404)
-                    .json({ message: "Social circle not found" });
-            }
-            if (socialCircle.ownerId.toString() != userId) {
-                return res.status(401).json({ message: "Not authorized" });
-            }
-            if (socialCircle.ownerId.toString() == memberId) {
-                if (socialCircle.members.length > 1) {
-                    return res
-                        .status(400)
-                        .json({ message: "Cannot remove owner of circle" });
-                } else {
-                    SocialCircle.findByIdAndDelete(id)
-                        .then(() => {
-                            return res
-                                .status(200)
-                                .json({ message: "Social circle deleted" });
-                        })
-                        .catch((error: any) => {
-                            return res
-                                .status(400)
-                                .json({ message: error.message });
-                        });
-                }
-            } else {
-                SocialCircle.findByIdAndUpdate(id, {
+    // check if circle exists & member in circle
+    const socialCircle = await SocialCircle.findById(id);
+    if (!socialCircle) {
+        return res.status(404).json({ error: "Social circle not found" });
+    }
+    if (!socialCircle.members.includes(memberId)) {
+        return res
+            .status(404)
+            .json({ error: "Member is not in circle" });
+    }
+
+    const circleOwnerId = socialCircle.ownerId.toString();
+
+    // User is the Circle owner
+    if (circleOwnerId === user.id) {
+        /* Case 1: Owner removes self */
+        if (circleOwnerId === memberId) {
+            return res
+                .status(400)
+                .json({ error: "Owner cannot remove self from circle" });
+        } else {
+            /* Case 2: Owner removes member */
+            // if member DNE, nothing happens
+            console.log(memberId);
+            const result = await SocialCircle.findByIdAndUpdate(
+                id,
+                {
+                    $pull: { members: memberId }, // remove memberId from members[]
+                },
+                { new: true } // return document after update
+            );
+            return res
+                .status(204)
+                .json({ message: "Successfully removed member" });
+        }
+    }
+    // User is a Circle member
+    else {
+        /* Case 3: Member removes owner */
+        if (circleOwnerId === memberId) {
+            return res
+                .status(401)
+                .json({ error: "Member cannot remove owner of circle" });
+        } else if (user.id === memberId) {
+            /* Case 4: Member removes self */
+            // if member DNE, nothing happens
+            const result = await SocialCircle.findByIdAndUpdate(
+                id,
+                {
                     $pull: { members: memberId },
-                })
-                    .then(() => {
-                        return res
-                            .status(200)
-                            .json({ message: "Member removed from circle" });
-                    })
-                    .catch((error: any) => {
-                        return res.status(400).json({ message: error.message });
-                    });
-            }
-        })
-        .catch((error: any) => {
-            return res.status(400).json({ message: error.message });
-        });
+                },
+                { new: true }
+            );
+            return res
+                .status(204)
+                .json({ message: "Successfully removed self" });
+        } else {
+            /* Case 5: Member removes other member */
+            return res
+                .status(401)
+                .json({ error: "Member cannot remove other members" });
+        }
+    }
+
+    return res.json();
 }
 
 export default {

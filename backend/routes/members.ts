@@ -7,4 +7,4 @@ export const membersRouter: Router = Router({ mergeParams: true });
 
 // TODO: remove passwords from response
 membersRouter.get("/", authorize, controller.getMembersBySocialCircleId);
-membersRouter.delete("/:memberId", controller.removeMemberFromCircle);
+membersRouter.delete("/", authorize, controller.removeMemberFromCircle);

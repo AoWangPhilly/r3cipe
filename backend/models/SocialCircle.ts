@@ -12,7 +12,7 @@ export interface IPost {
 export interface ISocialCircle {
     name: string;
     ownerId: mongoose.Schema.Types.ObjectId; // corresponds to User's mongo id
-    members: string[]; // list of User mongo ids
+    members: string[]; // list of User mongo ids; TODO: change to ObjectId[]
     posts: IPost[];
     profileUrl: string;
 }
