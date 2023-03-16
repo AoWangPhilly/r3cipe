@@ -2,6 +2,7 @@ import { RecipeType, Ingredient, CUISINES, DISH_TYPES } from "../types";
 import { useState, useEffect, useContext } from "react";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { IngredientSelect } from "../components/IngredientSelect";
 import { InstructionsInput } from "../components/InstructionsInput";
 import { Button, FormControlLabel, Grid, Switch } from "@mui/material";
@@ -43,6 +44,8 @@ export const RecipeInput = (props: RecipeInputProps) => {
     const [instructions, setInstructions] = useState<string[]>([]);
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const [currentFile, setCurrentFile] = useState<File | null>(null);
+    let FileInput: HTMLInputElement | null = null;
 
     const IS_OWNER = true; //TODO: check
 
@@ -138,6 +141,13 @@ export const RecipeInput = (props: RecipeInputProps) => {
         });
     };
 
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            const file = e.target.files[0];
+            setCurrentFile(file);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         // prevent default form submission behavior
         e.preventDefault();
@@ -162,61 +172,70 @@ export const RecipeInput = (props: RecipeInputProps) => {
         }
 
         //make instructions into a string, separated by newlines
-
-        const recipe: RecipeType = {
-            title: formState.title,
-            summary: formState.summary,
-            extendedIngredients: ingredients,
-            instructions: formState.instructions,
-            image: formState.image,
-            imageType: formState.imageType,
-            preparationMinutes: formState.preparationMinutes,
-            cookingMinutes: formState.cookingMinutes,
-            sourceUrl: formState.sourceUrl,
-            servings: formState.servings,
-            cuisines: formState.cuisines,
-            dishTypes: formState.dishTypes,
-        };
-        const requestObject = {
-            recipe: recipe,
-            isPublic: isPublic,
-        };
-        if (props.isEdit) {
-            await fetch("/api/user/recipes/" + id, {
-                method: "PUT",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(requestObject),
-            })
-                .then((res) => {
-                    if (res.status === 201) {
-                        navigate(`/recipe/${id}`);
-                    }
-                })
-                .catch((err) => {
-                    console.log(err);
-                });
-        } else {
-            await fetch("/api/user/recipes/", {
-                method: "POST",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(requestObject),
-            })
-                .then((res) => {
-                    res.json().then((data) => {
-                        console.log(data);
-                        navigate(`/recipe/${data.userRecipe.recipeId}`);
-                    });
-                })
-                .catch((err) => {
-                    console.log(err);
-                });
-        }
+        const data = new FormData();
+        data.append("image", currentFile!);
+        console.log(data);
+        fetch("/api/upload", {
+            method: "POST",
+            body: data,
+        })
+            .then((response) => response.json())
+            .then(async (data) => {
+                const recipe: RecipeType = {
+                    title: formState.title,
+                    summary: formState.summary,
+                    extendedIngredients: ingredients,
+                    instructions: formState.instructions,
+                    image: data.path,
+                    imageType: formState.imageType,
+                    preparationMinutes: formState.preparationMinutes,
+                    cookingMinutes: formState.cookingMinutes,
+                    sourceUrl: formState.sourceUrl,
+                    servings: formState.servings,
+                    cuisines: formState.cuisines,
+                    dishTypes: formState.dishTypes,
+                };
+                const requestObject = {
+                    recipe: recipe,
+                    isPublic: isPublic,
+                };
+                if (props.isEdit) {
+                    await fetch("/api/user/recipes/" + id, {
+                        method: "PUT",
+                        credentials: "include",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(requestObject),
+                    })
+                        .then((res) => {
+                            if (res.status === 201) {
+                                navigate(`/recipe/${id}`);
+                            }
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                        });
+                } else {
+                    await fetch("/api/user/recipes/", {
+                        method: "POST",
+                        credentials: "include",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(requestObject),
+                    })
+                        .then((res) => {
+                            res.json().then((data) => {
+                                console.log(data);
+                                navigate(`/recipe/${data.userRecipe.recipeId}`);
+                            });
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                        });
+                }
+            });
     };
 
     if (loading) {
@@ -298,25 +317,33 @@ export const RecipeInput = (props: RecipeInputProps) => {
                                 </Grid>
                                 <Grid item xs={12}></Grid>
                                 <Grid item xs={12}>
-                                    <TextField
-                                        label="Image"
+                                    <input
+                                        type="file"
+                                        onChange={handleFileSelect}
+                                        style={{ display: "none" }}
+                                        ref={(fileInput) =>
+                                            (FileInput = fileInput)
+                                        }
+                                        accept="image/*"
                                         name="image"
-                                        value={formState.image}
-                                        onChange={handleInputChange}
-                                        required
-                                        sx={{
-                                            width: "60%",
-                                        }}
+                                        id="image"
                                     />
-                                    <TextField
-                                        label="Type"
-                                        name="imageType"
-                                        value={formState.imageType}
-                                        onChange={handleInputChange}
-                                        sx={{
-                                            width: "10%",
-                                        }}
-                                    />
+                                    <Button
+                                        startIcon={<CloudUploadIcon />}
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={() => FileInput?.click()}
+                                    >
+                                        Upload Image
+                                    </Button>
+                                    {currentFile && (
+                                        <div>
+                                            <p>
+                                                Selected file:{" "}
+                                                {currentFile.name}
+                                            </p>
+                                        </div>
+                                    )}
                                 </Grid>
                                 <Grid item xs={12}>
                                     <TextField

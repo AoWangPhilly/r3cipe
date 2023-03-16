@@ -1,4 +1,10 @@
-import { useState, useEffect, useContext, SetStateAction } from "react";
+import {
+    useState,
+    useEffect,
+    useContext,
+    SetStateAction,
+    ChangeEventHandler,
+} from "react";
 import {
     Avatar,
     Button,
@@ -17,6 +23,7 @@ type FormState = {
     email: string;
     password: string;
     confirm: string;
+    profileUrl: string;
 };
 
 export const SignUp: React.FC = () => {
@@ -25,16 +32,18 @@ export const SignUp: React.FC = () => {
     const [passwordError, setPasswordError] = useState<string>("");
     const [confirmError, setConfirmError] = useState<string>("");
     const [backendError, setBackendError] = useState<string>("");
+    const [currentFile, setCurrentFile] = useState<File | null>(null);
+    let FileInput: HTMLInputElement | null = null;
     const [formState, setFormState] = useState<FormState>({
         name: "",
         email: "",
         password: "",
         confirm: "",
+        profileUrl: "",
     });
 
     //use auth contexrt
-    const { setIsAuth, setName, setUserId } =
-        useContext(AuthContext);
+    const { setIsAuth, setName, setUserId } = useContext(AuthContext);
 
     const navigate = useNavigate();
 
@@ -93,23 +102,35 @@ export const SignUp: React.FC = () => {
         //if no errors, submit form
         if (!errors) {
             //submit
-            let response = await fetch("/api/auth/signup", {
+            const data = new FormData();
+            data.append("image", currentFile!);
+            console.log(data);
+            fetch("/api/upload", {
                 method: "POST",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    name: formState.name,
-                    email: formState.email,
-                    password: formState.password,
-                }),
-            });
-            if (response.status !== 200) {
-                await response
-                    .json()
-                    .then((data) => setBackendError(data.errors[0]));
-            }
+                body: data,
+            })
+                .then((response) => response.json())
+                .then(async (data) => {
+                    let response = await fetch("/api/auth/signup", {
+                        method: "POST",
+                        credentials: "include",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            name: formState.name,
+                            email: formState.email,
+                            password: formState.password,
+                            profileUrl: data.path,
+                        }),
+                    });
+                    if (response.status !== 200) {
+                        await response
+                            .json()
+                            .then((data) => setBackendError(data.errors[0]));
+                    }
+                });
+
             checkAuth().then((result: any) => {
                 if (result.message === "Authenticated") {
                     setIsAuth(true);
@@ -123,18 +144,48 @@ export const SignUp: React.FC = () => {
         }
     };
 
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            const file = e.target.files[0];
+            setCurrentFile(file);
+        }
+    };
+
     return (
         <Container component="main" maxWidth="xs">
             <div>
-                <Avatar>
-                    <LockOutlinedIcon />
-                </Avatar>
-                <Typography component="h1" variant="h5">
-                    Sign Up
-                </Typography>
                 <br />
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={1}>
+                        <Typography component="h1" variant="h5">
+                            Sign Up
+                        </Typography>
+                        {/* center the grid item */}
+                        <Grid item xs={12} style={{ textAlign: "center" }}>
+                            <input
+                                type="file"
+                                onChange={handleFileSelect}
+                                style={{ display: "none" }}
+                                ref={(fileInput) => (FileInput = fileInput)}
+                                accept="image/*"
+                                name="image"
+                                id="image"
+                            />
+                            <Avatar
+                                onClick={() => FileInput?.click()}
+                                sx={{ width: 100, height: 100 }}
+                            >
+                                {currentFile ? (
+                                    <img
+                                        src={URL.createObjectURL(currentFile)}
+                                        alt="avatar"
+                                        style={{ height: "100%" }}
+                                    />
+                                ) : (
+                                    <LockOutlinedIcon />
+                                )}
+                            </Avatar>
+                        </Grid>
                         <Grid item xs={12}>
                             <TextField
                                 autoComplete="name"

@@ -53,7 +53,7 @@ async function signup(req: Request, res: Response) {
         return res.status(400).json({ errors: errors });
     }
 
-    const { name, email, password } = parseResult.data;
+    const { name, email, password, profileUrl } = parseResult.data;
 
     // check if user exists
     const user = await findUserByEmail(email);
@@ -72,6 +72,7 @@ async function signup(req: Request, res: Response) {
             name,
             email,
             password: hashedPassword,
+            profileUrl,
         });
         const savedUserProfile = await userProfile.save();
 

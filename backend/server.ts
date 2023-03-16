@@ -15,6 +15,7 @@ import { userRecipeRouter } from "./routes/userRecipe.js";
 import { socialCircleRouter } from "./routes/circles.js";
 
 import { userProfileRouter } from "./routes/UserProfile.js";
+import multer from "multer";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -50,6 +51,32 @@ app.use(express.static(path.join(__dirname, "public")));
 /**
  * Express REST API endpoints
  */
+//********************************************************
+// Upload image // this can be moved
+//********************************************************
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "../data/images");
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname));
+    },
+});
+
+const upload = multer({ storage: storage });
+
+app.post("/api/upload", upload.single('image'), (req, res) => {
+    //return file name to client
+    let path = "http://localhost:3000/images/" + req.file?.filename;
+    res.json({ path: path });
+});
+
+app.get("/images/:filename", (req, res) => {
+    res.sendFile(path.join(__dirname, "../data/images", req.params.filename));
+});
+//********************************************************
+//********************************************************
+
 app.use("/api/auth", authRouter);
 app.use("/api/ingredients", ingredientRouter);
 app.use("/api/user/inventory", inventoryRouter);

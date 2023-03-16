@@ -144,7 +144,7 @@ const CircleSelected = () => {
                         {circleData.members.map((member) => (
                             <ListItem key={member._id}>
                                 <ListItemAvatar>
-                                    <Avatar />
+                                    <Avatar src={member.profileUrl} />
                                 </ListItemAvatar>
                                 <ListItemText primary={member.name} />
                             </ListItem>

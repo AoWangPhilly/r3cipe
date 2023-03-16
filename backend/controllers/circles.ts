@@ -13,6 +13,7 @@ const createSocialCircle = async (req: Request, res: Response) => {
 
     const { name } = req.body;
     const { description } = req.body;
+    //i added imageUrl to the body (just a string)
     if (!name || !description) {
         return res.status(400).json({ message: "Missing required fields" });
     }
