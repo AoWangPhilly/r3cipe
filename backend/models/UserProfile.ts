@@ -44,9 +44,8 @@ const UserProfileSchema: Schema = new Schema<IUserProfile>(
         email: { type: String, required: true, unique: true },
         password: { type: String, required: true },
         profileUrl: { type: String, default: "" },
-        createdAt: { type: Date, default: Date.now },
     },
-    { versionKey: false }
+    { versionKey: false, timestamps: true }
 );
 
 export default mongoose.model<IUserProfileModel>(

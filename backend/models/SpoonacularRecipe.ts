@@ -7,7 +7,9 @@ interface ISpoonacularRecipe {
     recipe: RecipeType | null; // TODO?: remove null?
     userId: null; // will be "Spoonacular" here
     isPublic: boolean;
-    lastModified: Date;
+    createdAt: boolean;
+    updatedAt: boolean;
+    // lastModified: Date;
 }
 
 const spoonacularRecipeSchema = new mongoose.Schema<ISpoonacularRecipe>(
@@ -16,9 +18,8 @@ const spoonacularRecipeSchema = new mongoose.Schema<ISpoonacularRecipe>(
         recipe: { type: Object, required: true },
         userId: { type: String, default: null },
         isPublic: { type: Boolean, default: true },
-        lastModified: { type: Date, default: Date.now },
     },
-    { versionKey: false }
+    { versionKey: false, timestamps: true }
 );
 export default mongoose.model<ISpoonacularRecipe>(
     "SpoonacularRecipe",
