@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+//please change this to match the Post Type in the types folder :)
 export interface IPost {
     userId: string;
     recipeId: string;

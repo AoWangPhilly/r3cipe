@@ -125,3 +125,42 @@ export const DISH_TYPES = [
 ];
 
 export type DishType = typeof DISH_TYPES[number];
+
+export interface MessageType {
+    _id: string;
+    userInfo: {
+        name: string;
+        userId: string;
+        userImage: string;
+    };
+    message: string;
+    timestamp: Date;
+}
+
+export interface RecipeThumbnailType {
+    title: string;
+    image: string;
+    id: string;
+}
+export type PostType = {
+    message: MessageType;
+    recipeThumbnail: RecipeThumbnailType;
+};
+// e.g.
+// {
+//     "message": {
+//         "_id": "5f9f1b0b0b9b9b0017a1b0b9",   
+//         "userInfo": {
+//             "name": "John Doe",
+//             "userId": "5f9f1b0b0b9b9b0017a1b0b9",
+//             "userImage": "https://i.imgur.com/4KeKvtH.jpg"
+//         },
+//         "message": "Check out this recipe!",
+//        "timestamp": "2020-10-30T23:00:00.000Z"
+//     },
+//     "recipeThumbnail": {
+//         "title": "Chicken Parmesan",
+//         "image": "https://spoonacular.com/recipeImages/715538-556x370.jpg",
+//         "id": "715538"
+//     }
+// }

@@ -2,6 +2,7 @@ import Inventory from "../models/Inventory.js";
 import { NextFunction, Request, Response } from "express";
 import { getTokenStorage } from "../helpers/tokenStorage.js";
 import SpoonacularRecipe from "../models/SpoonacularRecipe.js";
+import UserRecipe from "../models/UserRecipe.js";
 
 // we update the whole Pantry instead of adding elements to it
 const updatePantry = async (
@@ -158,11 +159,23 @@ const getFavoriteRecipes = async (
         }
         let allRecipes = [];
         for (let i = 0; i < inventory.favoritedRecipes.length; i++) {
-            const recipe = await SpoonacularRecipe.findOne({
-                recipeId: inventory.favoritedRecipes[i].recipeId,
-            });
+            //check if id prefaced with "u"
+            console.log(inventory.favoritedRecipes[i].recipeId);
+            const recipeId = inventory.favoritedRecipes[i].recipeId;
+            let recipe;
+            if (recipeId[0] === "u") {
+                recipe = await UserRecipe.findOne({
+                    recipeId: inventory.favoritedRecipes[i].recipeId,
+                });
+            } else {
+                recipe = await SpoonacularRecipe.findOne({
+                    recipeId: inventory.favoritedRecipes[i].recipeId,
+                });
+            }
+            console.log(recipe?.recipeId);
             allRecipes.push(recipe);
         }
+        console.log(allRecipes);
 
         // Send response
         res.status(201).json(allRecipes);
@@ -188,7 +201,15 @@ const getMyRecipes = async (
         if (!inventory) {
             return res.status(404).json({ message: "Inventory not found" });
         }
-        res.status(201).json(inventory.myRecipes);
+        let allRecipes = [];
+        for (let i = 0; i < inventory.myRecipes.length; i++) {
+            const recipe = await UserRecipe.findOne({
+                recipeId: inventory.myRecipes[i],
+            });
+            allRecipes.push(recipe);
+        }
+        res.status(201).json(allRecipes);
+
     } catch (error) {
         return res.status(500).json({ message: "Internal server error" });
     }
