@@ -172,10 +172,8 @@ const getFavoriteRecipes = async (
                     recipeId: inventory.favoritedRecipes[i].recipeId,
                 });
             }
-            console.log(recipe?.recipeId);
             allRecipes.push(recipe);
         }
-        console.log(allRecipes);
 
         // Send response
         res.status(201).json(allRecipes);
