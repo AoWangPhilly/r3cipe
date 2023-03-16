@@ -1,15 +1,18 @@
 import { Box, Button, TextField } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
+type FormState = {
+    id: string;
+};
 
 const CircleSidebar = () => {
-    type FormState = {
-        Code: string;
-    };
     const [formState, setFormState] = useState<FormState>({
-        Code: "",
+        id: "",
     });
+    const navigate = useNavigate();
+    const [error, setError] = useState<string>("");
 
     const handleInputChange = (
         e: React.ChangeEvent<HTMLInputElement>
@@ -20,15 +23,16 @@ const CircleSidebar = () => {
             [name]: value,
         }));
     };
+
     const handleSubmit = async (
         e: React.FormEvent<HTMLFormElement>
     ): Promise<void> => {
         e.preventDefault();
-        console.log("Join Circle for Code: " + formState.Code);
+        console.log("Join Circle for Code: " + formState.id);
 
-        // Submit signup form here
-        const response = await fetch("/api/circles", {
-            method: "POST",
+        // Submit signup form here for
+        const response = await fetch("/api/circles/", {
+            method: "PUT",
             credentials: "include",
             headers: {
                 "Content-Type": "application/json",
@@ -36,24 +40,17 @@ const CircleSidebar = () => {
             body: JSON.stringify(formState),
         });
 
-        if (response.status === 200) {
-            console.log("Success");
+        if (response.ok) {
+            // Redirect to circle page
+            const circleUrl = `/circle/${formState.id}`;
+            navigate(circleUrl);
         } else {
             await response.json().then((data) => {
                 console.log(data);
+                setError("Cannot join Circle Page");
+                return;
             });
         }
-
-        // Get code from form and submit to backend
-        //  if code is invalid, display error message
-        // axios.post("/api/circle/join", { Code: formState.Code }).then((res) => {
-        //     console.log(res);
-        //     if (res.data.success) {
-        //         //  if code is valid, redirect to selected circle page
-        //     } else {
-        //         // error message
-        //     }
-        // });
     };
 
     return (
@@ -84,14 +81,14 @@ const CircleSidebar = () => {
             </Typography>
             <form onSubmit={handleSubmit}>
                 <TextField
-                    autoComplete="Code"
-                    name="Code"
+                    autoComplete="id"
+                    name="id"
                     variant="outlined"
                     required
                     fullWidth
-                    id="Code"
-                    label="Code"
-                    value={formState.Code}
+                    id="id"
+                    label="id"
+                    value={formState.id}
                     autoFocus
                     onChange={handleInputChange}
                 />
@@ -107,6 +104,7 @@ const CircleSidebar = () => {
                 >
                     Join
                 </Button>
+                <Typography color="firebrick">{error}</Typography>
             </form>
             <Typography
                 variant="h6"
