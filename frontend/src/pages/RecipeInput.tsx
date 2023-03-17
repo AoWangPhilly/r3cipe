@@ -145,6 +145,10 @@ export const RecipeInput = (props: RecipeInputProps) => {
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             const file = e.target.files[0];
+            if (file.size > 5000000) {
+                alert("File size must be less than 5MB");
+                return;
+            }
             setCurrentFile(file);
         }
     };
