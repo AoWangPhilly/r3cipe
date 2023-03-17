@@ -143,7 +143,7 @@ const SearchResults: React.FC = () => {
                     </Grid>
                 )
             }
-            {offset % 16 === 0 && (
+            {((offset % 16 === 0) && feelingHungry !== "true" ) && (
                 <Button
                     // center
                     sx={{
