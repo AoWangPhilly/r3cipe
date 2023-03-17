@@ -135,6 +135,7 @@ export const DISH_TYPES = [
 
 export type DishType = typeof DISH_TYPES[number];
 
+/* the following types are defined for Circles */
 export interface FiltUserInfo {
     name: string;
     userId: string;
@@ -158,6 +159,7 @@ export type PostType = {
     recipeThumbnail: RecipeThumbnailType;
 };
 
+// type sent to client on GET /api/circles/:circleId/posts
 export type PostList = {
     userInfo: FiltUserInfo;
     message: string;
