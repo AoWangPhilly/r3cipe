@@ -156,20 +156,20 @@ export type PostType = {
     recipeThumbnail: RecipeThumbnailType;
 };
 // e.g.
-// {
-//     "message": {
-//         "_id": "5f9f1b0b0b9b9b0017a1b0b9",
-//         "userInfo": {
-//             "name": "John Doe",
-//             "userId": "5f9f1b0b0b9b9b0017a1b0b9",
-//             "userImage": "https://i.imgur.com/4KeKvtH.jpg"
-//         },
-//         "message": "Check out this recipe!",
-//        "timestamp": "2020-10-30T23:00:00.000Z"
-//     },
-//     "recipeThumbnail": {
-//         "title": "Chicken Parmesan",
-//         "image": "https://spoonacular.com/recipeImages/715538-556x370.jpg",
-//         "id": "715538"
-//     }
-// }
+/* {
+    "message": {
+        "_id": "5f9f1b0b0b9b9b0017a1b0b9",
+        "userInfo": {
+            "name": "John Doe",
+            "userId": "5f9f1b0b0b9b9b0017a1b0b9",
+            "userImage": "https://i.imgur.com/4KeKvtH.jpg"
+        },
+        "message": "Check out this recipe!",
+       "timestamp": "2020-10-30T23:00:00.000Z"
+    },
+    "recipeThumbnail": {
+        "title": "Chicken Parmesan",
+        "image": "https://spoonacular.com/recipeImages/715538-556x370.jpg",
+        "id": "715538"
+    }
+} */
