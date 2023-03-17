@@ -19,7 +19,7 @@ import multer from "multer";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-let publicStaticFolder = path.resolve(__dirname, "out", "public");
+let publicStaticFolder = path.resolve(__dirname, "public");
 
 dotenv.config({ path: path.join(__dirname, "../.env") });
 
