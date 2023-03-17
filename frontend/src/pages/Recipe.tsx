@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { CircleType, RecipeType } from "../types";
 import { Avatar, Grid, IconButton, Typography } from "@mui/material";
 import { stripHtml } from "string-strip-html";
+import RestaurantIcon from "@mui/icons-material/Restaurant";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import SendIcon from '@mui/icons-material/Send';
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -238,6 +239,10 @@ const Recipe: React.FC = () => {
                                     height: "100%",
                                     margin: "auto",
                                 }}
+                                children={
+                                    <RestaurantIcon />
+                                        
+                                }
                             />
                         </Grid>
                         <Grid item xs={12} md={6}>

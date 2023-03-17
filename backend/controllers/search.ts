@@ -21,7 +21,7 @@ const API_KEY = process.env.API_KEY;
 async function searchSpoonacularRecipes(req: Request, res: Response) {
     const { query, cuisine, mealtype, pantry } = req.query;
     const key = `${query}-${cuisine}`;
-    const maxResults: number = 10;
+    const maxResults: number = 16;
     const { token } = req.cookies;
     const tokenStorage = getTokenStorage();
 
@@ -207,7 +207,7 @@ async function getRandomSpoonacularRecipe(req: Request, res: Response) {
         path: "recipes/random",
         queryParams: {
             apiKey: API_KEY,
-            number: 4, // can set to anything
+            number: 8, // can set to anything
         },
     });
 
@@ -251,8 +251,43 @@ async function getRandomSpoonacularRecipe(req: Request, res: Response) {
     res.json({ randomRecipeList });
 }
 
+async function getRecentRecipes(req: Request, res: Response) {
+    // randomly get 2 numbers summing to 16
+    let spoonRecipes = Math.ceil(16 - Math.random() * 12);
+    let userRecipes = 16 - spoonRecipes;
+    console.log(spoonRecipes, userRecipes);
+    const userRecentRecipes = await UserRecipe.find({
+        isPublic: true,
+    })
+        .sort({ createdAt: -1 })
+        .limit(userRecipes);
+
+    if (userRecentRecipes.length < userRecipes) {
+        spoonRecipes += userRecipes - userRecentRecipes.length;
+    }
+    const spoonacularRecentRecipes = await SpoonacularRecipe.find({
+        userId: "Spoonacular",
+    })
+        .sort({ createdAt: -1 })
+        .limit(spoonRecipes);
+
+    if (
+        spoonacularRecentRecipes.length === 0 &&
+        userRecentRecipes.length === 0
+    ) {
+        return res.status(404).json({ error: "No recent recipes found" });
+    }
+
+    //combine the two lists fully and randomly
+    const recentRecipes = [...spoonacularRecentRecipes, ...userRecentRecipes];
+    recentRecipes.sort(() => Math.random() - 0.5);
+
+    res.status(200).json({ recentRecipes });
+}
+
 export default {
     searchSpoonacularRecipes,
     getRecipeById,
     getRandomSpoonacularRecipe,
+    getRecentRecipes,
 };

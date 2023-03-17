@@ -1,12 +1,15 @@
-import { Button, Grid, MenuItem } from "@mui/material";
-import { useContext, useState } from "react";
+import { Button, Grid, MenuItem, Typography } from "@mui/material";
+import { useContext, useEffect, useState } from "react";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import ToggleButton from "@mui/material/ToggleButton";
 import TextField from "@mui/material/TextField";
 import SearchIcon from "@mui/icons-material/Search";
-import { CUISINES, DISH_TYPES } from "../types";
+import { CUISINES, DISH_TYPES, RecipeThumbnailType } from "../types";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import RecipeThumbnail from "../components/RecipeThumbnail";
+import { convertFullRecipesToThumbnails, convertSearchResultsToThumbnails } from "../util";
+import { textAlign } from "@mui/system";
 
 export type SearchFormState = {
     query: string;
@@ -34,6 +37,7 @@ const mealTypes: Option[] = DISH_TYPES.map((mealType: string) => ({
 const Search = () => {
     const { isAuth } = useContext(AuthContext);
 
+    const [recipes, setRecipes] = useState<RecipeThumbnailType[]>([]);
     const [searchFormState, setSearchFormState] = useState<SearchFormState>({
         query: "",
         cuisine: "",
@@ -43,21 +47,24 @@ const Search = () => {
     });
     const navigate = useNavigate();
 
-    /* useEffect(() => {
-        console.log("test authorize middleware");
-        let temp = async () => {
-            console.log("sending");
-            let resp = await fetch("/api/auth/dummy", {
-                method: "GET",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-            console.log(resp.status);
-        };
-        temp();
-    }, []); */
+    useEffect(() => {
+        const response = fetch("/api/search/spoonacular/recent", {
+            method: "GET",
+            credentials: "include",
+        });
+        response.then((res) => {
+            if (res.status === 200) {
+                res.json().then((data) => {
+                    console.log(data);
+                    setRecipes(
+                        convertFullRecipesToThumbnails(
+                            data.recentRecipes
+                        )
+                    );
+                });
+            }
+        });
+    }, []);
 
     const handleFeelingHungryClick = () => {
         const queryParams = new URLSearchParams();
@@ -140,144 +147,186 @@ const Search = () => {
     };
 
     return (
-        <form>
-            <Grid
-                container
-                spacing={2}
-                justifyContent="center"
-                alignItems="center"
-                sx={{ margin: "auto", width: "70%" }}
-            >
-                <Grid item xs={12} justifyContent="center" alignItems="center">
-                    <h1>Search</h1>
-                </Grid>
-                <Grid item xs={12} alignItems="center">
-                    <TextField
-                        sx={{
-                            margin: "auto",
-                            width: "97.5%",
-                        }}
-                        id="outlined-basic"
-                        label="Search for recipe"
-                        variant="outlined"
-                        value={searchFormState.query}
-                        onChange={handleInputChange}
-                        InputProps={{
-                            endAdornment: (
-                                <SearchIcon
-                                    color="action"
-                                    type="submit"
-                                    onClick={handleSubmit}
-                                    style={{ cursor: "pointer" }}
-                                />
-                            ),
-                            onKeyDown: (
-                                event: React.KeyboardEvent<HTMLInputElement>
-                            ) => {
-                                if (event.key === "Enter") {
-                                    handleSubmit(event);
-                                }
-                            },
-                        }}
-                    />
-                </Grid>
-
-                <Grid item xs={12} container spacing={0.5}>
-                    <Grid item xs={3}>
-                        <Select
-                            value={searchFormState.cuisine}
-                            onChange={handleCuisineSelectChange}
-                            displayEmpty
-                            sx={{ margin: "auto", width: "50%" }}
-                        >
-                            <MenuItem value="">Cuisine</MenuItem>
-
-                            {cuisines.map((option) => (
-                                <MenuItem
-                                    key={option.value}
-                                    value={option.value}
-                                >
-                                    {option.label}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </Grid>
-                    <Grid item xs={3}>
-                        <Select
-                            value={searchFormState.mealtype}
-                            displayEmpty
-                            onChange={handleMealTypeSelectChange}
-                            sx={{ margin: "auto", width: "50%" }}
-                        >
-                            <MenuItem value="">Meal Type</MenuItem>
-                            {mealTypes.map((option) => (
-                                <MenuItem
-                                    key={option.value}
-                                    value={option.value}
-                                >
-                                    {option.label}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </Grid>
-                    {isAuth && (
-                        <Grid item xs={3}>
-                            <ToggleButton
-                                color="primary"
-                                value="check"
-                                selected={searchFormState.usersubmitted}
-                                onChange={handleUserSubmittedToggleChange}
-                                sx={{ margin: "auto", width: "50%" }}
-                            >
-                                User Submitted
-                            </ToggleButton>
-                        </Grid>
-                    )}
-                    {isAuth && (
-                        <Grid item xs={3}>
-                            <ToggleButton
-                                color="primary"
-                                value="check"
-                                selected={searchFormState.pantry}
-                                onChange={handlePantryToggleChange}
-                                sx={{ margin: "auto", width: "50%" }}
-                            >
-                                Pantry
-                            </ToggleButton>
-                        </Grid>
-                    )}
-                </Grid>
+        <>
+            <form>
                 <Grid
                     container
                     spacing={2}
                     justifyContent="center"
                     alignItems="center"
-                    sx={{ margin: "auto", width: "90%" }}
+                    sx={{ margin: "auto", width: "70%" }}
                 >
-                    <Grid item xs={3}>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={handleFeelingHungryClick}
-                            startIcon={
-                                <span role="img" aria-label="hungry-face">
-                                    🍽️
-                                </span>
-                            }
+                    <Grid
+                        item
+                        xs={12}
+                        justifyContent="center"
+                        alignItems="center"
+                    >
+                        <Typography variant={"h4"}>Search</Typography>
+                    </Grid>
+                    <Grid item xs={12} alignItems="center">
+                        <TextField
                             sx={{
-                                borderRadius: "10px",
-                                padding: "8px 16px",
                                 margin: "auto",
-                                color: "#fff",
-                                textTransform: "capitalize",
+                                width: "97.5%",
                             }}
-                        >
-                            I am feeling hungry
-                        </Button>
+                            id="outlined-basic"
+                            label="Search for recipe"
+                            variant="outlined"
+                            value={searchFormState.query}
+                            onChange={handleInputChange}
+                            InputProps={{
+                                endAdornment: (
+                                    <SearchIcon
+                                        color="action"
+                                        type="submit"
+                                        onClick={handleSubmit}
+                                        style={{ cursor: "pointer" }}
+                                    />
+                                ),
+                                onKeyDown: (
+                                    event: React.KeyboardEvent<HTMLInputElement>
+                                ) => {
+                                    if (event.key === "Enter") {
+                                        handleSubmit(event);
+                                    }
+                                },
+                            }}
+                        />
+                    </Grid>
+
+                    <Grid item xs={12} container spacing={0.5}>
+                        <Grid item xs={3}>
+                            <Select
+                                value={searchFormState.cuisine}
+                                onChange={handleCuisineSelectChange}
+                                displayEmpty
+                                sx={{ margin: "auto", width: "50%" }}
+                            >
+                                <MenuItem value="">Cuisine</MenuItem>
+
+                                {cuisines.map((option) => (
+                                    <MenuItem
+                                        key={option.value}
+                                        value={option.value}
+                                    >
+                                        {option.label}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </Grid>
+                        <Grid item xs={3}>
+                            <Select
+                                value={searchFormState.mealtype}
+                                displayEmpty
+                                onChange={handleMealTypeSelectChange}
+                                sx={{ margin: "auto", width: "50%" }}
+                            >
+                                <MenuItem value="">Meal Type</MenuItem>
+                                {mealTypes.map((option) => (
+                                    <MenuItem
+                                        key={option.value}
+                                        value={option.value}
+                                    >
+                                        {option.label}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </Grid>
+                        {isAuth && (
+                            <Grid item xs={3}>
+                                <ToggleButton
+                                    color="primary"
+                                    value="check"
+                                    selected={searchFormState.usersubmitted}
+                                    onChange={handleUserSubmittedToggleChange}
+                                    sx={{ margin: "auto", width: "50%" }}
+                                >
+                                    User Submitted
+                                </ToggleButton>
+                            </Grid>
+                        )}
+                        {isAuth && (
+                            <Grid item xs={3}>
+                                <ToggleButton
+                                    color="primary"
+                                    value="check"
+                                    selected={searchFormState.pantry}
+                                    onChange={handlePantryToggleChange}
+                                    sx={{ margin: "auto", width: "50%" }}
+                                >
+                                    Pantry
+                                </ToggleButton>
+                            </Grid>
+                        )}
+                    </Grid>
+                    <Grid
+                        container
+                        spacing={2}
+                        justifyContent="center"
+                        alignItems="center"
+                        sx={{ margin: "auto", width: "90%" }}
+                    >
+                        <Grid item xs={3}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={handleFeelingHungryClick}
+                                startIcon={
+                                    <span role="img" aria-label="hungry-face">
+                                        🍽️
+                                    </span>
+                                }
+                                sx={{
+                                    borderRadius: "10px",
+                                    padding: "8px 16px",
+                                    margin: "auto",
+                                    color: "#fff",
+                                    textTransform: "capitalize",
+                                }}
+                            >
+                                I am feeling hungry
+                            </Button>
+                        </Grid>
                     </Grid>
                 </Grid>
-            </Grid>
-        </form>
+            </form>
+            <Typography variant="h5" sx={{ margin: "20px 0 10px 0", textAlign: "center"}}>
+                Trending Recipes
+            </Typography>
+            {
+                // if there are no recipes, display a message
+                recipes.length === 0 ? (
+                    <Typography variant="h6">
+                        No recipes found. Try a different search.
+                    </Typography>
+                ) : (
+                    <Grid
+                        container
+                        spacing={2}
+                        sx={{
+                            display: "flex",
+                            margin: "auto",
+                            justifyContent: "center",
+                            width: "80%",
+                        }}
+                    >
+                        {recipes.map((recipe: RecipeThumbnailType) => (
+                            <Grid
+                                item
+                                xs={12}
+                                sm={6}
+                                md={4}
+                                lg={3}
+                                key={recipe.id}
+                            >
+                                <RecipeThumbnail recipeThumbnail={recipe} />
+                            </Grid>
+                        ))}
+                    </Grid>
+                )
+            }
+        </>
     );
 };
 

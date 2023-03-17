@@ -7,5 +7,6 @@ const router: Router = Router();
 router.get("/recipe/:id", controller.getRecipeById);
 router.get("/spoonacular", controller.searchSpoonacularRecipes);
 router.get("/spoonacular/random", controller.getRandomSpoonacularRecipe);
+router.get("/spoonacular/recent", controller.getRecentRecipes);
 
 export default router;
