@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { Grid, Typography } from "@mui/material";
+import { Button, Grid, Typography } from "@mui/material";
 import { RecipeThumbnail } from "../components/RecipeThumbnail";
 import { RecipeThumbnailType } from "../types";
-import { convertFullRecipesToThumbnails, convertSearchResultsToThumbnails } from "../util";
-
-
+import {
+    convertFullRecipesToThumbnails,
+    convertSearchResultsToThumbnails,
+} from "../util";
 
 const SearchResults: React.FC = () => {
     const location = useLocation();
@@ -21,6 +22,7 @@ const SearchResults: React.FC = () => {
 
     const [recipes, setRecipes] = useState<any>([]); // TODO?: could use RecipeType
     const [loading, setLoading] = useState(true);
+    const [offset, setOffset] = useState(0);
 
     const searchForRecipes = async () => {
         if (feelingHungry === "true") {
@@ -65,6 +67,7 @@ const SearchResults: React.FC = () => {
                         data.spoonacularRecipeResult.recipes
                     )
                 );
+                setOffset(data.spoonacularRecipeResult.recipes.length);
             } else {
                 await spoonacularAPIResponse.json().then((data) => {
                     console.log(data);
@@ -79,6 +82,30 @@ const SearchResults: React.FC = () => {
             setLoading(false);
         });
     }, [location]);
+
+    const handleGetMoreRecipes = async () => {
+        const spoonacularAPIResponse = await fetch(
+            `/api/search/spoonacular?query=${query}&cuisine=${cuisine}&mealtype=${mealType}&pantry=${pantryString}&usersubmitted=${userSubmittedString}&offset=${recipes.length}`,
+            {
+                method: "GET",
+                credentials: "include",
+            }
+        );
+        if (spoonacularAPIResponse.status === 200) {
+            let data = await spoonacularAPIResponse.json();
+            setRecipes([
+                ...recipes,
+                ...convertSearchResultsToThumbnails(
+                    data.spoonacularRecipeResult.recipes
+                ),
+            ]);
+            setOffset(offset + data.spoonacularRecipeResult.recipes.length);
+        } else {
+            await spoonacularAPIResponse.json().then((data) => {
+                console.log(data);
+            });
+        }
+    };
 
     if (loading) return <> </>;
     return (
@@ -110,14 +137,30 @@ const SearchResults: React.FC = () => {
                                 lg={3}
                                 key={recipe.id}
                             >
-                                <RecipeThumbnail
-                                    recipeThumbnail={recipe}
-                                />
+                                <RecipeThumbnail recipeThumbnail={recipe} />
                             </Grid>
                         ))}
                     </Grid>
                 )
             }
+            {offset % 16 === 0 && (
+                <Button
+                    // center
+                    sx={{
+                        display: "flex",
+                        margin: "auto",
+                        justifyContent: "center",
+                        width: "40%",
+                        height: "50px",
+                        marginBottom: "100px",
+                        marginTop: "50px",
+                    }}
+                    variant="contained"
+                    onClick={handleGetMoreRecipes}
+                >
+                    Get More Recipes
+                </Button>
+            )}
         </div>
     );
 };
