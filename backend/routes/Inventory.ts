@@ -13,4 +13,4 @@ inventoryRouter.delete(
     authorize,
     controller.removeRecipeFromFavorite
 );
-inventoryRouter.get("/myrecipes", controller.getMyRecipes);
+inventoryRouter.get("/myrecipes", authorize, controller.getMyRecipes);
