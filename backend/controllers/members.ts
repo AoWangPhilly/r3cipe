@@ -1,20 +1,12 @@
 import { Request, Response } from "express";
-import { getTokenStorage } from "../helpers/tokenStorage.js";
 import SocialCircle from "../models/SocialCircle.js";
 import UserProfile from "../models/UserProfile.js";
-
-// TODO: remove dead code checking if token exists (bc authorize middleware)
 
 /**
  * Get list of members in circle
  */
 const getMembersBySocialCircleId = async (req: Request, res: Response) => {
-    const { token } = req.cookies;
-    const tokenStorage = getTokenStorage();
-    if (!tokenStorage[token]) {
-        return res.status(401).json({ error: "Invalid token" });
-    }
-    const userId = tokenStorage[token].id;
+    const user = req.user;
     const { id } = req.params;
     try {
         const socialCircle = await SocialCircle.findById(id);
@@ -22,7 +14,7 @@ const getMembersBySocialCircleId = async (req: Request, res: Response) => {
             return res.status(404).json({ error: "Social circle not found" });
         }
         // Check if user is a member of the circle
-        if (!socialCircle.members.includes(userId)) {
+        if (!socialCircle.members.includes(user.id)) {
             return res.status(401).json({ error: "Not authorized" });
         }
 
@@ -55,9 +47,7 @@ async function removeMemberFromCircle(req: Request, res: Response) {
         return res.status(404).json({ error: "Social circle not found" });
     }
     if (!socialCircle.members.includes(memberId)) {
-        return res
-            .status(404)
-            .json({ error: "Member is not in circle" });
+        return res.status(404).json({ error: "Member is not in circle" });
     }
 
     const circleOwnerId = socialCircle.ownerId.toString();
