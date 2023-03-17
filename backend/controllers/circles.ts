@@ -1,8 +1,56 @@
-import { getTokenStorage } from "../helpers/tokenStorage.js";
 import { Request, Response } from "express";
 import SocialCircle from "../models/SocialCircle.js";
 import { UserProfileId } from "../models/UserProfile.js";
-import { filterMemberContent } from "../helpers/circles.js";
+import {
+    constructPostObjectList,
+    filterMemberContent,
+} from "../helpers/circles.js";
+
+/**
+ * Return circle by mongo id
+ */
+const getCircleById = async (req: Request, res: Response) => {
+    const user = req.user;
+    const { id } = req.params;
+    try {
+        const socialCircle = await SocialCircle.findById(id)
+            .populate<{ ownerId: UserProfileId }>("ownerId")
+            .populate<{ members: UserProfileId[] }>("members");
+
+        // console.log(socialCircle);
+        if (!socialCircle) {
+            return res.status(404).json({ message: "Social circle not found" });
+        }
+        // check if socialCircle.members contains userId
+        let memberIdList = socialCircle.members.map((member) => member._id);
+        for (let id of memberIdList) {
+            if (id.toString() === user.id) {
+                // Filter content sent to client
+                const filtOwner = filterMemberContent([
+                    socialCircle.ownerId,
+                ])[0];
+                const filtMembers = filterMemberContent(socialCircle.members);
+                const postList = constructPostObjectList(socialCircle.posts);
+                return res.status(200).json({
+                    socialCircle: {
+                        _id: socialCircle._id,
+                        description: socialCircle.description,
+                        name: socialCircle.name,
+                        profileUrl: socialCircle.profileUrl,
+                        owner: filtOwner,
+                        members: filtMembers,
+                        posts: postList,
+                    },
+                });
+            }
+        }
+        return res
+            .status(401)
+            .json({ error: "You're not a member of this circle" });
+    } catch (error: any) {
+        res.status(400).json({ error: error.message });
+    }
+};
 
 /**
  * TODO: check if exists based on id, not name
@@ -81,51 +129,6 @@ const joinCircleByCode = async (req: Request, res: Response) => {
         socialCircle.members.push(user.id);
         const savedSocialCircle = await socialCircle.save();
         res.status(200).json({ socialCircle: savedSocialCircle });
-    } catch (error: any) {
-        res.status(400).json({ error: error.message });
-    }
-};
-
-/**
- * Return circle by mongo id
- */
-const getCircleById = async (req: Request, res: Response) => {
-    const user = req.user;
-    const { id } = req.params;
-    try {
-        const socialCircle = await SocialCircle.findById(id)
-            .populate<{ ownerId: UserProfileId }>("ownerId")
-            .populate<{ members: UserProfileId[] }>("members");
-
-        // console.log(socialCircle);
-        if (!socialCircle) {
-            return res.status(404).json({ message: "Social circle not found" });
-        }
-        // check if socialCircle.members contains userId
-        let memberIdList = socialCircle.members.map((member) => member._id);
-        for (let id of memberIdList) {
-            if (id.toString() === user.id) {
-                // Filter content sent to client
-                const filtOwner = filterMemberContent([
-                    socialCircle.ownerId,
-                ])[0];
-                const filtMembers = filterMemberContent(socialCircle.members);
-                return res.status(200).json({
-                    socialCircle: {
-                        _id: socialCircle._id,
-                        description: socialCircle.description,
-                        name: socialCircle.name,
-                        profileUrl: socialCircle.profileUrl,
-                        owner: filtOwner,
-                        members: filtMembers,
-                        posts: [], // TODO: return posts too!
-                    },
-                });
-            }
-        }
-        return res
-            .status(401)
-            .json({ error: "You're not a member of this circle" });
     } catch (error: any) {
         res.status(400).json({ error: error.message });
     }

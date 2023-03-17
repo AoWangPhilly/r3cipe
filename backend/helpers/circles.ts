@@ -1,4 +1,10 @@
-import { MessageType, RecipeThumbnailType, UserInfo } from "../types/types.js";
+import {
+    MessageType,
+    PostList,
+    PostType,
+    RecipeThumbnailType,
+    UserInfo,
+} from "../types/types.js";
 import { UserProfileId } from "../models/UserProfile.js";
 
 /**
@@ -26,7 +32,7 @@ export function constructPostObject({
     title: string;
     image: string;
     user: UserInfo;
-}) {
+}): PostType {
     const messageBlock: MessageType = {
         // _id: socialCircle.id,
         userInfo: {
@@ -48,4 +54,15 @@ export function constructPostObject({
         message: messageBlock,
         recipeThumbnail: recipeThumbnailBlock,
     };
+}
+
+export function constructPostObjectList(posts: PostType[]): PostList[] {
+    return posts.map((post) => {
+        return {
+            userInfo: post.message.userInfo,
+            message: post.message.message,
+            recipeThumbnail: post.recipeThumbnail,
+            timestamp: post.message.timestamp,
+        };
+    });
 }
