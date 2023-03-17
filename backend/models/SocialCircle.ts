@@ -1,14 +1,6 @@
 import mongoose from "mongoose";
-import { PostType, MessageType, RecipeThumbnailType } from "../types/types.js";
-
-//please change this to match the Post Type in the types folder :)
 // this is how Users share Recipes within social circles
-export interface IPost {
-    userId: string;
-    recipeId: string;
-    timestamp: Date;
-    comment: string; // TODO?: might need to set char limit here
-}
+import { PostType } from "../types/types.js";
 
 export interface ISocialCircle {
     name: string;

@@ -135,13 +135,15 @@ export const DISH_TYPES = [
 
 export type DishType = typeof DISH_TYPES[number];
 
+export interface FiltUserInfo {
+    name: string;
+    userId: string;
+    userImage: string;
+}
+
 export interface MessageType {
-    _id: string;
-    userInfo: {
-        name: string;
-        userId: string;
-        userImage: string;
-    };
+    // _id: string; // TODO: this is unncecessary
+    userInfo: FiltUserInfo;
     message: string;
     timestamp: Date;
 }
@@ -155,6 +157,13 @@ export type PostType = {
     message: MessageType;
     recipeThumbnail: RecipeThumbnailType;
 };
+
+export type PostList = {
+    userInfo: FiltUserInfo;
+    message: string;
+    recipeThumbnail: RecipeThumbnailType;
+    timestamp: Date;
+}
 // e.g.
 /* {
     "message": {
