@@ -1,11 +1,7 @@
 import { Request, Response } from "express";
 import SocialCircle from "../models/SocialCircle.js";
-import {
-    MessageType,
-    PostList,
-    PostType,
-    RecipeThumbnailType,
-} from "../types/types.js";
+import { PostList, PostType } from "../types/types.js";
+import { constructPostObject, constructPostObjectList } from "../helpers/circles.js";
 
 /**
  * Add a User-created Post to circle by id
@@ -32,26 +28,13 @@ async function addPostToCircle(req: Request, res: Response) {
             });
         }
 
-        const messageBlock: MessageType = {
-            // _id: socialCircle.id,
-            userInfo: {
-                name: user.name,
-                userId: user.id,
-                userImage: user.profileUrl,
-            },
-            message: message,
-            timestamp: new Date(),
-        };
-
-        const recipeThumbnailBlock: RecipeThumbnailType = {
-            title: title,
-            image: image,
-            id: recipeId,
-        };
-        const fullPost: PostType = {
-            message: messageBlock,
-            recipeThumbnail: recipeThumbnailBlock,
-        };
+        const fullPost: PostType = constructPostObject({
+            message,
+            recipeId,
+            title,
+            image,
+            user,
+        });
 
         const circlePost = await SocialCircle.findByIdAndUpdate(
             id,
@@ -91,16 +74,7 @@ async function getPostsByCircleId(req: Request, res: Response) {
             });
         }
 
-        let postObjs: PostList[] = [];
-        for (let post of socialCircle.posts) {
-            const postObj: PostList = {
-                userInfo: post.message.userInfo,
-                message: post.message.message,
-                recipeThumbnail: post.recipeThumbnail,
-                timestamp: post.message.timestamp,
-            };
-            postObjs.push(postObj);
-        }
+        let postObjs: PostList[] = constructPostObjectList(socialCircle.posts);
         res.json({ posts: postObjs });
     } catch (error: any) {
         return res.status(400).json({ error: error.message });

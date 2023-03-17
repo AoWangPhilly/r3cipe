@@ -1,6 +1,5 @@
 import Inventory from "../models/Inventory.js";
-import { NextFunction, Request, Response } from "express";
-import { getTokenStorage } from "../helpers/tokenStorage.js";
+import { Request, Response } from "express";
 import SpoonacularRecipe from "../models/SpoonacularRecipe.js";
 import UserRecipe from "../models/UserRecipe.js";
 import { buildUrl } from "build-url-ts";
@@ -10,20 +9,12 @@ import { parseRecipe } from "../helpers/recipeParser.js";
 const API_KEY = process.env.API_KEY;
 
 // we update the whole Pantry instead of adding elements to it
-const updatePantry = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+const updatePantry = async (req: Request, res: Response) => {
+    const user = req.user;
     try {
-        const { token } = req.cookies;
-        const tokenStorage = getTokenStorage();
-        if (!tokenStorage[token]) {
-            return res.status(401).json({ message: "Invalid token" });
-        }
         const { pantry } = req.body;
         const inventory = await Inventory.findOne({
-            userId: tokenStorage[token].id,
+            userId: user.id,
         });
         if (!inventory) {
             return res.status(404).json({ message: "Inventory not found" });
@@ -37,15 +28,11 @@ const updatePantry = async (
     }
 };
 
-const getPantry = async (req: Request, res: Response, next: NextFunction) => {
+const getPantry = async (req: Request, res: Response) => {
+    const user = req.user;
     try {
-        const { token } = req.cookies;
-        const tokenStorage = getTokenStorage();
-        if (!tokenStorage[token]) {
-            return res.status(401).json({ message: "Invalid token" });
-        }
         const inventory = await Inventory.findOne({
-            userId: tokenStorage[token].id,
+            userId: user.id,
         });
         if (!inventory) {
             return res.status(404).json({ message: "Inventory not found" });
@@ -57,18 +44,9 @@ const getPantry = async (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
-const addRecipeToFavorite = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+const addRecipeToFavorite = async (req: Request, res: Response) => {
+    const user = req.user;
     try {
-        const { token } = req.cookies;
-        const tokenStorage = getTokenStorage();
-        if (!tokenStorage[token]) {
-            return res.status(401).json({ message: "Invalid token" });
-        }
-
         const { id } = req.params;
         // console.log(id);
         const recipe = SpoonacularRecipe.findOne({ id });
@@ -77,7 +55,7 @@ const addRecipeToFavorite = async (
         }
 
         const inventory = await Inventory.findOne({
-            userId: tokenStorage[token].id,
+            userId: user.id,
         });
 
         if (!inventory) {
@@ -110,20 +88,12 @@ const addRecipeToFavorite = async (
     }
 };
 
-const removeRecipeFromFavorite = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+const removeRecipeFromFavorite = async (req: Request, res: Response) => {
+    const user = req.user;
     try {
-        const { token } = req.cookies;
-        const tokenStorage = getTokenStorage();
-        if (!tokenStorage[token]) {
-            return res.status(401).json({ message: "Invalid token" });
-        }
         const { id } = req.params;
         const inventory = await Inventory.findOne({
-            userId: tokenStorage[token].id,
+            userId: user.id,
         });
         if (!inventory) {
             return res.status(404).json({ message: "Inventory not found" });
@@ -145,19 +115,11 @@ const removeRecipeFromFavorite = async (
     }
 };
 
-const getFavoriteRecipes = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+const getFavoriteRecipes = async (req: Request, res: Response) => {
+    const user = req.user;
     try {
-        const { token } = req.cookies;
-        const tokenStorage = getTokenStorage();
-        if (!tokenStorage[token]) {
-            return res.status(401).json({ message: "Invalid token" });
-        }
         const inventory = await Inventory.findOne({
-            userId: tokenStorage[token].id,
+            userId: user.id,
         });
         if (!inventory) {
             return res.status(404).json({ message: "Inventory not found" });
@@ -217,19 +179,11 @@ const getFavoriteRecipes = async (
     }
 };
 
-const getMyRecipes = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+const getMyRecipes = async (req: Request, res: Response) => {
+    const user = req.user;
     try {
-        const { token } = req.cookies;
-        const tokenStorage = getTokenStorage();
-        if (!tokenStorage[token]) {
-            return res.status(401).json({ message: "Invalid token" });
-        }
         const inventory = await Inventory.findOne({
-            userId: tokenStorage[token].id,
+            userId: user.id,
         });
         if (!inventory) {
             return res.status(404).json({ message: "Inventory not found" });
