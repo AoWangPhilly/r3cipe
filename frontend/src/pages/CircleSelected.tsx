@@ -144,6 +144,7 @@ const CircleSelected = () => {
                                 height: "150px",
                                 marginBottom: "10px",
                                 border: "1px solid black",
+                                background: GRADIENT,
                             }}
                         >
                             <GroupsIcon
