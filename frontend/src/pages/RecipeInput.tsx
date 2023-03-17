@@ -43,10 +43,10 @@ export const RecipeInput = (props: RecipeInputProps) => {
     const [ingredients, setIngredients] = useState<Ingredient[]>([]);
     const [instructions, setInstructions] = useState<string[]>([]);
     const { id } = useParams<{ id: string }>();
-    const navigate = useNavigate();
+    const [imageUrl, setImageUrl] = useState<string>("");
     const [currentFile, setCurrentFile] = useState<File | null>(null);
     let FileInput: HTMLInputElement | null = null;
-
+    const navigate = useNavigate();
     const IS_OWNER = true; //TODO: check
 
     useEffect(() => {
@@ -80,6 +80,7 @@ export const RecipeInput = (props: RecipeInputProps) => {
                     setInstructions(instructions);
                     setIsPublic(data.recipe.isPublic);
                     setOwner(data.recipe.userId);
+                    setImageUrl(data.recipe.recipe.image);
                     console.log(
                         "Instructions set after api call: ",
                         instructions
@@ -171,71 +172,77 @@ export const RecipeInput = (props: RecipeInputProps) => {
             return;
         }
 
-        //make instructions into a string, separated by newlines
-        const data = new FormData();
-        data.append("image", currentFile!);
-        console.log(data);
-        fetch("/api/upload", {
-            method: "POST",
-            body: data,
-        })
-            .then((response) => response.json())
-            .then(async (data) => {
-                const recipe: RecipeType = {
-                    title: formState.title,
-                    summary: formState.summary,
-                    extendedIngredients: ingredients,
-                    instructions: formState.instructions,
-                    image: data.path,
-                    imageType: formState.imageType,
-                    preparationMinutes: formState.preparationMinutes,
-                    cookingMinutes: formState.cookingMinutes,
-                    sourceUrl: formState.sourceUrl,
-                    servings: formState.servings,
-                    cuisines: formState.cuisines,
-                    dishTypes: formState.dishTypes,
-                };
-                const requestObject = {
-                    recipe: recipe,
-                    isPublic: isPublic,
-                };
-                if (props.isEdit) {
-                    await fetch("/api/user/recipes/" + id, {
-                        method: "PUT",
-                        credentials: "include",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(requestObject),
+        let uploadPromise = Promise.resolve(imageUrl);
+        if (currentFile) {
+            const formData = new FormData();
+            formData.append("image", currentFile);
+            uploadPromise = fetch("/api/upload", {
+                method: "POST",
+                credentials: "include",
+                body: formData,
+            })
+                .then((res) => res.json())
+                .then((data) => data.path);
+        } else if (imageUrl === "") {
+            alert("Please upload an image");
+            return;
+        }
+        uploadPromise.then(async (path) => {
+            const recipe: RecipeType = {
+                title: formState.title,
+                summary: formState.summary,
+                extendedIngredients: ingredients,
+                instructions: formState.instructions,
+                image: path ? path : imageUrl,
+                imageType: formState.imageType,
+                preparationMinutes: formState.preparationMinutes,
+                cookingMinutes: formState.cookingMinutes,
+                sourceUrl: formState.sourceUrl,
+                servings: formState.servings,
+                cuisines: formState.cuisines,
+                dishTypes: formState.dishTypes,
+            };
+            const requestObject = {
+                recipe: recipe,
+                isPublic: isPublic,
+            };
+            if (props.isEdit) {
+                await fetch("/api/user/recipes/" + id, {
+                    method: "PUT",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(requestObject),
+                })
+                    .then((res) => {
+                        if (res.status === 201) {
+                            navigate(`/recipe/${id}`);
+                        }
                     })
-                        .then((res) => {
-                            if (res.status === 201) {
-                                navigate(`/recipe/${id}`);
-                            }
-                        })
-                        .catch((err) => {
-                            console.log(err);
+                    .catch((err) => {
+                        console.log(err);
+                    });
+            } else {
+                await fetch("/api/user/recipes/", {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(requestObject),
+                })
+                    .then((res) => {
+                        res.json().then((data) => {
+                            console.log(data);
+                            navigate(`/recipe/${data.userRecipe.recipeId}`);
                         });
-                } else {
-                    await fetch("/api/user/recipes/", {
-                        method: "POST",
-                        credentials: "include",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(requestObject),
                     })
-                        .then((res) => {
-                            res.json().then((data) => {
-                                console.log(data);
-                                navigate(`/recipe/${data.userRecipe.recipeId}`);
-                            });
-                        })
-                        .catch((err) => {
-                            console.log(err);
-                        });
-                }
-            });
+                    .catch((err) => {
+                        console.log(err);
+                    });
+            }
+        });
     };
 
     if (loading) {

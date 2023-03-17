@@ -10,19 +10,38 @@ interface ShareModalProps {
     setSelectedCircle: React.Dispatch<React.SetStateAction<string>>;
     selectedCircle: string;
     recipeId: string;
+    recipeTitle: string;
+    recipeImage: string;
 }
 
 
 const ShareModal = (props: ShareModalProps) => {
-    const { shareModalOpen, handleShareModalClose, circles, selectedCircle, setSelectedCircle, recipeId } = props;
+    const { shareModalOpen, handleShareModalClose, circles, selectedCircle, setSelectedCircle, recipeId, recipeImage, recipeTitle } = props;
     const [message, setMessage] = React.useState("");
 
 
     const handleShare = () => {
         // send a post request to the backend to share the recipe to the selected circle
         // with the message
-        console.log("share", { selectedCircle, message, recipeId: recipeId });
-
+        // then close the modal
+        fetch(`/api/circles/${selectedCircle}/posts`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                recipeId,
+                message,
+                title: recipeTitle,
+                image: recipeImage,
+            }),
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                console.log(data);
+                handleShareModalClose();
+            }
+        );
     };
 
     return (

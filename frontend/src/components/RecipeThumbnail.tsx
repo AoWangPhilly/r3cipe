@@ -1,5 +1,5 @@
 import { RecipeType } from "../types";
-import { Card, CardContent, CardMedia, Chip, Typography } from "@mui/material";
+import { Avatar, Box, Card, CardContent, CardMedia, Chip, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { MessageType, RecipeThumbnailType } from "../types";
 
@@ -9,13 +9,25 @@ interface RecipeThumbnailProps {
     message?: MessageType;
 }
 
+const MessageBubble = (props: { message: MessageType}) => {
+    const { message } = props;
+    const userInfo = message.userInfo;
+
+    return (
+        <Box sx={{ display: "flex", alignItems: "center", bgcolor: "background.paper", p: 1, borderRadius: 1 }}>
+            <Avatar alt={userInfo.name} src={userInfo.userImage} sx={{ width: 24, height: 24 }} />
+            <Typography variant="body2" sx={{ ml: 1 }}>
+                {message.message}
+            </Typography>
+        </Box>
+    );
+};
+
 export const RecipeThumbnail = (props: RecipeThumbnailProps) => {
     const navigate = useNavigate();
     const { title, image, id } = props.recipeThumbnail;
     console.log(props);
-    if(props.message) {
-        const { userInfo, message, timestamp } = props.message;
-    }
+    
     const isUserRecipe = id.startsWith("u");
 
     return (
@@ -37,6 +49,9 @@ export const RecipeThumbnail = (props: RecipeThumbnailProps) => {
                 </Typography>
                 {isUserRecipe && (
                     <Chip label="User Submitted" color="primary" />
+                )}
+                {props.message && (
+                    <MessageBubble message={props.message} />
                 )}
             </CardContent>
         </Card>

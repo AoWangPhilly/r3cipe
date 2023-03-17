@@ -65,14 +65,25 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-app.post("/api/upload", upload.single('image'), (req, res) => {
+app.post("/api/upload", upload.single("image"), (req, res) => {
     //return file name to client
     let path = "http://localhost:3000/images/" + req.file?.filename;
     res.json({ path: path });
 });
 
 app.get("/images/:filename", (req, res) => {
-    res.sendFile(path.join(__dirname, "../data/images", req.params.filename));
+    //try to get file at ../data/images/filename
+    //if it exists, send it to client
+    //if it doesn't exist, send 404
+    // res.sendFile(path.join(__dirname, "../data/images", req.params.filename));
+    res.sendFile(
+        path.join(__dirname, "../data/images", req.params.filename),
+        (err) => {
+            if (err) {
+                res.sendStatus(404);
+            }
+        }
+    );
 });
 //********************************************************
 //********************************************************

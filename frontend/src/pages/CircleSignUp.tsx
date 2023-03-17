@@ -55,15 +55,21 @@ const CircleSignUp = () => {
         setIsLoading(true);
 
         try {
-            const data = new FormData();
-            data.append("image", currentFile!);
-            console.log(data);
-            fetch("/api/upload", {
-                method: "POST",
-                body: data,
-            })
-                .then((response) => response.json())
-                .then(async (data) => {
+            let uploadPromise = Promise.resolve("");
+            if (currentFile) {
+                const data = new FormData();
+                data.append("image", currentFile);
+                uploadPromise = fetch("/api/upload", {
+                    method: "POST",
+                    credentials: "include",
+                    body: data,
+                })
+                    .then((response) => response.json())
+                    .then((data) => data.path);
+            }
+            uploadPromise
+                .then(async (path) => {
+                    console.log(path);
                     const response = await fetch("/api/circles", {
                         method: "POST",
                         credentials: "include",
@@ -73,7 +79,7 @@ const CircleSignUp = () => {
                         body: JSON.stringify({
                             name: formState.name,
                             description: formState.description,
-                            imageUrl: data.path,
+                            imageUrl: path,
                         }),
                     });
                     setIsLoading(false);

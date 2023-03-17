@@ -7,13 +7,15 @@ import {
     ListItem,
     ListItemAvatar,
     ListItemText,
-    CircularProgress,IconButton, Tooltip
+    CircularProgress,
+    IconButton,
+    Tooltip,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import JoinCircleModal from "../components/JoinCircleModal";
 import RecipeThumbnail from "../components/RecipeThumbnail";
-import FileCopyIcon from '@mui/icons-material/FileCopy';
+import FileCopyIcon from "@mui/icons-material/FileCopy";
 
 interface CircleData {
     _id: string;
@@ -24,12 +26,12 @@ interface CircleData {
         _id: string;
         name: string;
         profileUrl: string;
-    }
+    };
     members: {
         _id: string;
         name: string;
         profileUrl: string;
-    }[]
+    }[];
     posts: {}[];
 }
 
@@ -59,7 +61,7 @@ const CircleSelected = () => {
     const handleCopyLink = () => {
         navigator.clipboard.writeText(window.location.href);
         setIsCopied(true);
-      };
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -73,6 +75,15 @@ const CircleSelected = () => {
                 if (response.ok) {
                     const { socialCircle } = await response.json();
                     setCircleData(socialCircle);
+                    const response2 = await fetch(`/api/circles/${id}/posts`, {
+                        method: "GET",
+                        credentials: "include",
+                    });
+                    const { posts } = await response2.json();
+                    setCircleData((prev) => ({
+                        ...prev,
+                        posts,
+                    }));
                 } else if (response.status === 401) {
                     handleJoinCircleModalOpen();
                 }
@@ -102,107 +113,115 @@ const CircleSelected = () => {
 
     return (
         <>
-        <Grid container spacing={4}>
-            {/* Left Side of Page */}
-            <Grid item xs={12} md={4}>
-            <Tooltip title={isCopied ? 'Link copied!' : 'Copy link to clipboard'}>
-      <IconButton onClick={handleCopyLink} size="large">
-        Invite<FileCopyIcon />
-      </IconButton>
-    </Tooltip>
-                <Box
-                    sx={{
-                        padding: "20px",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        marginBottom: "20px",
-                    }}
-                >
-                    <Avatar
-                        src={circleData.profileUrl}
+            <Grid container spacing={4}>
+                {/* Left Side of Page */}
+                <Grid item xs={12} md={4}>
+                    <Tooltip
+                        title={
+                            isCopied ? "Link copied!" : "Copy link to clipboard"
+                        }
+                    >
+                        <IconButton onClick={handleCopyLink} size="large">
+                            Invite
+                            <FileCopyIcon />
+                        </IconButton>
+                    </Tooltip>
+                    <Box
                         sx={{
-                            width: "150px",
-                            height: "150px",
-                            marginBottom: "10px",
+                            padding: "20px",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            marginBottom: "20px",
                         }}
-                    />
-                    <Typography variant="h5" gutterBottom>
-                        {circleData.name}
-                    </Typography>
+                    >
+                        <Avatar
+                            src={circleData.profileUrl}
+                            sx={{
+                                width: "150px",
+                                height: "150px",
+                                marginBottom: "10px",
+                            }}
+                        />
+                        <Typography variant="h5" gutterBottom>
+                            {circleData.name}
+                        </Typography>
 
-                    <Typography variant="body1" gutterBottom>
-                        {circleData.description}
-                    </Typography>
-                    <Typography variant="body1" gutterBottom>
-                        Owner: {circleData.owner.name}
-                    </Typography>
-                    <Typography variant="body1" gutterBottom>
-                        Members:
-                    </Typography>
-                    <List sx={{ width: "100%" }}>
-                        {circleData.members.map((member) => (
-                            <ListItem key={member._id}>
-                                <ListItemAvatar>
-                                    <Avatar src={member.profileUrl} />
-                                </ListItemAvatar>
-                                <ListItemText primary={member.name} />
-                            </ListItem>
-                        ))}
-                    </List>
-                </Box>
+                        <Typography variant="body1" gutterBottom>
+                            {circleData.description}
+                        </Typography>
+                        <Typography variant="body1" gutterBottom>
+                            Owner: {circleData.owner.name}
+                        </Typography>
+                        <Typography variant="body1" gutterBottom>
+                            Members:
+                        </Typography>
+                        <List sx={{ width: "100%" }}>
+                            {circleData.members.map((member) => (
+                                <ListItem key={member._id}>
+                                    <ListItemAvatar>
+                                        <Avatar src={member.profileUrl} />
+                                    </ListItemAvatar>
+                                    <ListItemText primary={member.name} />
+                                </ListItem>
+                            ))}
+                        </List>
+                    </Box>
+                </Grid>
+
+                {/* Right Side of Page */}
+                <Grid item xs={12} md={8}>
+                    <Box
+                        sx={{
+                            padding: "20px",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            marginBottom: "20px",
+                        }}
+                    >
+                        <Typography variant="h5" gutterBottom>
+                            Posts
+                        </Typography>
+                        {
+                            // if there are no posts, display a message
+                            !circleData.posts ? (
+                                <Typography variant="h6">
+                                    No posts found
+                                </Typography>
+                            ) : (
+                                <Grid container spacing={2}>
+                                    {circleData.posts.map((post: any) => (
+                                        <Grid
+                                            item
+                                            xs={12}
+                                            sm={6}
+                                            md={4}
+                                            lg={3}
+                                            key={post.recipeId}
+                                        >
+                                            <RecipeThumbnail
+                                                recipeThumbnail={
+                                                    post.recipeThumbnail
+                                                }
+                                                message={{
+                                                    message: post.message,
+                                                    userInfo: post.userInfo,
+                                                    timestamp: post.timestamp,
+                                                }}
+                                            />
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                            )
+                        }
+                    </Box>
+                </Grid>
             </Grid>
-
-            {/* Right Side of Page */}
-            <Grid item xs={12} md={8}>
-                <Box
-                    sx={{
-                        padding: "20px",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        marginBottom: "20px",
-                    }}
-                >
-                                    
-                    <Typography variant="h5" gutterBottom>
-                        Posts
-                    </Typography>
-                    {
-                        // if there are no posts, display a message
-                        !circleData.posts ? (
-                            <Typography variant="h6">No posts found</Typography>
-                        ) : (
-                            <Grid container spacing={2}>
-                                {circleData.posts.map((post: any) => (
-                                    <Grid
-                                        item
-                                        xs={12}
-                                        sm={6}
-                                        md={4}
-                                        lg={3}
-                                        key={post.recipeId}
-                                    >
-                                        <RecipeThumbnail
-                                            recipeThumbnail={
-                                                post.recipeThumbnail
-                                            }
-                                            message={post.message}
-                                        />
-                                    </Grid>
-                                ))}
-                            </Grid>
-                        )
-                    }
-                </Box>
-
-            </Grid>
-            
-        </Grid>
-        <JoinCircleModal 
-            joinCircleModalOpen={joinCircleModalOpen}
-            circleId={id!}
-        />
+            <JoinCircleModal
+                joinCircleModalOpen={joinCircleModalOpen}
+                circleId={id!}
+            />
         </>
     );
 };

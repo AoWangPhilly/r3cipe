@@ -126,7 +126,6 @@ export const DISH_TYPES = [
 export type DishType = typeof DISH_TYPES[number];
 
 export interface MessageType {
-    _id: string;
     userInfo: {
         name: string;
         userId: string;

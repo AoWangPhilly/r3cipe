@@ -32,6 +32,7 @@ const createSocialCircle = async (req: Request, res: Response) => {
         const socialCircle = new SocialCircle({
             name: name,
             description: description,
+            profileUrl: req.body.imageUrl,
             ownerId: user.id,
             members: [user.id],
         });

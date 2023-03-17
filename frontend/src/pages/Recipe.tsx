@@ -331,6 +331,8 @@ const Recipe: React.FC = () => {
                     circles={circles}
                     selectedCircle={selectedCircle}
                     setSelectedCircle={setSelectedCircle}
+                    recipeImage={recipe!.image}
+                    recipeTitle={recipe!.title}
                 />
             </>
         );
