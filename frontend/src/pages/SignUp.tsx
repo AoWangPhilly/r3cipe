@@ -102,15 +102,21 @@ export const SignUp: React.FC = () => {
         //if no errors, submit form
         if (!errors) {
             //submit
-            const data = new FormData();
-            data.append("image", currentFile!);
-            console.log(data);
-            fetch("/api/upload", {
-                method: "POST",
-                body: data,
-            })
-                .then((response) => response.json())
-                .then(async (data) => {
+            let uploadPromise = Promise.resolve("");
+            if (currentFile) {
+                const data = new FormData();
+                data.append("image", currentFile!);
+                console.log(data);
+                uploadPromise = fetch("/api/upload", {
+                    method: "POST",
+                    body: data,
+                })
+                    .then((response) => response.json())
+                    .then((data) => data.path);
+            }
+
+            uploadPromise
+                .then(async (path) => {
                     let response = await fetch("/api/auth/signup", {
                         method: "POST",
                         credentials: "include",
@@ -121,7 +127,7 @@ export const SignUp: React.FC = () => {
                             name: formState.name,
                             email: formState.email,
                             password: formState.password,
-                            profileUrl: data.path,
+                            profileUrl: path ? path : "",
                         }),
                     });
                     if (response.status !== 200) {
@@ -129,18 +135,19 @@ export const SignUp: React.FC = () => {
                             .json()
                             .then((data) => setBackendError(data.errors[0]));
                     }
+                })
+                .then(() => {
+                    checkAuth().then((result: any) => {
+                        if (result.message === "Authenticated") {
+                            setIsAuth(true);
+                            setName(result.user.name);
+                            setUserId(result.user.id);
+                            navigate("/");
+                        } else {
+                            setBackendError("Invalid username or password");
+                        }
+                    });
                 });
-
-            checkAuth().then((result: any) => {
-                if (result.message === "Authenticated") {
-                    setIsAuth(true);
-                    setName(result.user.name);
-                    setUserId(result.user.id);
-                    navigate("/");
-                } else {
-                    setBackendError("Invalid username or password");
-                }
-            });
         }
     };
 
