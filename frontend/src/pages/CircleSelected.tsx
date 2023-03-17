@@ -191,7 +191,7 @@ const CircleSelected = () => {
                                 </Typography>
                             ) : (
                                 <Grid container spacing={2}>
-                                    {circleData.posts.map((post: any) => (
+                                    {circleData.posts.slice(0).reverse().map((post: any) => (
                                         <Grid
                                             item
                                             xs={12}
