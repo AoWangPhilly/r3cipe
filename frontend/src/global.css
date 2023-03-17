@@ -1,0 +1,60 @@
+@import url("https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap");
+
+/* Set global styles for the body */
+body {
+    font-family: "Roboto", sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #fff;
+}
+
+/* Set styles for the app container */
+#root {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Change Material UI primary color to green */
+:root {
+    --primary-color: #da9311;
+}
+
+.MuiButton-containedPrimary {
+    color: #fff;
+    background-color: var(--primary-color) !important;
+}
+
+.MuiButton-containedPrimary:hover {
+    background-color: #da9311 !important;
+}
+
+.MuiButton-containedPrimary:focus {
+    background-color: var(--primary-color) !important;
+}
+
+.MuiTypography-primary {
+    color: var(--primary-color) !important;
+}
+
+.MuiAppBar-colorPrimary {
+    background-color: var(--primary-color) !important;
+}
+
+.MuiIconButton-root {
+    color: var(--primary-color) !important;
+}
+
+/* Override Material UI default primary color */
+
+
+.MuiButton-text,
+.MuiChip-root,
+.MuiListItem-root.Mui-selected,
+.MuiListItem-root.Mui-selected:hover {
+    background-color: var(--primary-color) !important;
+}
+
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border-color: var(--primary-color) !important;
+}

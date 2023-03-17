@@ -17,6 +17,7 @@ import KitchenIcon from "@mui/icons-material/Kitchen";
 import { Link, redirect, useNavigate } from "react-router-dom";
 import { AuthContext, checkAuth } from "../context/AuthContext";
 import PantryModal from "./PantryModal";
+import { GRADIENT } from "../util";
 
 //use MUI navbar component
 
@@ -284,8 +285,7 @@ export default function Navbar() {
                                                 width: 50,
                                                 height: 50,
                                                 cursor: "pointer",
-                                                background:
-                                                    "linear-gradient(45deg, #2196F3 40%, #21CBF3 80%)",
+                                                background: GRADIENT,
                                             }}
                                         >
                                             {profileUrl ? (

@@ -16,6 +16,8 @@ import { useParams } from "react-router-dom";
 import JoinCircleModal from "../components/JoinCircleModal";
 import RecipeThumbnail from "../components/RecipeThumbnail";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
+import GroupsIcon from "@mui/icons-material/Groups";
+import { GRADIENT } from "../util";
 
 interface CircleData {
     _id: string;
@@ -141,8 +143,16 @@ const CircleSelected = () => {
                                 width: "150px",
                                 height: "150px",
                                 marginBottom: "10px",
+                                border: "1px solid black",
                             }}
-                        />
+                        >
+                            <GroupsIcon
+                                sx={{
+                                    width: "100px",
+                                    height: "100px",
+                                }}
+                            />
+                        </Avatar>
                         <Typography variant="h5" gutterBottom>
                             {circleData.name}
                         </Typography>
@@ -160,7 +170,14 @@ const CircleSelected = () => {
                             {circleData.members.map((member) => (
                                 <ListItem key={member._id}>
                                     <ListItemAvatar>
-                                        <Avatar src={member.profileUrl} />
+                                        <Avatar
+                                            src={member.profileUrl}
+                                            sx={{
+                                                width: "50px",
+                                                height: "50px",
+                                                background: GRADIENT,
+                                            }}
+                                        />
                                     </ListItemAvatar>
                                     <ListItemText primary={member.name} />
                                 </ListItem>
@@ -191,27 +208,31 @@ const CircleSelected = () => {
                                 </Typography>
                             ) : (
                                 <Grid container spacing={2}>
-                                    {circleData.posts.slice(0).reverse().map((post: any) => (
-                                        <Grid
-                                            item
-                                            xs={12}
-                                            sm={6}
-                                            md={4}
-                                            lg={3}
-                                            key={post.recipeId}
-                                        >
-                                            <RecipeThumbnail
-                                                recipeThumbnail={
-                                                    post.recipeThumbnail
-                                                }
-                                                message={{
-                                                    message: post.message,
-                                                    userInfo: post.userInfo,
-                                                    timestamp: post.timestamp,
-                                                }}
-                                            />
-                                        </Grid>
-                                    ))}
+                                    {circleData.posts
+                                        .slice(0)
+                                        .reverse()
+                                        .map((post: any) => (
+                                            <Grid
+                                                item
+                                                xs={12}
+                                                sm={12}
+                                                md={6}
+                                                lg={4}
+                                                key={post.recipeId}
+                                            >
+                                                <RecipeThumbnail
+                                                    recipeThumbnail={
+                                                        post.recipeThumbnail
+                                                    }
+                                                    message={{
+                                                        message: post.message,
+                                                        userInfo: post.userInfo,
+                                                        timestamp:
+                                                            post.timestamp,
+                                                    }}
+                                                />
+                                            </Grid>
+                                        ))}
                                 </Grid>
                             )
                         }

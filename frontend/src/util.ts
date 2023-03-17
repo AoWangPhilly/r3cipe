@@ -36,3 +36,5 @@ export function convertSearchResultsToThumbnails(
         };
     });
 }
+
+export const GRADIENT = "linear-gradient(45deg, #e29f0d 40%, #f9b42c 80%)";

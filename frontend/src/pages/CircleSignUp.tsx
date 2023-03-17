@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import { useNavigate } from "react-router-dom";
+import { GRADIENT } from "../util";
 
 interface FormState {
     name: string;
@@ -189,8 +190,7 @@ const CircleSignUp = () => {
                             variant="contained"
                             color="primary"
                             sx={{
-                                background:
-                                    "linear-gradient(45deg, #2196F3 40%, #21CBF3 80%)",
+                                background: GRADIENT,
                                 marginTop: "20px",
                                 marginBottom: "10px",
                             }}

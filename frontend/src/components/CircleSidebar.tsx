@@ -2,6 +2,7 @@ import { Box, Button, TextField } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { GRADIENT } from "../util";
 
 type FormState = {
     id: string;
@@ -98,8 +99,7 @@ const CircleSidebar = () => {
                     sx={{
                         width: "100%",
                         my: 2,
-                        background:
-                            "linear-gradient(45deg, #2196F3 40%, #21CBF3 80%)",
+                        background: GRADIENT,
                     }}
                 >
                     Join
@@ -123,8 +123,7 @@ const CircleSidebar = () => {
                     sx={{
                         width: "100%",
                         my: 2,
-                        background:
-                            "linear-gradient(45deg, #2196F3 40%, #21CBF3 80%)",
+                        background: GRADIENT,
                     }}
                 >
                     Create

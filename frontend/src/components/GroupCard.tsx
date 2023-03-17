@@ -8,15 +8,24 @@ import {
     Box,
 } from "@mui/material";
 import { Link } from "react-router-dom";
+import GroupsIcon from "@mui/icons-material/Groups";
+import { GRADIENT } from "../util";
 
 interface GroupCardProps {
     title: string;
     subtitle: string;
+    image: string;
     avatars: { alt: string; src: string }[];
     code: string;
 }
 
-const GroupCard: FC<GroupCardProps> = ({ title, subtitle, avatars, code }) => {
+const GroupCard: FC<GroupCardProps> = ({
+    title,
+    subtitle,
+    avatars,
+    image,
+    code,
+}) => {
     return (
         <Link to={`/circle/${code}`} style={{ textDecoration: "none" }}>
             <Card
@@ -42,34 +51,31 @@ const GroupCard: FC<GroupCardProps> = ({ title, subtitle, avatars, code }) => {
                         mb: 2,
                     }}
                 >
+                    <Avatar
+                        alt={title}
+                        src={image}
+                        sx={{
+                            width: "70px",
+                            height: "70px",
+                            border: "1px solid black",
+                            background: GRADIENT,
+                            boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.2)",
+                            "&:hover": {
+                                transform: "scale(1.1)",
+                                boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.4)",
+                            },
+                        }}
+                    >
+                        <GroupsIcon
+                            sx={{
+                                width: "40px",
+                                height: "40px",
+                            }}
+                        />
+                    </Avatar>
                     <CardHeader
                         title={title}
                         subheader={subtitle}
-                        avatar={
-                            <AvatarGroup max={5}>
-                                {avatars.map((avatar, index) => (
-                                    <Avatar
-                                        key={index}
-                                        alt={avatar.alt}
-                                        src={avatar.src}
-                                        sx={{
-                                            width: "70px",
-                                            height: "70px",
-                                            border: "3px solid black",
-                                            background:
-                                                "linear-gradient(45deg, #2196F3 40%, #21CBF3 80%)",
-                                            boxShadow:
-                                                "0px 0px 20px rgba(0, 0, 0, 0.2)",
-                                            "&:hover": {
-                                                transform: "scale(1.1)",
-                                                boxShadow:
-                                                    "0px 0px 20px rgba(0, 0, 0, 0.4)",
-                                            },
-                                        }}
-                                    />
-                                ))}
-                            </AvatarGroup>
-                        }
                         sx={{
                             backgroundColor: "transparent",
                             textAlign: "center",
@@ -84,6 +90,29 @@ const GroupCard: FC<GroupCardProps> = ({ title, subtitle, avatars, code }) => {
                             },
                         }}
                     />
+                    {/* <AvatarGroup max={5}>
+                        {avatars.map((avatar, index) => (
+                            <Avatar
+                                key={index}
+                                alt={avatar.alt}
+                                src={avatar.src}
+                                sx={{
+                                    width: "40px",
+                                    height: "40px",
+                                    border: "3px solid black",
+                                    background:
+                                        GRADIENT,
+                                    boxShadow:
+                                        "0px 0px 20px rgba(0, 0, 0, 0.2)",
+                                    "&:hover": {
+                                        transform: "scale(1.1)",
+                                        boxShadow:
+                                            "0px 0px 20px rgba(0, 0, 0, 0.4)",
+                                    },
+                                }}
+                            />
+                        ))}
+                    </AvatarGroup> */}
                 </Box>
             </Card>
         </Link>

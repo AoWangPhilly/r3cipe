@@ -3,11 +3,13 @@ import CircularProgress from "@mui/material/CircularProgress";
 import CircleSidebar from "../components/CircleSidebar";
 import GroupCard from "../components/GroupCard";
 import NoCircleJoined from "../components/NoCirclesJoined";
+import { Box, Typography } from "@mui/material";
 
 interface CircleData {
     _id: string;
     name: string;
     members: string[];
+    profileUrl: string;
 }
 
 const Circle = () => {
@@ -61,8 +63,15 @@ const Circle = () => {
     }
 
     return (
-        <div>
-            <h1>Circle</h1>
+        <Box
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                margin: "auto",
+                width: "80%",
+            }}
+        >
+            <Typography variant="h4">Circles</Typography>
             <CircleSidebar />
             {circles.length === 0 ? (
                 <NoCircleJoined /> //
@@ -72,12 +81,13 @@ const Circle = () => {
                         key={circle._id}
                         title={circle.name}
                         subtitle={`Members: ${circle.members.length}`}
+                        image={circle.profileUrl}
                         avatars={avatarMembers(circle.members)}
                         code={circle._id}
                     />
                 ))
             )}
-        </div>
+        </Box>
     );
 };
 
