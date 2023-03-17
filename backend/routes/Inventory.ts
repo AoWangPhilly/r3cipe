@@ -1,5 +1,5 @@
 import { Router } from "express";
-import controller from "../controllers/inventory.js";
+import controller from "../controllers/Inventory.js";
 import { authorize } from "../middleware/checkAuth.js";
 
 export const inventoryRouter: Router = Router();
