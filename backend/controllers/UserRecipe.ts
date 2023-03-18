@@ -6,7 +6,6 @@ import Inventory from "../models/Inventory.js";
 import { RecipeType } from "../types/types.js";
 
 /**
- * TODO!: needs to be fixed
  * Returns all User submitted recipes (not just currently logged in user)
  */
 const queryRecipes = async (req: Request, res: Response) => {
@@ -23,6 +22,9 @@ const queryRecipes = async (req: Request, res: Response) => {
     // search for user submitted recipes
     const allRecipes = await UserRecipe.find();
     const filteredRecipes = allRecipes.filter((recipe) => {
+        let cuisineMatch;
+        let mealMatch;
+
         const recipeContent = recipe.recipe as RecipeType;
         const queryMatch =
             recipeContent.title
@@ -31,14 +33,24 @@ const queryRecipes = async (req: Request, res: Response) => {
             recipeContent.summary
                 .toLowerCase()
                 .includes(String(query).toLowerCase());
-        const cuisineMatch = recipeContent.cuisines.some(
-            (cuisineName) =>
-                cuisineName.toLowerCase() === String(cuisine).toLowerCase()
-        );
-        const mealMatch = recipeContent.dishTypes.some(
-            (mealTypeName) =>
-                mealTypeName.toLowerCase() === String(mealtype).toLowerCase()
-        );
+
+        if (cuisine === "") {
+            cuisineMatch = true;
+        } else {
+            cuisineMatch = recipeContent.cuisines.some(
+                (cuisineName) =>
+                    cuisineName.toLowerCase() === String(cuisine).toLowerCase()
+            );
+        }
+        if (mealtype === "") {
+            mealMatch = true;
+        } else {
+            mealMatch = recipeContent.dishTypes.some(
+                (mealTypeName) =>
+                    mealTypeName.toLowerCase() ===
+                    String(mealtype).toLowerCase()
+            );
+        }
         if (pantry === "true") {
             const pantryMatch = userPantry.every((ingredient) => {
                 return recipeContent.extendedIngredients.some(
