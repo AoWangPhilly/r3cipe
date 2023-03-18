@@ -63,3 +63,27 @@ describe("GET /recipe/:id", () => {
         expect(response.data.recipe.recipe.title).toEqual("Fantasic milk 1");
     });
 });
+
+describe("GET /spoonacular", () => {
+    test("Get Spoonacular Recipes with Missing Fields", async () => {
+        try {
+            const response = await axios.get(
+                `${BASE_URL}/api/search/spoonacular`
+            );
+        } catch (error: any) {
+            const response = error.response;
+            expect(response.status).toEqual(400);
+            expect(response.data.error).toEqual("no parameters provided");
+        }
+    });
+
+    test("Get Spoonacular Recipes with Valid Query", async () => {
+        const response = await axios.get(
+            `${BASE_URL}/api/search/spoonacular?query=pasta`
+        );
+        expect(response.status).toEqual(200);
+        expect(
+            response.data.spoonacularRecipeResult.recipes.length
+        ).toBeLessThanOrEqual(16);
+    });
+});
