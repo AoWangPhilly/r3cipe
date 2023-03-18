@@ -5,14 +5,11 @@ import { Avatar, Grid, IconButton, Typography } from "@mui/material";
 import { stripHtml } from "string-strip-html";
 import RestaurantIcon from "@mui/icons-material/Restaurant";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
-import SendIcon from '@mui/icons-material/Send';
+import SendIcon from "@mui/icons-material/Send";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { AuthContext } from "../context/AuthContext";
 import ShareModal from "../components/ShareModal";
-
-
-
 
 const addFavorite = (id: string) => {
     fetch(`/api/user/inventory/favorite/${id}`, {
@@ -41,7 +38,6 @@ const removeFavorite = (id: string) => {
             console.log("remove favorite", data);
         });
 };
-
 
 const Recipe: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -117,15 +113,13 @@ const Recipe: React.FC = () => {
                 credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
-                    },
-                    })
-                    .then((res) => res.json())
-                    .then(
-                        (result) => {
-                            console.log("circles", result);
-                            setCircles(result.socialCircles);
-                        }
-                    );
+                },
+            })
+                .then((res) => res.json())
+                .then((result) => {
+                    console.log("circles", result);
+                    setCircles(result.socialCircles);
+                });
         }
     }, [isAuth]);
     useEffect(() => {
@@ -220,7 +214,7 @@ const Recipe: React.FC = () => {
                                             onClick={handleShareModalOpen}
                                         >
                                             <SendIcon
-                                                style={{ color: "blueviolet"}}
+                                                style={{ color: "blueviolet" }}
                                             />
                                         </IconButton>
                                     </>
@@ -239,10 +233,7 @@ const Recipe: React.FC = () => {
                                     height: "100%",
                                     margin: "auto",
                                 }}
-                                children={
-                                    <RestaurantIcon />
-                                        
-                                }
+                                children={<RestaurantIcon />}
                             />
                         </Grid>
                         <Grid item xs={12} md={6}>
@@ -316,16 +307,18 @@ const Recipe: React.FC = () => {
                             </Grid>
                         )}
                         <Grid item xs={12}>
-                            <Typography variant="subtitle1">
-                                Source URL:{" "}
-                                <a
-                                    href={recipe.sourceUrl}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                >
-                                    {recipe.sourceUrl}
-                                </a>
-                            </Typography>
+                            {recipe.sourceUrl && (
+                                <Typography variant="subtitle1">
+                                    Source URL:{" "}
+                                    <a
+                                        href={recipe.sourceUrl}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                    >
+                                        {recipe.sourceUrl}
+                                    </a>
+                                </Typography>
+                            )}
                         </Grid>
                     </Grid>
                 )}

@@ -11,13 +11,19 @@ import {
     IconButton,
     Tooltip,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import JoinCircleModal from "../components/JoinCircleModal";
 import RecipeThumbnail from "../components/RecipeThumbnail";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
+import StarIcon from "@mui/icons-material/Star";
+import TrashIcon from "@mui/icons-material/Delete";
 import GroupsIcon from "@mui/icons-material/Groups";
 import { GRADIENT } from "../util";
+import { AuthContext } from "../context/AuthContext";
+import DeleteCircleModal from "../components/DeleteCircleModal";
+import LeaveCircleModal from "../components/LeaveCircleModal";
+import KickCircleModal from "../components/KickCircleModal";
 
 interface CircleData {
     _id: string;
@@ -55,14 +61,38 @@ const CircleSelected = () => {
     const [loading, setLoading] = useState(true);
     const [isCopied, setIsCopied] = useState(false);
     const [joinCircleModalOpen, setJoinCircleModalOpen] = useState(false);
+    const [deleteCircleModalOpen, setDeleteCircleModalOpen] = useState(false);
+    const [leaveCircleModalOpen, setLeaveCircleModalOpen] = useState(false);
+    const [kickCircleModalOpen, setKickCircleModalOpen] = useState(false);
+    const [userToBeKicked, setUserToBeKicked] = useState({
+        _id: "",
+        name: "",
+    });
+    const { userId } = useContext(AuthContext);
 
     const handleJoinCircleModalOpen = () => {
         setJoinCircleModalOpen(true);
     };
 
     const handleCopyLink = () => {
-        navigator.clipboard.writeText(window.location.href);
+        navigator.clipboard.writeText(id!);
         setIsCopied(true);
+    };
+
+    const handleKickMember = (memberId: string, memberName: string) => {
+        setUserToBeKicked({
+            _id: memberId,
+            name: memberName,
+        });
+        setKickCircleModalOpen(true);
+    };
+
+    const handleLeaveCircle = () => {
+        setLeaveCircleModalOpen(true);
+    };
+
+    const handleDeleteCircle = () => {
+        setDeleteCircleModalOpen(true);
     };
 
     useEffect(() => {
@@ -72,7 +102,6 @@ const CircleSelected = () => {
                     method: "GET",
                     credentials: "include",
                 });
-                console.log(response);
 
                 if (response.ok) {
                     const { socialCircle } = await response.json();
@@ -120,7 +149,7 @@ const CircleSelected = () => {
                 <Grid item xs={12} md={4}>
                     <Tooltip
                         title={
-                            isCopied ? "Link copied!" : "Copy link to clipboard"
+                            isCopied ? "Invite code copied!" : "Copy code to clipboard"
                         }
                     >
                         <IconButton onClick={handleCopyLink} size="large">
@@ -128,6 +157,31 @@ const CircleSelected = () => {
                             <FileCopyIcon />
                         </IconButton>
                     </Tooltip>
+                    <Tooltip
+                        title={
+                            // if the user is the owner, display a message
+                            circleData.owner._id === userId
+                                ? "Delete Circle"
+                                : "Leave Circle"
+                        }
+                    >
+                        <IconButton
+                            onClick={() => {
+                                if (circleData.owner._id === userId) {
+                                    handleDeleteCircle();
+                                } else {
+                                    handleLeaveCircle();
+                                }
+                            }}
+                            size="large"
+                        >
+                            {circleData.owner._id === userId
+                                ? "Delete"
+                                : "Leave"}
+                            <TrashIcon />
+                        </IconButton>
+                    </Tooltip>
+
                     <Box
                         sx={{
                             padding: "20px",
@@ -161,13 +215,8 @@ const CircleSelected = () => {
                         <Typography variant="body1" gutterBottom>
                             {circleData.description}
                         </Typography>
-                        <Typography variant="body1" gutterBottom>
-                            Owner: {circleData.owner.name}
-                        </Typography>
-                        <Typography variant="body1" gutterBottom>
-                            Members:
-                        </Typography>
-                        <List sx={{ width: "100%" }}>
+
+                        <List sx={{ width: "40%" }}>
                             {circleData.members.map((member) => (
                                 <ListItem key={member._id}>
                                     <ListItemAvatar>
@@ -180,7 +229,37 @@ const CircleSelected = () => {
                                             }}
                                         />
                                     </ListItemAvatar>
+
                                     <ListItemText primary={member.name} />
+                                    {member._id === circleData.owner._id && (
+                                        <Tooltip title="Owner">
+                                            <StarIcon
+                                                sx={{
+                                                    color: "gold",
+                                                    marginRight: "8px",
+                                                }}
+                                            />
+                                        </Tooltip>
+                                    )}
+                                    {userId === circleData.owner._id &&
+                                        userId !== member._id && (
+                                            <Tooltip title="Kick Member">
+                                                <IconButton
+                                                    onClick={() =>
+                                                        handleKickMember(
+                                                            member._id,
+                                                            member.name
+                                                        )
+                                                    }
+                                                >
+                                                    <TrashIcon
+                                                        sx={{
+                                                            color: "red",
+                                                        }}
+                                                    />
+                                                </IconButton>
+                                            </Tooltip>
+                                        )}
                                 </ListItem>
                             ))}
                         </List>
@@ -244,6 +323,24 @@ const CircleSelected = () => {
                 joinCircleModalOpen={joinCircleModalOpen}
                 circleId={id!}
             />
+            <DeleteCircleModal
+                deleteCircleModalOpen={deleteCircleModalOpen}
+                setDeleteCircleModalOpen={setDeleteCircleModalOpen}
+                circleId={id!}
+            />
+            <LeaveCircleModal
+                leaveCircleModalOpen={leaveCircleModalOpen}
+                setLeaveCircleModalOpen={setLeaveCircleModalOpen}
+                circleId={id!}
+            />
+            {userToBeKicked && (
+                <KickCircleModal
+                    kickCircleModalOpen={kickCircleModalOpen}
+                    setKickCircleModalOpen={setKickCircleModalOpen}
+                    circleId={id!}
+                    user={userToBeKicked}
+                />
+            )}
         </>
     );
 };

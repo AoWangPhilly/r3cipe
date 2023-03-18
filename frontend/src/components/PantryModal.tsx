@@ -130,7 +130,10 @@ const PantryForm: React.FC = () => {
         getPantry();
     }, [onPantry]);
 
+    useEffect(() => {}, [pantryItems]);
+
     const handleSelectChange = (e: SelectChangeEvent<string[]>) => {
+        console.log(e.target.value);
         setSelectedItems(e.target.value as string[]);
     };
 
@@ -191,25 +194,24 @@ const PantryForm: React.FC = () => {
                             value={selectedItems}
                             onChange={handleSelectChange}
                             input={<Input />}
-                            renderValue={(selected) => (
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        flexWrap: "wrap",
-                                        listStyle: "none",
-                                        padding: 0,
-                                    }}
-                                >
-                                    {selected.map((value) => (
-                                        <Chip
-                                            key={value}
-                                            label={value}
-                                            sx={{ margin: 0.5 }}
-                                            size="small"
-                                        />
-                                    ))}
-                                </Box>
-                            )}
+                            renderValue={(selected) =>
+                                selected.map((value) => (
+                                    <Chip
+                                        key={value}
+                                        label={value}
+                                        sx={{ margin: 0.5 }}
+                                        size="small"
+                                        onClick={() => {
+                                            console.log(selectedItems, value);
+                                            setSelectedItems(
+                                                selectedItems.filter(
+                                                    (item) => item !== value
+                                                )
+                                            );
+                                        }}
+                                    />
+                                ))
+                            }
                             MenuProps={{
                                 PaperProps: {
                                     style: {

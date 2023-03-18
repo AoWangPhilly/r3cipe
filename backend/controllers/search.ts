@@ -255,7 +255,6 @@ async function getRecentRecipes(req: Request, res: Response) {
     // randomly get 2 numbers summing to 16
     let spoonRecipes = Math.ceil(16 - Math.random() * 12);
     let userRecipes = 16 - spoonRecipes;
-    console.log(spoonRecipes, userRecipes);
     const userRecentRecipes = await UserRecipe.find({
         isPublic: true,
     })

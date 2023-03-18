@@ -268,6 +268,7 @@ const Search = () => {
                         justifyContent="center"
                         alignItems="center"
                         sx={{ margin: "auto", width: "100%" }}
+                        direction="row"
                     >
                         <Grid item xs={6}>
                             <Button
@@ -278,10 +279,11 @@ const Search = () => {
                                 startIcon={<SearchIcon />}
                                 sx={{
                                     borderRadius: "10px",
-                                    padding: "8px 16px",
                                     color: "#fff",
                                     textTransform: "capitalize",
                                     width: "50%",
+                                    height: "50px",
+                                    float: "right",
                                 }}
                             >
                                 Search
@@ -299,11 +301,11 @@ const Search = () => {
                                 }
                                 sx={{
                                     borderRadius: "10px",
-                                    padding: "8px 16px",
                                     margin: "auto",
                                     color: "#fff",
                                     textTransform: "capitalize",
                                     width: "50%",
+                                    height: "50px",
                                 }}
                             >
                                 I am feeling hungry
