@@ -75,16 +75,69 @@ describe("POST /signup", () => {
         const userInventory = await Inventory.findOne({
             email: "user@example.com",
         });
-        console.log(userInventory);
         expect(userInventory?.pantry).toHaveLength(0);
         expect(userInventory?.favoritedRecipes).toHaveLength(0);
         expect(userInventory?.myRecipes).toHaveLength(0);
     });
 });
 
-// describe("POST /login", () => {
-//     test("Invalid fields", async () => {});
-//     test("User does not exist", async () => {});
-//     test("Invalid password", async () => {});
-//     test("Valid fields", async () => {});
-// });
+describe("POST /login", () => {
+    let mongoClient: typeof mongoose;
+
+    beforeAll(async () => {
+        // connect to the database
+        try {
+            mongoClient = await mongoose.connect(MONGO_URL);
+        } catch (error) {
+            console.log(error);
+        }
+    });
+
+    afterAll(async () => {
+        await UserProfile.deleteOne({ email: "user@example.com" });
+        // Closing the DB connection allows Jest to exit successfully.
+        await mongoClient.connection.close();
+    });
+    test("Invalid fields", async () => {
+        try {
+            const response = await axios.post(`${BASE_URL}/api/auth/login`, {
+                email: "test",
+                password: "test",
+            });
+        } catch (error: any) {
+            const response = error.response;
+            expect(response.data.errors).toEqual([
+                "Email is invalid",
+                "Password must have at least 6 characters",
+            ]);
+            expect(response.status).toEqual(400);
+        }
+    });
+
+    test("Invalid password", async () => {
+        try {
+            const response = await axios.post(`${BASE_URL}/api/auth/login`, {
+                email: "test@gmail.com",
+                password: "test12345",
+            });
+        } catch (error: any) {
+            const response = error.response;
+            expect(response.data.errors).toEqual(["Incorrect password"]);
+            expect(response.status).toEqual(400);
+        }
+    });
+    test("Valid fields", async () => {
+        await axios.post(`${BASE_URL}/api/auth/signup`, {
+            name: "test",
+            email: "user@example.com",
+            password: "test12345",
+        });
+
+        const response = await axios.post(`${BASE_URL}/api/auth/login`, {
+            email: "user@example.com",
+            password: "test12345",
+        });
+        expect(response.status).toEqual(200);
+        expect(response.data).toBeDefined();
+    });
+});
