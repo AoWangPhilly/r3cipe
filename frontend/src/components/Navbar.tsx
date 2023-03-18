@@ -253,7 +253,9 @@ export default function Navbar() {
                                             onClick={handlePantryOpen}
                                             color="inherit"
                                         >
-                                            <KitchenIcon />
+                                            <KitchenIcon
+                                                sx={{ color: "white" }}
+                                            />
                                         </IconButton>
                                     </Tooltip>
                                 </Box>
