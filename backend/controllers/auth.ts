@@ -6,7 +6,7 @@ import UserProfile, {
     loginSchema,
 } from "../models/UserProfile.js";
 import Inventory from "../models/Inventory.js";
-import { findUserByEmail } from "../helpers/UserProfile.js";
+import { findUserByEmail } from "../helpers/userProfile.js";
 import {
     cookieOptions,
     deleteToken,
@@ -196,7 +196,6 @@ async function logout(req: Request, res: Response) {
     if (!tokenStorage.hasOwnProperty(token)) {
         console.log("token invalid");
     }
-
     deleteToken(token);
     // delete tokenStorage[token];
 

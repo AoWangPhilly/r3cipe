@@ -7,7 +7,6 @@ import crypto from "crypto";
 import { CookieOptions } from "express";
 import { UserInfo } from "../types/types.js";
 
-
 const TOKEN_EXPIRY = 3600; // 1 hr (in seconds)
 export const clientCookieOptions: CookieOptions = {
     // secure: true, // TODO!: uncomment out for production!; comment out for Postman
@@ -28,6 +27,7 @@ export function getTokenStorage() {
 
 export function setToken(token: string, tokenInfo: UserInfo) {
     tokenStorage[token] = tokenInfo;
+    console.log(tokenStorage);
 }
 
 export function deleteToken(token: string) {
