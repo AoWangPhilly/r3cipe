@@ -63,31 +63,34 @@ const Circle = () => {
     }
 
     return (
-        <Box
-            sx={{
-                display: "flex",
-                flexDirection: "column",
-                margin: "auto",
-                width: "80%",
-            }}
-        >
+        <>
             <Typography variant="h4">Circles</Typography>
-            <CircleSidebar />
-            {circles.length === 0 ? (
-                <NoCircleJoined /> //
-            ) : (
-                circles.map((circle: CircleData) => (
-                    <GroupCard
-                        key={circle._id}
-                        title={circle.name}
-                        subtitle={`Members: ${circle.members.length}`}
-                        image={circle.profileUrl}
-                        avatars={avatarMembers(circle.members)}
-                        code={circle._id}
-                    />
-                ))
-            )}
-        </Box>
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    alignSelf: "flex-start",
+                    width: "40%",
+                }}
+            >
+                <CircleSidebar />
+                {circles.length === 0 ? (
+                    <NoCircleJoined /> //
+                ) : (
+                    circles.map((circle: CircleData) => (
+                        <GroupCard
+                            key={circle._id}
+                            title={circle.name}
+                            subtitle={`Members: ${circle.members.length}`}
+                            image={circle.profileUrl}
+                            avatars={avatarMembers(circle.members)}
+                            code={circle._id}
+                        />
+                    ))
+                )}
+            </Box>
+        </>
     );
 };
 

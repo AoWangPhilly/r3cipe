@@ -27,10 +27,14 @@ const GroupCard: FC<GroupCardProps> = ({
     code,
 }) => {
     return (
-        <Link to={`/circle/${code}`} style={{ textDecoration: "none" }}>
+        <Link
+            to={`/circle/${code}`}
+            style={{ textDecoration: "none" }}
+
+        >
             <Card
                 sx={{
-                    width: "65%",
+                    width: "300%",
                     overflow: "hidden",
                     boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.1)",
                     transition: "all 0.2s ease-in-out",
