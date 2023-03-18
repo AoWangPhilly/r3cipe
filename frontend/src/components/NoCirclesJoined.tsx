@@ -4,7 +4,7 @@ const NoCircleJoined = () => {
     return (
         <Box
             sx={{
-                width: "100%",
+                width: "65%",
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
