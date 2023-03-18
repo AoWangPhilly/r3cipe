@@ -1,6 +1,5 @@
 import { Router } from "express";
 import controller from "../controllers/auth.js";
-import { authorize } from "../middleware/checkAuth.js";
 import multer from "multer";
 import path from "path";
 

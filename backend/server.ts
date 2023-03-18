@@ -9,9 +9,9 @@ import cookieParser from "cookie-parser";
 
 import authRouter from "./routes/auth.js";
 import { ingredientRouter } from "./routes/Ingredient.js";
-import { inventoryRouter } from "./routes/Inventory.js";
+import { inventoryRouter } from "./routes/inventory.js";
 import searchRouter from "./routes/search.js";
-import { userRecipeRouter } from "./routes/UserRecipe.js";
+import { userRecipeRouter } from "./routes/userRecipe.js";
 import { socialCircleRouter } from "./routes/circles.js";
 
 import { userProfileRouter } from "./routes/UserProfile.js";
@@ -19,7 +19,6 @@ import multer from "multer";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-let publicStaticFolder = path.resolve(__dirname, "public");
 
 dotenv.config({ path: path.join(__dirname, "../.env") });
 
@@ -97,12 +96,6 @@ app.use("/api/user/recipes", userRecipeRouter);
 app.use("/api/circles", socialCircleRouter);
 
 app.use("/api/user/profiles", userProfileRouter); // TODO: DELETE
-
-// serving react app for deployment
-app.use(express.static("public"));
-app.get("/*", (req, res) => {
-    res.sendFile("index.html", { root: publicStaticFolder });
-});
 
 // run server
 const port = 3000;

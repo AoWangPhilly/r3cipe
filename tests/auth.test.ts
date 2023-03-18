@@ -3,6 +3,7 @@ import Inventory from "../backend/models/Inventory.js";
 import axios, { AxiosError } from "axios";
 import { MONGO_URL } from "../backend/config/config.js";
 import mongoose from "mongoose";
+import { getTokenStorage } from "../backend/helpers/tokenStorage.js";
 
 const BASE_URL = "http://localhost:3000";
 
@@ -139,5 +140,88 @@ describe("POST /login", () => {
         });
         expect(response.status).toEqual(200);
         expect(response.data).toBeDefined();
+    });
+});
+
+describe("POST /logout", () => {
+    let mongoClient: typeof mongoose;
+
+    beforeAll(async () => {
+        // connect to the database
+        try {
+            mongoClient = await mongoose.connect(MONGO_URL);
+        } catch (error) {
+            console.log(error);
+        }
+    });
+
+    afterAll(async () => {
+        // Closing the DB connection allows Jest to exit successfully.
+        await UserProfile.deleteOne({ email: "user@example.com" });
+        await mongoClient.connection.close();
+    });
+
+    test("Not logged in", async () => {
+        const response = await axios.post(`${BASE_URL}/api/auth/logout`);
+        expect(getTokenStorage()).toEqual({});
+    });
+
+    test("Logged in", async () => {
+        await axios.post(`${BASE_URL}/api/auth/signup`, {
+            name: "test",
+            email: "user@example.com",
+            password: "test12345",
+        });
+
+        expect(getTokenStorage()).toHaveLength(1);
+
+        const response = await axios.post(`${BASE_URL}/api/auth/login`, {
+            email: "user@example.com",
+            password: "test12345",
+        });
+        const logoutResponse = await axios.post(`${BASE_URL}/api/auth/logout`);
+
+        expect(getTokenStorage()).toEqual({});
+    });
+});
+
+describe("GET /checkLogin", () => {
+    let mongoClient: typeof mongoose;
+
+    beforeAll(async () => {
+        // connect to the database
+        try {
+            mongoClient = await mongoose.connect(MONGO_URL);
+        } catch (error) {
+            console.log(error);
+        }
+    });
+
+    afterAll(async () => {
+        await UserProfile.deleteOne({ email: "user@example.com" });
+        // Closing the DB connection allows Jest to exit successfully.
+        await mongoClient.connection.close();
+    });
+
+    test("Not logged in", async () => {
+        const response = await axios.get(`${BASE_URL}/api/auth/checkLogin`);
+        expect(response.status).toEqual(400);
+        expect(response.data).toEqual({ message: "Unauthenticated" });
+    });
+
+    test("Logged in", async () => {
+        await axios.post(`${BASE_URL}/api/auth/signup`, {
+            name: "test",
+            email: "user@example.com",
+            password: "test12345",
+        });
+
+        await axios.post(`${BASE_URL}/api/auth/login`, {
+            email: "user@example.com",
+            password: "test12345",
+        });
+
+        const response = await axios.get(`${BASE_URL}/api/auth/checkLogin`);
+        expect(response.status).toEqual(200);
     });
 });

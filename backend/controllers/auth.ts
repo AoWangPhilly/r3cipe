@@ -196,6 +196,7 @@ async function logout(req: Request, res: Response) {
     if (!tokenStorage.hasOwnProperty(token)) {
         console.log("token invalid");
     }
+
     deleteToken(token);
     // delete tokenStorage[token];
 
