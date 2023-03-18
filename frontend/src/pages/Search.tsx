@@ -8,7 +8,10 @@ import { CUISINES, DISH_TYPES, RecipeThumbnailType } from "../types";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import RecipeThumbnail from "../components/RecipeThumbnail";
-import { convertFullRecipesToThumbnails, convertSearchResultsToThumbnails } from "../util";
+import {
+    convertFullRecipesToThumbnails,
+    convertSearchResultsToThumbnails,
+} from "../util";
 import { textAlign } from "@mui/system";
 
 export type SearchFormState = {
@@ -57,9 +60,7 @@ const Search = () => {
                 res.json().then((data) => {
                     console.log(data);
                     setRecipes(
-                        convertFullRecipesToThumbnails(
-                            data.recentRecipes
-                        )
+                        convertFullRecipesToThumbnails(data.recentRecipes)
                     );
                 });
             }
@@ -291,9 +292,14 @@ const Search = () => {
                     </Grid>
                 </Grid>
             </form>
-            <Typography variant="h5" sx={{ margin: "20px 0 10px 0", textAlign: "center"}}>
-                Trending Recipes
+
+            <Typography
+                variant="h5"
+                sx={{ margin: "20px 0 10px 0", textAlign: "center" }}
+            >
+                🔥 Trending Recipes
             </Typography>
+
             {
                 // if there are no recipes, display a message
                 recipes.length === 0 ? (
