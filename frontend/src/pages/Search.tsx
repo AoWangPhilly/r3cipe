@@ -79,6 +79,7 @@ const Search = () => {
         event:
             | React.MouseEvent<SVGSVGElement, MouseEvent>
             | React.KeyboardEvent<HTMLInputElement>
+            | React.MouseEvent<HTMLButtonElement>
     ): Promise<void> => {
         event.preventDefault();
         console.log("Sign up");
@@ -266,9 +267,27 @@ const Search = () => {
                         spacing={2}
                         justifyContent="center"
                         alignItems="center"
-                        sx={{ margin: "auto", width: "90%" }}
+                        sx={{ margin: "auto", width: "100%" }}
                     >
-                        <Grid item xs={3}>
+                        <Grid item xs={6}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                type="submit"
+                                onClick={handleSubmit}
+                                startIcon={<SearchIcon />}
+                                sx={{
+                                    borderRadius: "10px",
+                                    padding: "8px 16px",
+                                    color: "#fff",
+                                    textTransform: "capitalize",
+                                    width: "50%",
+                                }}
+                            >
+                                Search
+                            </Button>
+                        </Grid>
+                        <Grid item xs={6}>
                             <Button
                                 variant="contained"
                                 color="primary"
@@ -284,6 +303,7 @@ const Search = () => {
                                     margin: "auto",
                                     color: "#fff",
                                     textTransform: "capitalize",
+                                    width: "50%",
                                 }}
                             >
                                 I am feeling hungry
