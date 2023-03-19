@@ -19,7 +19,7 @@ const getCircleById = async (req: Request, res: Response) => {
 
         // console.log(socialCircle);
         if (!socialCircle) {
-            return res.status(404).json({ message: "Social circle not found" });
+            return res.status(404).json({ error: "Social circle not found" });
         }
         // check if socialCircle.members contains userId
         let memberIdList = socialCircle.members.map((member) => member._id);
@@ -108,7 +108,6 @@ const getSocialCirclesByUserId = async (req: Request, res: Response) => {
 };
 
 /**
- * TODO: DELETE? doesn't seem to be used
  * Add User to a circle based on the circle's mongo id
  * Gets id from req.body
  */
@@ -131,7 +130,10 @@ const joinCircleByCode = async (req: Request, res: Response) => {
         const savedSocialCircle = await socialCircle.save();
         res.status(200).json({ socialCircle: savedSocialCircle });
     } catch (error: any) {
-        res.status(400).json({ error: error.message });
+        /* one possible error: invalid mongo id that could not be cast */
+        // console.log(error.message);
+        res.status(400).json({ error: "Social circle not found" });
+        // res.status(400).json({ error: "Could not join circle" });
     }
 };
 

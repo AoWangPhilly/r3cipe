@@ -46,9 +46,10 @@ const CircleSidebar = () => {
             const circleUrl = `/circle/${formState.id}`;
             navigate(circleUrl);
         } else {
-            await response.json().then((data) => {
+            await response.json().then((data: { error: string }) => {
                 console.log(data);
-                setError("Cannot join Circle Page");
+                // setError("Cannot join Circle Page");
+                setError(data.error);
                 return;
             });
         }
