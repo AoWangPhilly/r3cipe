@@ -3,7 +3,9 @@
  * Although not used here, these follow the types defined in types.ts
  */
 
-export function parseRecipe(recipe: any) {
+import { generateInstructions } from "./ai.js";
+
+export async function parseRecipe(recipe: any) {
     const {
         preparationMinutes,
         cookingMinutes,
@@ -20,6 +22,18 @@ export function parseRecipe(recipe: any) {
         id,
     } = recipe;
 
+    const ingredients = extendedIngredients.map((ingredient: any) => {
+        return {
+            id: ingredient.id,
+            original: ingredient.original,
+            originalName: ingredient.originalName,
+        };
+    });
+    const ingredientNames = ingredients.map((ingredient: any) => {
+        return ingredient.originalName;
+    });
+    // console.log(ingredientNames);
+
     let instructions = analyzedInstructions;
     if (instructions && instructions.length > 0) {
         instructions = instructions[0].steps
@@ -28,15 +42,11 @@ export function parseRecipe(recipe: any) {
             })
             .join("\n");
     } else {
-        instructions = "";
+        // use OpenAI to generate instructions
+        console.log("Generating instructions with OpenAI");
+        instructions = await generateInstructions(title, ingredientNames);
     }
-    const ingredients = extendedIngredients.map((ingredient: any) => {
-        return {
-            id: ingredient.id,
-            original: ingredient.original,
-            originalName: ingredient.originalName,
-        };
-    });
+
     return {
         preparationMinutes: preparationMinutes,
         cookingMinutes: cookingMinutes,

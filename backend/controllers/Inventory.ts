@@ -158,7 +158,7 @@ const getFavoriteRecipes = async (req: Request, res: Response) => {
                     // TODO: might need error catching here?
 
                     // console.log(response.data);
-                    const { recipeId, ...parsedRecipe } = parseRecipe(data);
+                    const { recipeId, ...parsedRecipe } = await parseRecipe(data);
                     const spoonacularRecipe = new SpoonacularRecipe({
                         recipeId: recipeId,
                         recipe: parsedRecipe,

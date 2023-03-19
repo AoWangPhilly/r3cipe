@@ -85,8 +85,8 @@ async function searchSpoonacularRecipes(req: Request, res: Response) {
     axios
         .get(spoonacularUrl)
         .then(async (response) => {
-            response.data.results.forEach(async (recipe: any) => {
-                const { recipeId, ...parsedRecipe } = parseRecipe(recipe);
+            await response.data.results.forEach(async (recipe: any) => {
+                const { recipeId, ...parsedRecipe } = await parseRecipe(recipe);
 
                 const spoonacularRecipe = new SpoonacularRecipe({
                     recipeId: recipeId,
@@ -173,9 +173,9 @@ async function getRecipeById(req: Request, res: Response) {
         axios
             .get(spoonacularUrl)
             .then(async (response) => {
-                console.log("Recipe not in cache, making API req");
+                console.log(`Recipe ${id} not in cache, making API req`);
                 // console.log(response.data);
-                const { recipeId, ...parsedRecipe } = parseRecipe(
+                const { recipeId, ...parsedRecipe } = await parseRecipe(
                     response.data
                 );
                 const spoonacularRecipe = new SpoonacularRecipe({
@@ -184,19 +184,19 @@ async function getRecipeById(req: Request, res: Response) {
                     userId: "Spoonacular",
                 });
 
-                await spoonacularRecipe
+                /* await spoonacularRecipe
                     .save()
                     .then((recipe) => {
                         console.log("recipe saved");
                     })
                     .catch((error) => {
                         console.log(error);
-                    });
+                    }); */
                 return res.status(200).json({ recipe: spoonacularRecipe });
             })
             .catch((error) => {
-                console.log("error here");
-                console.log(error);
+                console.log(`error in getting recipe with id ${id}`);
+                // console.log(error);
                 return res.status(404).json({ error: "recipe not found" });
             });
     }
@@ -216,12 +216,17 @@ async function getRandomSpoonacularRecipe(req: Request, res: Response) {
         return res.status(500).json({ error: "Could not get random recipe" });
     }
 
-    const randomRecipeList: RecipeTypeWithId[] = response.data.recipes.map(
-        (recipe: RecipeType) => {
-            const { ...parsedRecipe } = parseRecipe(recipe);
+    /* const randomRecipeList: RecipeTypeWithId[] = await response.data.recipes.map(
+        async (recipe: RecipeType) => {
+            const { ...parsedRecipe } = await parseRecipe(recipe);
             return parsedRecipe;
         }
-    );
+    ); */
+    let randomRecipeList: RecipeTypeWithId[] = [];
+    await response.data.recipes.forEach(async (recipe: any) => {
+        const { recipeId, ...parsedRecipe } = await parseRecipe(recipe);
+        randomRecipeList.push({ recipeId, ...parsedRecipe });
+    });
 
     // Cache recipe if not already stored
     randomRecipeList.forEach(async (recipe) => {
@@ -266,7 +271,7 @@ async function getRecentRecipes(req: Request, res: Response) {
     } else if (userRecentRecipes.length > userRecipes) {
         userRecipes += userRecentRecipes.length - userRecipes;
     }
-    
+
     const spoonacularRecentRecipes = await SpoonacularRecipe.find({
         userId: "Spoonacular",
     })
