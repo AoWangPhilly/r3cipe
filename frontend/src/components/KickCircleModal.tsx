@@ -23,8 +23,8 @@ const KickCircleModal = (props: KickCircleProps) => {
     const { kickCircleModalOpen, setKickCircleModalOpen, circleId, user } = props;
     const handleKickCircle = () => {
         // send a post request to the backend to join the circle
-        console.log("kick circle", props.circleId);
-        console.log("kick user", user._id);
+        // console.log("kick circle", props.circleId);
+        // console.log("kick user", user._id);
         fetch(`/api/circles/${circleId}/members`, {
             method: "DELETE",
             credentials: "include",
@@ -36,10 +36,11 @@ const KickCircleModal = (props: KickCircleProps) => {
             }),
         }).then((response) => {
             if (response.ok) {
-                console.log("success");
+                // console.log("success");
                 navigate(0);
             } else {
-                console.log("error");
+                // console.log("error");
+                alert("Error kicking user");
             }
         });
     };

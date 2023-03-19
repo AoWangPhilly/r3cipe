@@ -29,7 +29,7 @@ const CircleSidebar = () => {
         e: React.FormEvent<HTMLFormElement>
     ): Promise<void> => {
         e.preventDefault();
-        console.log("Join Circle for Code: " + formState.id);
+        // console.log("Join Circle for Code: " + formState.id);
 
         // Submit signup form here for
         const response = await fetch("/api/circles/", {
@@ -47,7 +47,7 @@ const CircleSidebar = () => {
             navigate(circleUrl);
         } else {
             await response.json().then((data: { error: string }) => {
-                console.log(data);
+                // console.log(data);
                 // setError("Cannot join Circle Page");
                 setError(data.error);
                 return;

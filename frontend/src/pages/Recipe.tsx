@@ -19,10 +19,10 @@ const addFavorite = (id: string) => {
             "Content-Type": "application/json",
         },
     })
-        .then((res) => res.json())
-        .then((data) => {
-            console.log("add favorite", data);
-        });
+        // .then((res) => res.json())
+        // .then((data) => {
+        //     console.log("add favorite", data);
+        // });
 };
 
 const removeFavorite = (id: string) => {
@@ -33,10 +33,10 @@ const removeFavorite = (id: string) => {
             "Content-Type": "application/json",
         },
     })
-        .then((res) => res.json())
-        .then((data) => {
-            console.log("remove favorite", data);
-        });
+        // .then((res) => res.json())
+        // .then((data) => {
+        //     console.log("remove favorite", data);
+        // });
 };
 
 const Recipe: React.FC = () => {
@@ -70,22 +70,22 @@ const Recipe: React.FC = () => {
 
     useEffect(() => {
         if (isAuth) {
-            fetch(`/api/user/inventory/pantry`, {
-                method: "GET",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            })
-                .then((res) => res.json())
-                .then(
-                    (result) => {
-                        console.log("pantry", result);
-                    },
-                    (error) => {
-                        setError(error);
-                    }
-                );
+            // fetch(`/api/user/inventory/pantry`, {
+            //     method: "GET",
+            //     credentials: "include",
+            //     headers: {
+            //         "Content-Type": "application/json",
+            //     },
+            // })
+            //     .then((res) => res.json())
+            //     .then(
+            //         (result) => {
+            //             console.log("pantry", result);
+            //         },
+            //         (error) => {
+            //             setError(error);
+            //         }
+            //     );
             fetch(`/api/user/inventory/favorite`, {
                 method: "GET",
                 credentials: "include",
@@ -96,7 +96,7 @@ const Recipe: React.FC = () => {
                 .then((res) => res.json())
                 .then(
                     (result) => {
-                        console.log("favorites", result);
+                        // console.log("favorites", result);
                         //results is an array of objects with id property
                         //check if id is in array
                         const isFav = result.some(
@@ -117,7 +117,7 @@ const Recipe: React.FC = () => {
             })
                 .then((res) => res.json())
                 .then((result) => {
-                    console.log("circles", result);
+                    // console.log("circles", result);
                     setCircles(result.socialCircles);
                 });
         }
@@ -139,7 +139,7 @@ const Recipe: React.FC = () => {
             })
             .then(
                 (result) => {
-                    console.log(result);
+                    // console.log(result);
                     setRecipe(result.recipe.recipe);
                     setOwner(result.recipe.userId);
                     setIsLoaded(true);

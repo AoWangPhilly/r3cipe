@@ -54,7 +54,7 @@ const ShareModal = (props: ShareModalProps) => {
         })
             .then((res) => res.json())
             .then((data) => {
-                console.log(data);
+                // console.log(data);
                 handleShareModalClose();
             });
     };
@@ -108,7 +108,6 @@ const ShareModal = (props: ShareModalProps) => {
                         label="Message"
                         multiline
                         rows={4}
-                        defaultValue=""
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                         variant="outlined"

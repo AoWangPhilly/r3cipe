@@ -11,6 +11,7 @@ import {
     IconButton,
     Tooltip,
     Button,
+    ListItemSecondaryAction,
 } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -233,9 +234,14 @@ const CircleSelected = () => {
                             </Tooltip>
                         </Grid>
 
-                        <List sx={{ width: "40%" }}>
+                        <List sx={{ width: "90%" }}>
                             {circleData.members.map((member) => (
-                                <ListItem key={member._id}>
+                                <ListItem
+                                    key={member._id}
+                                    sx={{
+                                        width: "100%",
+                                    }}
+                                >
                                     <ListItemAvatar>
                                         <Avatar
                                             src={member.profileUrl}
@@ -248,35 +254,38 @@ const CircleSelected = () => {
                                     </ListItemAvatar>
 
                                     <ListItemText primary={member.name} />
-                                    {member._id === circleData.owner._id && (
-                                        <Tooltip title="Owner">
-                                            <StarIcon
-                                                sx={{
-                                                    color: "gold",
-                                                    marginRight: "8px",
-                                                }}
-                                            />
-                                        </Tooltip>
-                                    )}
-                                    {userId === circleData.owner._id &&
-                                        userId !== member._id && (
-                                            <Tooltip title="Kick Member">
-                                                <IconButton
-                                                    onClick={() =>
-                                                        handleKickMember(
-                                                            member._id,
-                                                            member.name
-                                                        )
-                                                    }
-                                                >
-                                                    <TrashIcon
-                                                        sx={{
-                                                            color: "red",
-                                                        }}
-                                                    />
-                                                </IconButton>
+                                    <ListItemSecondaryAction>
+                                        {member._id ===
+                                            circleData.owner._id && (
+                                            <Tooltip title="Owner">
+                                                <StarIcon
+                                                    sx={{
+                                                        color: "gold",
+                                                        marginRight: "8px",
+                                                    }}
+                                                />
                                             </Tooltip>
                                         )}
+                                        {userId === circleData.owner._id &&
+                                            userId !== member._id && (
+                                                <Tooltip title="Kick Member">
+                                                    <IconButton
+                                                        onClick={() =>
+                                                            handleKickMember(
+                                                                member._id,
+                                                                member.name
+                                                            )
+                                                        }
+                                                    >
+                                                        <TrashIcon
+                                                            sx={{
+                                                                color: "red",
+                                                            }}
+                                                        />
+                                                    </IconButton>
+                                                </Tooltip>
+                                            )}
+                                    </ListItemSecondaryAction>
                                 </ListItem>
                             ))}
                         </List>
@@ -315,7 +324,7 @@ const CircleSelected = () => {
                                                 sm={12}
                                                 md={6}
                                                 lg={4}
-                                                key={post.recipeId}
+                                                key={post.recipeThumbnail.id + post.timestamp}
                                             >
                                                 <RecipeThumbnail
                                                     recipeThumbnail={

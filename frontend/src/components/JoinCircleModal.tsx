@@ -13,7 +13,7 @@ const JoinCircleModal = (props: JoinCircleProps) => {
     const { joinCircleModalOpen, circleId } = props;
     const handleJoinCircle = () => {
         // send a post request to the backend to join the circle
-        console.log("join circle", props.circleId);
+        // console.log("join circle", props.circleId);
         fetch(`/api/circles/${circleId}`,
             {
                 method: "PUT",
@@ -21,10 +21,9 @@ const JoinCircleModal = (props: JoinCircleProps) => {
                 }
                 ).then((response) => {
                     if (response.ok) {
-                        console.log("success");
                         navigate(0);
                     } else {
-                        console.log("error");
+                        alert("Error joining circle")
                     }
                 })
     }

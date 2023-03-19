@@ -32,17 +32,19 @@ const Circle = () => {
                     method: "GET",
                     credentials: "include",
                 });
-                console.log(response);
+                // console.log(response);
                 if (response.ok) {
                     const { socialCircles } = await response.json();
                     setCircles(socialCircles);
                 } else {
-                    console.log("Error occurred while fetching circles ");
+                    // console.log("Error occurred while fetching circles ");
                     const errorData = await response.json();
-                    console.log("Error data:", errorData);
+                    // console.log("Error data:", errorData);
+                    console.error(errorData);
                 }
             } catch (error) {
                 console.log(error);
+                
             }
             setLoading(false);
         };

@@ -22,7 +22,7 @@ const LeaveCircleModal = (props: LeaveCircleProps) => {
     const { leaveCircleModalOpen, setLeaveCircleModalOpen, circleId } = props;
     const handleLeaveCircle = () => {
         // send a post request to the backend to join the circle
-        console.log("leave circle", props.circleId);
+        // console.log("leave circle", props.circleId);
         fetch(`/api/circles/${circleId}/members/`, {
             method: "DELETE",
             credentials: "include",
@@ -34,10 +34,11 @@ const LeaveCircleModal = (props: LeaveCircleProps) => {
             }),
         }).then((response) => {
             if (response.ok) {
-                console.log("success");
+                // console.log("success");
                 navigate("/circle");
             } else {
-                console.log("error");
+                // console.log("error");
+                alert("Error leaving circle");
             }
         });
     };

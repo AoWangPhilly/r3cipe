@@ -58,7 +58,7 @@ const Search = () => {
         response.then((res) => {
             if (res.status === 200) {
                 res.json().then((data) => {
-                    console.log(data);
+                    // console.log(data);
                     setRecipes(
                         convertFullRecipesToThumbnails(data.recentRecipes)
                     );
@@ -82,8 +82,8 @@ const Search = () => {
             | React.MouseEvent<HTMLButtonElement>
     ): Promise<void> => {
         event.preventDefault();
-        console.log("Sign up");
-        console.log(searchFormState);
+        // console.log("Sign up");
+        // console.log(searchFormState);
 
         if (searchFormState.query === "") {
             // exit early if there is no search query

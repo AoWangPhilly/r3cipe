@@ -56,7 +56,7 @@ const CircleSignUp = () => {
         e: React.FormEvent<HTMLFormElement>
     ): Promise<void> => {
         e.preventDefault();
-        console.log("Sign up");
+        // console.log("Sign up");
         setIsLoading(true);
 
         try {
@@ -74,7 +74,7 @@ const CircleSignUp = () => {
             }
             uploadPromise
                 .then(async (path) => {
-                    console.log(path);
+                    // console.log(path);
                     const response = await fetch("/api/circles", {
                         method: "POST",
                         credentials: "include",
@@ -101,7 +101,7 @@ const CircleSignUp = () => {
                     }
                 });
         } catch (error) {
-            console.log(error);
+            // console.log(error);
             setError("An error occurred! Please try again");
         }
     };

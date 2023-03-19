@@ -56,7 +56,15 @@ export const RecipeThumbnail = (props: RecipeThumbnailProps) => {
                 navigate(`/recipe/${id}`);
             }}
         >
-            <CardMedia sx={{ height: 140 }} image={image} title={title} />
+            <CardMedia
+                sx={{ height: 140 }}
+                image={
+                    image
+                        ? image
+                        : "https://www.freeiconspng.com/thumbs/no-image-icon/no-image-icon-6.png"
+                }
+                title={title}
+            ></CardMedia>
             <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
                     {title}

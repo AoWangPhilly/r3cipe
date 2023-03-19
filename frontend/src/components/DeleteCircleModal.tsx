@@ -19,16 +19,15 @@ const DeleteCircleModal = (props: DeleteCircleProps) => {
     const { deleteCircleModalOpen, setDeleteCircleModalOpen, circleId } = props;
     const handleDeleteCircle = () => {
         // send a post request to the backend to join the circle
-        console.log("delete circle", props.circleId);
+        // console.log("delete circle", props.circleId);
         fetch(`/api/circles/${circleId}`, {
             method: "DELETE",
             credentials: "include",
         }).then((response) => {
             if (response.ok) {
-                console.log("success");
                 navigate("/circle");
             } else {
-                console.log("error");
+                alert("Error deleting circle")
             }
         });
     };

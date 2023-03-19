@@ -81,10 +81,10 @@ export const RecipeInput = (props: RecipeInputProps) => {
                     setIsPublic(data.recipe.isPublic);
                     setOwner(data.recipe.userId);
                     setImageUrl(data.recipe.recipe.image);
-                    console.log(
-                        "Instructions set after api call: ",
-                        instructions
-                    );
+                    // console.log(
+                    //     "Instructions set after api call: ",
+                    //     instructions
+                    // );
                     setLoading(false);
                 })
                 .catch((err) => {
@@ -160,11 +160,11 @@ export const RecipeInput = (props: RecipeInputProps) => {
         for (let i = 0; i < instructions.length; i++) {
             formState.instructions += instructions[i] + "\n";
         }
-        console.log("Instructions set before update/save call: ", instructions);
-        console.log(
-            "Instructions set before update/save call: ",
-            formState.instructions
-        );
+        // console.log("Instructions set before update/save call: ", instructions);
+        // console.log(
+        //     "Instructions set before update/save call: ",
+        //     formState.instructions
+        // );
 
         if (formState.instructions === "") {
             alert("Please enter instructions");
@@ -238,7 +238,7 @@ export const RecipeInput = (props: RecipeInputProps) => {
                 })
                     .then((res) => {
                         res.json().then((data) => {
-                            console.log(data);
+                            // console.log(data);
                             navigate(`/recipe/${data.userRecipe.recipeId}`);
                         });
                     })

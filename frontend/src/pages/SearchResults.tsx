@@ -32,7 +32,7 @@ const SearchResults: React.FC = () => {
             });
             if (apiResponse.status === 200) {
                 let data = await apiResponse.json();
-                console.log(data);
+                // console.log(data);
                 setRecipes(
                     convertSearchResultsToThumbnails(data.randomRecipeList)
                 );
@@ -70,7 +70,7 @@ const SearchResults: React.FC = () => {
                 setOffset(data.spoonacularRecipeResult.recipes.length);
             } else {
                 await spoonacularAPIResponse.json().then((data) => {
-                    console.log(data);
+                    console.log("error", data);
                 });
             }
         }
@@ -102,7 +102,7 @@ const SearchResults: React.FC = () => {
             setOffset(offset + data.spoonacularRecipeResult.recipes.length);
         } else {
             await spoonacularAPIResponse.json().then((data) => {
-                console.log(data);
+                console.log("error", data);
             });
         }
     };

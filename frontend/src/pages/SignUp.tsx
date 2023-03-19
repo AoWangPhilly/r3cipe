@@ -106,7 +106,7 @@ export const SignUp: React.FC = () => {
             if (currentFile) {
                 const data = new FormData();
                 data.append("image", currentFile!);
-                console.log(data);
+                // console.log(data);
                 uploadPromise = fetch("/api/upload", {
                     method: "POST",
                     body: data,

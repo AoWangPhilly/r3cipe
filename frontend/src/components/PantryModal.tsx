@@ -82,7 +82,7 @@ const PantryForm: React.FC = () => {
             try {
                 setIngredientsLoading(true);
 
-                console.log("Fetching ingredients");
+                // console.log("Fetching ingredients");
                 const response = await fetch("/api/ingredients", {
                     method: "GET",
                     credentials: "include",
@@ -93,12 +93,13 @@ const PantryForm: React.FC = () => {
                     const ingredientNames = data.ingredients.map(
                         (ingredient: IngredientRaw) => ingredient.name
                     );
-                    console.log("Checking ingredients: ");
+                    // console.log("Checking ingredients: ");
 
                     setAllIngredients(ingredientNames);
-                    console.log("Setting ingredients: ");
+                    // console.log("Setting ingredients: ");
                 } else {
-                    console.log("Error occurred while fetching ingredients");
+                    // console.log("Error occurred while fetching ingredients");
+                    alert("Error occurred while fetching ingredients")
                 }
             } catch (error) {
                 console.error(error);
@@ -121,7 +122,8 @@ const PantryForm: React.FC = () => {
                     setPantryItems(data);
                     setOnPantry(false);
                 } else {
-                    console.log("Error occurred while fetching pantry");
+                    // console.log("Error occurred while fetching pantry");
+                    alert("Error occurred while fetching pantry")
                 }
             } catch (error) {
                 console.error(error);
@@ -133,7 +135,7 @@ const PantryForm: React.FC = () => {
     useEffect(() => {}, [pantryItems]);
 
     const handleSelectChange = (e: SelectChangeEvent<string[]>) => {
-        console.log(e.target.value);
+        // console.log(e.target.value);
         setSelectedItems(e.target.value as string[]);
     };
 
@@ -202,7 +204,7 @@ const PantryForm: React.FC = () => {
                                         sx={{ margin: 0.5 }}
                                         size="small"
                                         onClick={() => {
-                                            console.log(selectedItems, value);
+                                            // console.log(selectedItems, value);
                                             setSelectedItems(
                                                 selectedItems.filter(
                                                     (item) => item !== value

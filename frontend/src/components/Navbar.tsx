@@ -62,7 +62,7 @@ export default function Navbar() {
 
     useEffect(() => {
         checkAuth().then((data) => {
-            console.log(data);
+            // console.log(data);
             if (data.message === "Authenticated") {
                 setIsAuth(true);
                 setName(data.user.name);
