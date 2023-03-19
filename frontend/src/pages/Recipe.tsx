@@ -3,11 +3,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { CircleType, RecipeType } from "../types";
 import {
     Avatar,
-    Button,
     Grid,
     IconButton,
     Rating,
     Typography,
+    Box,
+    CircularProgress,
+    Button,
 } from "@mui/material";
 import { stripHtml } from "string-strip-html";
 import RestaurantIcon from "@mui/icons-material/Restaurant";
@@ -60,6 +62,8 @@ const Recipe: React.FC = () => {
     const [shareModalOpen, setShareModalOpen] = React.useState(false);
     const [circles, setCircles] = React.useState<CircleType[]>([]);
     const [selectedCircle, setSelectedCircle] = React.useState<string>("");
+    const [userRating, setUserRating] = React.useState<number | null>(0);
+    const [totalReviews, setTotalReviews] = React.useState<number>(0);
 
     const handleShareModalOpen = () => {
         setShareModalOpen(true);
@@ -161,18 +165,48 @@ const Recipe: React.FC = () => {
             );
     }, [id]);
 
+    // get reviews and ratings info from backend
+    const fetchReviews = async () => {
+        try {
+            const res = await fetch(`/api/reviews/recipe/${id}`, {
+                method: "GET",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (!res.ok) {
+                throw new Error("Could not fetch reviews");
+            }
+
+            const data = await res.json();
+            console.log("reviews", data);
+            setTotalReviews(data.totalReviews);
+        } catch (error) {
+            console.error("Error fetching reviews:", error);
+        }
+    };
+
+    useEffect(() => {
+        //fetchReviews();
+    }, [id]);
+
     function onRecipeRatingChange(
         event: React.SyntheticEvent<Element, Event>,
         value: number | null
     ) {
+        setUserRating(value);
         console.log(value);
         // Send user's rating to backend
+        // Update overall recipe's rating in backend
+        // retrieve new backend rating and update state of userRating and totalReviews to show new rating
     }
 
     if (error) {
         return <div>Error: {error}</div>;
     } else if (!isLoaded) {
-        return <div>Loading...</div>;
+        return <CircularProgress />;
     } else {
         return (
             <>
@@ -208,12 +242,37 @@ const Recipe: React.FC = () => {
                         >
                             {/* Rating for recipe */}
                             {isAuth && (
-                                <Rating
-                                    name="half-rating"
-                                    defaultValue={0}
-                                    precision={0.5}
-                                    onChange={onRecipeRatingChange}
-                                />
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        mt: 1,
+                                        mb: 2,
+                                    }}
+                                >
+                                    <Typography
+                                        variant="subtitle1"
+                                        component="span"
+                                    >
+                                        Ratings:
+                                    </Typography>
+                                    <Rating
+                                        name="half-rating"
+                                        defaultValue={0}
+                                        precision={0.5}
+                                        value={userRating}
+                                        onChange={onRecipeRatingChange}
+                                        sx={{ ml: 1 }}
+                                    />
+                                    <Typography
+                                        variant="subtitle1"
+                                        component="span"
+                                        sx={{ ml: 2 }}
+                                    >
+                                        ({totalReviews})
+                                    </Typography>
+                                </Box>
                             )}
                             {owner === userId && (
                                 <Button

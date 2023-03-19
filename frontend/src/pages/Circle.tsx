@@ -44,7 +44,6 @@ const Circle = () => {
                 }
             } catch (error) {
                 console.log(error);
-                
             }
             setLoading(false);
         };
@@ -55,7 +54,7 @@ const Circle = () => {
     if (loading) {
         return (
             <div>
-                <h1>Circle</h1>
+                <Typography variant="h4">Circles</Typography>
                 <CircleSidebar />
                 <div style={{ display: "flex", justifyContent: "center" }}>
                     <CircularProgress />

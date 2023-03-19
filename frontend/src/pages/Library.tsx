@@ -1,5 +1,12 @@
 import RecipeThumbnail from "../components/RecipeThumbnail";
-import { Tabs, Tab, Grid, Box, Typography } from "@mui/material";
+import {
+    Tabs,
+    Tab,
+    Grid,
+    Box,
+    Typography,
+    CircularProgress,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import { RecipeThumbnailType } from "../types";
 import { convertFullRecipesToThumbnails } from "../util";
@@ -58,7 +65,7 @@ export const Library = () => {
     }, [activeTab]);
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <CircularProgress />;
     } else if (error) {
         return <div>error</div>;
     } else if (!recipes) {
@@ -85,9 +92,7 @@ export const Library = () => {
                 >
                     {recipes.map((recipe: RecipeThumbnailType) => (
                         <Grid item xs={1} key={recipe.id}>
-                            <RecipeThumbnail
-                                recipeThumbnail={recipe}
-                            />
+                            <RecipeThumbnail recipeThumbnail={recipe} />
                         </Grid>
                     ))}
                 </Grid>

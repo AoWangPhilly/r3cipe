@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { Button, Grid, Typography } from "@mui/material";
+import { Button, CircularProgress, Grid, Typography } from "@mui/material";
 import { RecipeThumbnail } from "../components/RecipeThumbnail";
 import { RecipeThumbnailType } from "../types";
 import {
@@ -107,7 +107,7 @@ const SearchResults: React.FC = () => {
         }
     };
 
-    if (loading) return <> </>;
+    if (loading) return <CircularProgress />;
     return (
         <div>
             <h1>Search Results</h1>
@@ -143,7 +143,7 @@ const SearchResults: React.FC = () => {
                     </Grid>
                 )
             }
-            {((offset % 16 === 0) && feelingHungry !== "true" ) && (
+            {offset % 16 === 0 && feelingHungry !== "true" && (
                 <Button
                     // center
                     sx={{
