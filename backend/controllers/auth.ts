@@ -6,7 +6,7 @@ import UserProfile, {
     loginSchema,
 } from "../models/UserProfile.js";
 import Inventory from "../models/Inventory.js";
-import { findUserByEmail } from "../helpers/userProfile.js";
+import { findUserByEmail } from "../helpers/UserProfile.js";
 import {
     cookieOptions,
     deleteToken,
