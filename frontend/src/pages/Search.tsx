@@ -85,7 +85,7 @@ const Search = () => {
         // console.log("Sign up");
         // console.log(searchFormState);
 
-        if (searchFormState.query === "") {
+        if (searchFormState.query === "" && !searchFormState.usersubmitted && !searchFormState.pantry && searchFormState.cuisine === "" && searchFormState.mealtype === "") {
             // exit early if there is no search query
             return;
         }

@@ -51,6 +51,7 @@ const SearchResults: React.FC = () => {
             if (apiResponse.status === 200) {
                 let data = await apiResponse.json();
                 setRecipes(convertFullRecipesToThumbnails(data.recipes));
+                setOffset(data.recipes.length);
             }
         } else {
             const spoonacularAPIResponse = await fetch(

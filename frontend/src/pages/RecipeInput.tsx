@@ -320,6 +320,7 @@ export const RecipeInput = (props: RecipeInputProps) => {
                                         value={formState.cuisines}
                                         sx={{
                                             width: "40%",
+                                            color: "white",
                                         }}
                                     />
                                     <Autocomplete

@@ -60,8 +60,11 @@ body {
     color: var(--primary-color) !important;
 }
 
-/* Override Material UI default primary color */
+.MuiChip-label {
+    color: white;
+}
 
+/* Override Material UI default primary color */
 
 .MuiButton-text,
 .MuiChip-root,
