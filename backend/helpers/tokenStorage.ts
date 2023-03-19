@@ -27,7 +27,7 @@ export function getTokenStorage() {
 
 export function setToken(token: string, tokenInfo: UserInfo) {
     tokenStorage[token] = tokenInfo;
-    console.log(tokenStorage);
+    // console.log(tokenStorage);
 }
 
 export function deleteToken(token: string) {
