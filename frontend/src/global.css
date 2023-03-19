@@ -20,6 +20,12 @@ body {
     --primary-color: #da9311;
 }
 
+/* Set error color to lighter red */
+.MuiButton-containedError {
+    color: #fff;
+    background-color: #eb4135 !important;
+}
+
 .MuiButton-containedPrimary {
     color: #fff;
     background-color: var(--primary-color) !important;
@@ -27,6 +33,15 @@ body {
 
 .MuiButton-containedPrimary:hover {
     background-color: #da9311 !important;
+}
+
+.MuiButton-outlinedPrimary {
+    color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+.MuiButton-outlinedPrimary:hover {
+    background-color: #da941134 !important; /* last2 are the opacity */
 }
 
 .MuiButton-containedPrimary:focus {

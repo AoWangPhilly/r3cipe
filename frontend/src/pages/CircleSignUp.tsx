@@ -195,7 +195,7 @@ const CircleSignUp = () => {
                                 marginBottom: "10px",
                             }}
                         >
-                            Sign Up
+                            Create
                         </Button>
                     )}
                 </form>

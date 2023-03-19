@@ -10,15 +10,17 @@ import {
     CircularProgress,
     IconButton,
     Tooltip,
+    Button,
 } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import JoinCircleModal from "../components/JoinCircleModal";
 import RecipeThumbnail from "../components/RecipeThumbnail";
-import FileCopyIcon from "@mui/icons-material/FileCopy";
+import FileCopyIcon from "@mui/icons-material/FileCopyOutlined";
 import StarIcon from "@mui/icons-material/Star";
 import TrashIcon from "@mui/icons-material/Delete";
 import GroupsIcon from "@mui/icons-material/Groups";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import { GRADIENT } from "../util";
 import { AuthContext } from "../context/AuthContext";
 import DeleteCircleModal from "../components/DeleteCircleModal";
@@ -147,41 +149,6 @@ const CircleSelected = () => {
             <Grid container spacing={4}>
                 {/* Left Side of Page */}
                 <Grid item xs={12} md={4}>
-                    <Tooltip
-                        title={
-                            isCopied ? "Invite code copied!" : "Copy code to clipboard"
-                        }
-                    >
-                        <IconButton onClick={handleCopyLink} size="large">
-                            Invite
-                            <FileCopyIcon />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip
-                        title={
-                            // if the user is the owner, display a message
-                            circleData.owner._id === userId
-                                ? "Delete Circle"
-                                : "Leave Circle"
-                        }
-                    >
-                        <IconButton
-                            onClick={() => {
-                                if (circleData.owner._id === userId) {
-                                    handleDeleteCircle();
-                                } else {
-                                    handleLeaveCircle();
-                                }
-                            }}
-                            size="large"
-                        >
-                            {circleData.owner._id === userId
-                                ? "Delete"
-                                : "Leave"}
-                            <TrashIcon />
-                        </IconButton>
-                    </Tooltip>
-
                     <Box
                         sx={{
                             padding: "20px",
@@ -215,6 +182,56 @@ const CircleSelected = () => {
                         <Typography variant="body1" gutterBottom>
                             {circleData.description}
                         </Typography>
+
+                        <Grid item>
+                            <Tooltip
+                                title={
+                                    isCopied
+                                        ? "Invite code copied!"
+                                        : "Copy code to clipboard"
+                                }
+                            >
+                                <Button
+                                    onClick={handleCopyLink}
+                                    size="medium"
+                                    variant="outlined"
+                                    endIcon={<FileCopyIcon />}
+                                >
+                                    Invite
+                                </Button>
+                            </Tooltip>
+                            <Tooltip
+                                title={
+                                    // if the user is the owner, display a message
+                                    circleData.owner._id === userId
+                                        ? "Delete Circle"
+                                        : "Leave Circle"
+                                }
+                            >
+                                <Button
+                                    onClick={() => {
+                                        if (circleData.owner._id === userId) {
+                                            handleDeleteCircle();
+                                        } else {
+                                            handleLeaveCircle();
+                                        }
+                                    }}
+                                    size="medium"
+                                    variant="outlined"
+                                    endIcon={
+                                        circleData.owner._id === userId ? (
+                                            <TrashIcon />
+                                        ) : (
+                                            <ExitToAppIcon />
+                                        )
+                                    }
+                                >
+                                    {circleData.owner._id === userId
+                                        ? "Delete"
+                                        : "Leave"}
+                                </Button>
+                            </Tooltip>
+                        </Grid>
 
                         <List sx={{ width: "40%" }}>
                             {circleData.members.map((member) => (

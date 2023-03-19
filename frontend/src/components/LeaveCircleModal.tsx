@@ -1,6 +1,7 @@
 import {
     Button,
     Dialog,
+    DialogContent,
     DialogContentText,
     DialogTitle,
     Grid,
@@ -52,16 +53,18 @@ const LeaveCircleModal = (props: LeaveCircleProps) => {
             maxWidth="md"
         >
             <DialogTitle id="alert-dialog-title">{"Leave Circle"}</DialogTitle>
-            <DialogContentText id="alert-dialog-description">
-                Are you sure you want to leave this circle?
-            </DialogContentText>
+            <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    Are you sure you want to leave this circle?
+                </DialogContentText>
+            </DialogContent>
             <Grid
                 container
                 spacing={3}
                 sx={{
                     margin: "auto",
                     width: "80%",
-                    marginTop: "2rem",
+                    // marginTop: "2rem",
                     marginBottom: "2rem",
                 }}
             >
@@ -77,7 +80,7 @@ const LeaveCircleModal = (props: LeaveCircleProps) => {
                 </Grid>
                 <Grid item xs={12}>
                     <Button
-                        variant="contained"
+                        variant="outlined"
                         color="primary"
                         fullWidth
                         onClick={handleCancel}

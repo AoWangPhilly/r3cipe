@@ -1,6 +1,7 @@
 import {
     Button,
     Dialog,
+    DialogContent,
     DialogContentText,
     DialogTitle,
     Grid,
@@ -54,18 +55,23 @@ const KickCircleModal = (props: KickCircleProps) => {
             maxWidth="md"
         >
             <DialogTitle id="alert-dialog-title">
-                {"Kick user from circle"}
+                {"Remove User"}
             </DialogTitle>
-            <DialogContentText id="alert-dialog-description">
-                Are you sure you want to kick this circle?
-            </DialogContentText>
+            <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    {`Are you sure you want to kick ${user.name} from this circle?`}
+                    {/* Are you sure you want to kick this circle? */}
+                </DialogContentText>
+            </DialogContent>
+            {/* <DialogContentText id="alert-dialog-description">
+                {`Are you sure you want to kick ${user.name} from this circle?`}
+            </DialogContentText> */}
             <Grid
                 container
                 spacing={3}
                 sx={{
                     margin: "auto",
                     width: "80%",
-                    marginTop: "2rem",
                     marginBottom: "2rem",
                 }}
             >
