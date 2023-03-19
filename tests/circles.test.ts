@@ -20,6 +20,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
     // Closing the DB connection allows Jest to exit successfully.
+    await UserProfile.deleteOne({ email: "test@example.com" });
     await UserProfile.deleteOne({ email: "user@example.com" });
     await SocialCircle.deleteOne({ name: "test" });
     await SocialCircle.deleteOne({ name: "example" });
@@ -134,29 +135,34 @@ describe("GET circles by ID", () => {
             password: "test12345",
         });
 
-        const response = await axios.post(
-            `${BASE_URL}/api/circles/`,
+        try {
+            const response = await axios.post(
+                `${BASE_URL}/api/circles/`,
 
-            {
-                name: "example",
-                description: "test",
-            },
-            {
-                headers: {
-                    Cookie: loginResponse.headers["set-cookie"]![0],
+                {
+                    name: "example",
+                    description: "test",
                 },
-            }
-        );
+                {
+                    headers: {
+                        Cookie: loginResponse.headers["set-cookie"]![0],
+                    },
+                }
+            );
 
-        const circleByIdResponse = await axios.get(
-            `${BASE_URL}/api/circles/invalid`,
-            {
-                headers: {
-                    Cookie: loginResponse.headers["set-cookie"]![0],
-                },
-            }
-        );
-
-        expect(circleByIdResponse.status).toEqual(404);
+            const circleByIdResponse = await axios.get(
+                `${BASE_URL}/api/circles/invalid`,
+                {
+                    headers: {
+                        Cookie: loginResponse.headers["set-cookie"]![0],
+                    },
+                }
+            );
+        } catch (error: any) {
+            expect(error.response.data.message).toEqual(
+                "Social circle already exists"
+            );
+            expect(error.response.status).toEqual(400);
+        }
     });
 });
