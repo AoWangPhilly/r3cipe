@@ -95,53 +95,23 @@ describe("PUT pantry", () => {
     });
 });
 
-// describe("GET favorite recipes", () => {
-//     test("Get favorite recipes", async () => {
-//         const response = await axios.get(`${BASE_URL}/api/pantry/favorites`);
-//         expect(response.status).toEqual(200);
-//         expect(response.data.favorites.length).toBeGreaterThan(0);
-//     });
-// });
+describe("GET favorite recipes", () => {
+    test("Get favorite recipes", async () => {
+        const loginResponse = await axios.post(`${BASE_URL}/api/auth/login`, {
+            email: "user@example.com",
+            password: "test12345",
+        });
 
-// describe("PUT favorite recipes", () => {
-//     test("Put favorite recipes", async () => {
-//         const response = await axios.put(`${BASE_URL}/api/pantry/favorites`, {
-//             favorites: [
-//                 {
-//                     name: "Test",
-//                     image: "Test",
-//                     id: 1,
-//                 },
-//             ],
-//         });
-//         expect(response.status).toEqual(200);
-//         expect(response.data.favorites.length).toBeGreaterThan(0);
-//     });
-// });
+        const response = await axios.get(
+            `${BASE_URL}/api/user/inventory/favorite`,
+            {
+                headers: {
+                    Cookie: `${loginResponse.headers["set-cookie"]![0]}`, // replace sessionId with the actual session ID obtained after logging in
+                },
+            }
+        );
 
-// describe("DELETE favorite recipes", () => {
-//     test("Delete favorite recipes", async () => {
-//         const response = await axios.delete(
-//             `${BASE_URL}/api/pantry/favorites`,
-//             {
-//                 favorites: [
-//                     {
-//                         name: "Test",
-//                         image: "Test",
-//                         id: 1,
-//                     },
-//                 ],
-//             }
-//         );
-//         expect(response.status).toEqual(200);
-//         expect(response.data.favorites.length).toBeGreaterThan(0);
-//     });
-// });
-
-// describe("GET my recipes", () => {
-//     test("Get my recipes", async () => {
-//         const response = await axios.get(`${BASE_URL}/api/pantry/myrecipes`);
-//         expect(response.status).toEqual(200);
-//         expect(response.data.myrecipes.length).toBeGreaterThan(0);
-//     });
-// });
+        expect(response.status).toEqual(201);
+        expect(response.data).toEqual([]);
+    });
+});
