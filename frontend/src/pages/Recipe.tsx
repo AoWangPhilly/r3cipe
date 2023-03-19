@@ -63,6 +63,7 @@ const Recipe: React.FC = () => {
     const [circles, setCircles] = React.useState<CircleType[]>([]);
     const [selectedCircle, setSelectedCircle] = React.useState<string>("");
     const [userRating, setUserRating] = React.useState<number | null>(0);
+    const [overallRating, setOverallRating] = React.useState<number | null>(0);
     const [totalReviews, setTotalReviews] = React.useState<number>(0);
 
     const handleShareModalOpen = () => {
@@ -182,6 +183,7 @@ const Recipe: React.FC = () => {
 
             const data = await res.json();
             console.log("reviews", data);
+            setOverallRating(data.overallRating);
             setTotalReviews(data.totalReviews);
         } catch (error) {
             console.error("Error fetching reviews:", error);
@@ -255,14 +257,14 @@ const Recipe: React.FC = () => {
                                         variant="subtitle1"
                                         component="span"
                                     >
-                                        Ratings:
+                                        Average Rating:
                                     </Typography>
                                     <Rating
-                                        name="half-rating"
+                                        name="overall-rating"
                                         defaultValue={0}
                                         precision={0.5}
-                                        value={userRating}
-                                        onChange={onRecipeRatingChange}
+                                        value={overallRating}
+                                        readOnly
                                         sx={{ ml: 1 }}
                                     />
                                     <Typography
@@ -270,8 +272,16 @@ const Recipe: React.FC = () => {
                                         component="span"
                                         sx={{ ml: 2 }}
                                     >
-                                        ({totalReviews})
+                                        Your Rating:
                                     </Typography>
+                                    <Rating
+                                        name="user-rating"
+                                        defaultValue={0}
+                                        precision={0.5}
+                                        value={userRating}
+                                        onChange={onRecipeRatingChange}
+                                        sx={{ ml: 1 }}
+                                    />
                                 </Box>
                             )}
                             {owner === userId && (
