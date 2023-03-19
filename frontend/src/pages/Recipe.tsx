@@ -284,24 +284,19 @@ const Recipe: React.FC = () => {
                                     />
                                 </Box>
                             )}
-                            {owner === userId && (
-                                <Button
-                                    variant="contained"
-                                    color="info"
-                                    sx={{
-                                        marginLeft: "1rem",
-                                        color: "white",
-                                    }}
-                                    onClick={() => navigate(`/edit/${id}`)}
-                                    endIcon={
-                                        <BorderColorIcon
-                                            style={{ color: "white" }}
-                                        />
-                                    }
-                                >
-                                    Edit
-                                </Button>
-                            )}
+                        </Grid>
+
+                        {/* Fav / Share / Edit Buttons */}
+                        <Grid
+                            item
+                            xs={12}
+                            sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                margin: "auto",
+                            }}
+                        >
                             {isAuth ? (
                                 <>
                                     {isFavorite ? (
@@ -367,10 +362,30 @@ const Recipe: React.FC = () => {
                                                 />
                                             }
                                         >
-                                            Share to Circle
+                                            Share
                                         </Button>
                                     ) : (
                                         <></>
+                                    )}
+                                    {owner === userId && (
+                                        <Button
+                                            variant="contained"
+                                            color="info"
+                                            sx={{
+                                                // marginLeft: "1rem",
+                                                color: "white",
+                                            }}
+                                            onClick={() =>
+                                                navigate(`/edit/${id}`)
+                                            }
+                                            endIcon={
+                                                <BorderColorIcon
+                                                    style={{ color: "white" }}
+                                                />
+                                            }
+                                        >
+                                            Edit
+                                        </Button>
                                     )}
                                 </>
                             ) : (
