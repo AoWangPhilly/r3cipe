@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 import axios from "axios";
 import UserProfile from "../backend/models/UserProfile.js";
 import SocialCircle from "../backend/models/SocialCircle";
-import { connect } from "http2";
 
 const BASE_URL = "http://localhost:3000";
 
@@ -166,3 +165,69 @@ describe("GET circles by ID", () => {
         }
     });
 });
+
+// describe("PUT join circles by ID", () => {
+//     test("Join user circle by Valid ID", async () => {
+//         const loginResponse = await axios.post(`${BASE_URL}/api/auth/login`, {
+//             email: "user@example.com",
+//             password: "test12345",
+//         });
+
+//         const response = await axios.post(
+//             `${BASE_URL}/api/circles/`,
+//             {
+//                 name: "example",
+//                 description: "test",
+//             },
+//             {
+//                 headers: {
+//                     Cookie: loginResponse.headers["set-cookie"]![0],
+//                 },
+//             }
+//         );
+//     });
+// });
+
+// describe("PUT add users to circle", () => {
+//     test("Add user to circle", async () => {
+//         const loginResponse = await axios.post(`${BASE_URL}/api/auth/login`, {
+//             email: "user@example.com",
+//             password: "test12345",
+//         });
+
+//         const response = await axios.post(
+//             `${BASE_URL}/api/circles/`,
+//             {
+//                 name: "example",
+//                 description: "test",
+//             },
+//             {
+//                 headers: {
+//                     Cookie: loginResponse.headers["set-cookie"]![0],
+//                 },
+//             }
+//         );
+//     });
+// });
+
+// describe("DELETE remove social circle", () => {
+//     test("Remove social circle", async () => {
+//         const loginResponse = await axios.post(`${BASE_URL}/api/auth/login`, {
+//             email: "user@example.com",
+//             password: "test12345",
+//         });
+
+//         const response = await axios.post(
+//             `${BASE_URL}/api/circles/`,
+//             {
+//                 name: "example",
+//                 description: "test",
+//             },
+//             {
+//                 headers: {
+//                     Cookie: loginResponse.headers["set-cookie"]![0],
+//                 },
+//             }
+//         );
+//     });
+// });
