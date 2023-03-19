@@ -9,8 +9,10 @@ import { parseRecipe } from "../helpers/recipeParser.js";
 import Inventory from "../models/Inventory.js";
 import { RecipeType, RecipeTypeWithId } from "../types/types.js";
 import UserRecipe from "../models/UserRecipe.js";
+import { getApiKey, checkApiKey } from "../helpers/apiKey.js";
+import { Console } from "console";
 
-const API_KEY = process.env.API_KEY;
+// const API_KEY = process.env.API_KEY;
 
 /**
  * Spoonacular's complexSearch endpoint
@@ -19,12 +21,12 @@ const API_KEY = process.env.API_KEY;
  * If search/recipe found in cache, use that. otherwise, make API req
  */
 async function searchSpoonacularRecipes(req: Request, res: Response) {
-    const { query, cuisine, mealtype, pantry } = req.query;
-    const key = `${query}-${cuisine}`;
+    const { query, cuisine, mealtype, pantry, offset } = req.query;
+
+    const key = `${query}-${cuisine}-${mealtype}-${offset ? offset : 0}`;
     const maxResults: number = 16;
     const { token } = req.cookies;
     const tokenStorage = getTokenStorage();
-
     // parameters are empty
     if (!query && !cuisine && !mealtype) {
         return res.status(400).json({ error: "no parameters provided" });
@@ -42,7 +44,7 @@ async function searchSpoonacularRecipes(req: Request, res: Response) {
         spoonacularUrl = buildUrl("https://api.spoonacular.com", {
             path: "recipes/complexSearch",
             queryParams: {
-                apiKey: API_KEY,
+                apiKey: getApiKey(),
                 query: query as string,
                 type: mealtype as string,
                 cuisine: cuisine as string,
@@ -50,19 +52,21 @@ async function searchSpoonacularRecipes(req: Request, res: Response) {
                 addRecipeInformation: "true",
                 fillIngredients: "true",
                 number: maxResults,
+                offset: (offset ? offset : 0) as number,
             },
         });
     } else {
         spoonacularUrl = buildUrl("https://api.spoonacular.com", {
             path: "recipes/complexSearch",
             queryParams: {
-                apiKey: API_KEY,
+                apiKey: getApiKey(),
                 query: query as string,
                 type: mealtype as string,
                 cuisine: cuisine as string,
                 addRecipeInformation: "true",
                 fillIngredients: "true",
                 number: maxResults,
+                offset: (offset ? offset : 0) as number,
             },
         });
 
@@ -85,6 +89,8 @@ async function searchSpoonacularRecipes(req: Request, res: Response) {
     axios
         .get(spoonacularUrl)
         .then(async (response) => {
+            let pointsLeft = response.headers["x-api-quota-left"];
+            checkApiKey(pointsLeft);
             await response.data.results.forEach(async (recipe: any) => {
                 const { recipeId, ...parsedRecipe } = await parseRecipe(recipe);
 
@@ -149,7 +155,12 @@ async function getRecipeById(req: Request, res: Response) {
     if (id.startsWith("u")) {
         const recipe = await UserRecipe.findOne({ recipeId: id });
 
-        if (recipe) {
+        //if recipe exists, and recipe is public OR recipe is private and user is logged in
+        if (
+            recipe &&
+            (recipe.isPublic ||
+                (req.cookies.token && recipe.userId === req.cookies.token))
+        ) {
             return res.status(200).json({ recipe });
         } else {
             return res.status(404).json({ error: "user recipe not found" });
@@ -164,7 +175,7 @@ async function getRecipeById(req: Request, res: Response) {
         const spoonacularUrl = buildUrl("https://api.spoonacular.com", {
             path: `recipes/${id}/information`,
             queryParams: {
-                apiKey: API_KEY,
+                apiKey: getApiKey(),
                 includeNutrition: "false",
             },
         });
@@ -173,6 +184,8 @@ async function getRecipeById(req: Request, res: Response) {
         axios
             .get(spoonacularUrl)
             .then(async (response) => {
+                let pointsLeft = response.headers["x-api-quota-left"];
+                checkApiKey(pointsLeft);
                 console.log(`Recipe ${id} not in cache, making API req`);
                 // console.log(response.data);
                 const { recipeId, ...parsedRecipe } = await parseRecipe(
@@ -206,12 +219,14 @@ async function getRandomSpoonacularRecipe(req: Request, res: Response) {
     const spoonacularUrl = buildUrl("https://api.spoonacular.com", {
         path: "recipes/random",
         queryParams: {
-            apiKey: API_KEY,
+            apiKey: getApiKey(),
             number: 8, // can set to anything
         },
     });
 
     const response = await axios.get(spoonacularUrl);
+    let pointsLeft = response.headers["x-api-quota-left"];
+    checkApiKey(pointsLeft);
     if (response.status >= 400) {
         return res.status(500).json({ error: "Could not get random recipe" });
     }

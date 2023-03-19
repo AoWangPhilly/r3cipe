@@ -119,49 +119,51 @@ const SearchResults: React.FC = () => {
                         No recipes found. Try a different search.
                     </Typography>
                 ) : (
-                    <Grid
-                        container
-                        spacing={2}
-                        sx={{
-                            display: "flex",
-                            margin: "auto",
-                            justifyContent: "center",
-                            width: "80%",
-                        }}
-                    >
-                        {recipes.map((recipe: RecipeThumbnailType) => (
-                            <Grid
-                                item
-                                xs={12}
-                                sm={6}
-                                md={4}
-                                lg={3}
-                                key={recipe.id}
+                    <>
+                        <Grid
+                            container
+                            spacing={2}
+                            sx={{
+                                display: "flex",
+                                margin: "auto",
+                                justifyContent: "center",
+                                width: "80%",
+                            }}
+                        >
+                            {recipes.map((recipe: RecipeThumbnailType) => (
+                                <Grid
+                                    item
+                                    xs={12}
+                                    sm={6}
+                                    md={4}
+                                    lg={3}
+                                    key={recipe.id}
+                                >
+                                    <RecipeThumbnail recipeThumbnail={recipe} />
+                                </Grid>
+                            ))}
+                        </Grid>
+                        {offset % 16 === 0 && feelingHungry !== "true" && (
+                            <Button
+                                // center
+                                sx={{
+                                    display: "flex",
+                                    margin: "auto",
+                                    justifyContent: "center",
+                                    width: "40%",
+                                    height: "50px",
+                                    marginBottom: "100px",
+                                    marginTop: "50px",
+                                }}
+                                variant="contained"
+                                onClick={handleGetMoreRecipes}
                             >
-                                <RecipeThumbnail recipeThumbnail={recipe} />
-                            </Grid>
-                        ))}
-                    </Grid>
+                                Get More Recipes
+                            </Button>
+                        )}
+                    </>
                 )
             }
-            {offset % 16 === 0 && feelingHungry !== "true" && (
-                <Button
-                    // center
-                    sx={{
-                        display: "flex",
-                        margin: "auto",
-                        justifyContent: "center",
-                        width: "40%",
-                        height: "50px",
-                        marginBottom: "100px",
-                        marginTop: "50px",
-                    }}
-                    variant="contained"
-                    onClick={handleGetMoreRecipes}
-                >
-                    Get More Recipes
-                </Button>
-            )}
         </div>
     );
 };

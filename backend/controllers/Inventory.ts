@@ -5,8 +5,9 @@ import UserRecipe from "../models/UserRecipe.js";
 import { buildUrl } from "build-url-ts";
 import axios from "axios";
 import { parseRecipe } from "../helpers/recipeParser.js";
+import { checkApiKey, getApiKey } from "../helpers/apiKey.js";
 
-const API_KEY = process.env.API_KEY;
+// const API_KEY = process.env.API_KEY;
 
 // we update the whole Pantry instead of adding elements to it
 const updatePantry = async (req: Request, res: Response) => {
@@ -147,14 +148,17 @@ const getFavoriteRecipes = async (req: Request, res: Response) => {
                         {
                             path: `recipes/${idTemp}/information`,
                             queryParams: {
-                                apiKey: API_KEY,
+                                apiKey: getApiKey(),
                                 includeNutrition: "false",
                             },
                         }
                     );
 
                     console.log("Recipe not in cache, making API req");
-                    const { data } = await axios.get(spoonacularUrl);
+                    const response = await axios.get(spoonacularUrl);
+                    const data = response.data;
+                    let pointsLeft = response.headers["x-api-quota-left"];
+                    checkApiKey(pointsLeft);
                     // TODO: might need error catching here?
 
                     // console.log(response.data);

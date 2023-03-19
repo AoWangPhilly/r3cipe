@@ -20,7 +20,7 @@ const queryRecipes = async (req: Request, res: Response) => {
         })) as string[];
     }
     // search for user submitted recipes
-    const allRecipes = await UserRecipe.find();
+    const allRecipes = await UserRecipe.find({ isPublic: true });
     const filteredRecipes = allRecipes.filter((recipe) => {
         let cuisineMatch;
         let mealMatch;

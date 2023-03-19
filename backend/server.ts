@@ -67,7 +67,12 @@ const upload = multer({ storage: storage });
 
 app.post("/api/upload", upload.single("image"), (req, res) => {
     //return file name to client
-    let path = "http://localhost:3000/images/" + req.file?.filename;
+    let path;
+    if (process.env.stage === "DEV") {
+        path = "http://localhost:3000/images/" + req.file?.filename;
+    } else {
+        path = "https://food.tylers.works/images/" + req.file?.filename;
+    }
     res.json({ path: path });
 });
 
