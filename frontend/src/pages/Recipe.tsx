@@ -1,7 +1,14 @@
 import React, { useContext, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { CircleType, RecipeType } from "../types";
-import { Avatar, Grid, IconButton, Rating, Typography } from "@mui/material";
+import {
+    Avatar,
+    Button,
+    Grid,
+    IconButton,
+    Rating,
+    Typography,
+} from "@mui/material";
 import { stripHtml } from "string-strip-html";
 import RestaurantIcon from "@mui/icons-material/Restaurant";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
@@ -10,6 +17,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { AuthContext } from "../context/AuthContext";
 import ShareModal from "../components/ShareModal";
+import Send from "@mui/icons-material/Send";
 
 const addFavorite = (id: string) => {
     fetch(`/api/user/inventory/favorite/${id}`, {
@@ -18,11 +26,11 @@ const addFavorite = (id: string) => {
         headers: {
             "Content-Type": "application/json",
         },
-    })
-        // .then((res) => res.json())
-        // .then((data) => {
-        //     console.log("add favorite", data);
-        // });
+    });
+    // .then((res) => res.json())
+    // .then((data) => {
+    //     console.log("add favorite", data);
+    // });
 };
 
 const removeFavorite = (id: string) => {
@@ -32,11 +40,11 @@ const removeFavorite = (id: string) => {
         headers: {
             "Content-Type": "application/json",
         },
-    })
-        // .then((res) => res.json())
-        // .then((data) => {
-        //     console.log("remove favorite", data);
-        // });
+    });
+    // .then((res) => res.json())
+    // .then((data) => {
+    //     console.log("remove favorite", data);
+    // });
 };
 
 const Recipe: React.FC = () => {
@@ -47,6 +55,7 @@ const Recipe: React.FC = () => {
     const [error, setError] = React.useState<string>("");
     const [isLoaded, setIsLoaded] = React.useState(false);
     const [isFavorite, setIsFavorite] = React.useState(false);
+    const [isPublic, setIsPublic] = React.useState(false);
     const [isClicked, setIsClicked] = React.useState(false);
     const [shareModalOpen, setShareModalOpen] = React.useState(false);
     const [circles, setCircles] = React.useState<CircleType[]>([]);
@@ -142,6 +151,7 @@ const Recipe: React.FC = () => {
                     // console.log(result);
                     setRecipe(result.recipe.recipe);
                     setOwner(result.recipe.userId);
+                    setIsPublic(result.recipe.isPublic);
                     setIsLoaded(true);
                 },
                 (error) => {
@@ -184,59 +194,18 @@ const Recipe: React.FC = () => {
                                 gutterBottom
                             >
                                 {recipe.title}
-                                {owner === userId && (
-                                    <IconButton
-                                        onClick={() => navigate(`/edit/${id}`)}
-                                    >
-                                        <BorderColorIcon
-                                            style={{ color: "lightblue" }}
-                                        />
-                                    </IconButton>
-                                )}
-                                {isAuth ? (
-                                    <>
-                                        {isFavorite ? (
-                                            <IconButton
-                                                onClick={() => {
-                                                    removeFavorite(id!);
-                                                    setIsFavorite(false);
-                                                }}
-                                            >
-                                                <FavoriteIcon
-                                                    style={{ color: "red" }}
-                                                />
-                                            </IconButton>
-                                        ) : (
-                                            <IconButton
-                                                onClick={() => {
-                                                    addFavorite(id!);
-                                                    setIsFavorite(true);
-                                                    setIsClicked(true);
-                                                    setTimeout(() => {
-                                                        setIsClicked(false);
-                                                    }, 300);
-                                                }}
-                                                className={
-                                                    isClicked ? "pop" : ""
-                                                }
-                                            >
-                                                <FavoriteBorderIcon
-                                                    style={{ color: "red" }}
-                                                />
-                                            </IconButton>
-                                        )}
-                                        <IconButton
-                                            onClick={handleShareModalOpen}
-                                        >
-                                            <SendIcon
-                                                style={{ color: "blueviolet" }}
-                                            />
-                                        </IconButton>
-                                    </>
-                                ) : (
-                                    <></>
-                                )}
                             </Typography>
+                        </Grid>
+                        <Grid
+                            item
+                            xs={12}
+                            sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                margin: "auto",
+                            }}
+                        >
                             {/* Rating for recipe */}
                             {isAuth && (
                                 <Rating
@@ -245,6 +214,98 @@ const Recipe: React.FC = () => {
                                     precision={0.5}
                                     onChange={onRecipeRatingChange}
                                 />
+                            )}
+                            {owner === userId && (
+                                <Button
+                                    variant="contained"
+                                    color="info"
+                                    sx={{
+                                        marginLeft: "1rem",
+                                        color: "white",
+                                    }}
+                                    onClick={() => navigate(`/edit/${id}`)}
+                                    endIcon={
+                                        <BorderColorIcon
+                                            style={{ color: "white" }}
+                                        />
+                                    }
+                                >
+                                    Edit
+                                </Button>
+                            )}
+                            {isAuth ? (
+                                <>
+                                    {isFavorite ? (
+                                        <Button
+                                            sx={{
+                                                color: "white",
+                                            }}
+                                            variant="contained"
+                                            color="error"
+                                            onClick={() => {
+                                                removeFavorite(id!);
+                                                setIsFavorite(false);
+                                            }}
+                                            endIcon={
+                                                <FavoriteIcon
+                                                    style={{
+                                                        color: "white",
+                                                    }}
+                                                />
+                                            }
+                                        >
+                                            Unfavorite
+                                        </Button>
+                                    ) : (
+                                        <Button
+                                            sx={{
+                                                color: "red",
+                                            }}
+                                            variant="outlined"
+                                            color="error"
+                                            onClick={() => {
+                                                addFavorite(id!);
+                                                setIsFavorite(true);
+                                                setIsClicked(true);
+                                                setTimeout(() => {
+                                                    setIsClicked(false);
+                                                }, 300);
+                                            }}
+                                            className={isClicked ? "pop" : ""}
+                                            endIcon={
+                                                <FavoriteBorderIcon
+                                                    style={{ color: "red" }}
+                                                />
+                                            }
+                                        >
+                                            Favorite
+                                        </Button>
+                                    )}
+                                    {isPublic ? (
+                                        <Button
+                                            onClick={() => {
+                                                setShareModalOpen(true);
+                                            }}
+                                            sx={{
+                                                color: "white",
+                                            }}
+                                            variant="contained"
+                                            endIcon={
+                                                <SendIcon
+                                                    style={{
+                                                        color: "white",
+                                                    }}
+                                                />
+                                            }
+                                        >
+                                            Share to Circle
+                                        </Button>
+                                    ) : (
+                                        <></>
+                                    )}
+                                </>
+                            ) : (
+                                <></>
                             )}
                         </Grid>
 

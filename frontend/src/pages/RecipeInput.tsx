@@ -5,7 +5,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { IngredientSelect } from "../components/IngredientSelect";
 import { InstructionsInput } from "../components/InstructionsInput";
-import { Button, FormControlLabel, Grid, Switch } from "@mui/material";
+import { Box, Button, FormControlLabel, Grid, Switch } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
@@ -258,7 +258,16 @@ export const RecipeInput = (props: RecipeInputProps) => {
         return <h1>Error</h1>;
     } else {
         return (
-            <div>
+            <Box sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "80%",
+                height: "100%",
+                marginLeft: "auto",
+                marginRight: "auto",
+            }}>
                 {props.isEdit ? <h1>Edit Recipe</h1> : <h1>Create Recipe</h1>}
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
@@ -444,7 +453,7 @@ export const RecipeInput = (props: RecipeInputProps) => {
                     </Grid>
                     <br />
                 </form>
-            </div>
+            </Box>
         );
     }
 };
