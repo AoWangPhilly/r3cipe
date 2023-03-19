@@ -4,8 +4,10 @@
         "build": "rm -rf out && mkdir out && tsc",
         "build:deploy": "rm -rf out && mkdir out && tsc && (cd frontend && npm run build)",
         "start": "cd out && node server.js",
+        "start:deploy": "cd out && NODE_ENV=production pm2 start server.js",
         "watch": "npm run build && tsc-watch --onSuccess \"npm run start\"",
         "test": "NODE_OPTIONS=--experimental-vm-modules jest --runInBand --rootDir=tests"
+        
     },
     "type": "module",
     "dependencies": {
