@@ -5,7 +5,13 @@ import Autocomplete from "@mui/material/Autocomplete";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { IngredientSelect } from "../components/IngredientSelect";
 import { InstructionsInput } from "../components/InstructionsInput";
-import { Button, FormControlLabel, Grid, Switch } from "@mui/material";
+import {
+    Button,
+    FormControlLabel,
+    Grid,
+    Switch,
+    CircularProgress,
+} from "@mui/material";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
@@ -250,7 +256,7 @@ export const RecipeInput = (props: RecipeInputProps) => {
     };
 
     if (loading) {
-        return <h1>Loading...</h1>;
+        return <CircularProgress />;
     } else if (props.isEdit && userId !== owner) {
         return <h1>Not authorized to edit this recipe</h1>;
     } else if (error) {

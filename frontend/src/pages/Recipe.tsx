@@ -8,6 +8,7 @@ import {
     Rating,
     Typography,
     Box,
+    CircularProgress,
 } from "@mui/material";
 import { stripHtml } from "string-strip-html";
 import RestaurantIcon from "@mui/icons-material/Restaurant";
@@ -201,7 +202,7 @@ const Recipe: React.FC = () => {
     if (error) {
         return <div>Error: {error}</div>;
     } else if (!isLoaded) {
-        return <div>Loading...</div>;
+        return <CircularProgress />;
     } else {
         return (
             <>
