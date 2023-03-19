@@ -131,9 +131,15 @@ const Recipe: React.FC = () => {
                 "Content-Type": "application/json",
             },
         })
-            .then((res) => res.json())
+            .then((res) => {
+                if (!res.ok) {
+                    return Promise.reject("Could not find that recipe");
+                }
+                return res.json();
+            })
             .then(
                 (result) => {
+                    console.log(result);
                     setRecipe(result.recipe.recipe);
                     setOwner(result.recipe.userId);
                     setIsLoaded(true);
