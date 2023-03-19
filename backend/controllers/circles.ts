@@ -132,7 +132,7 @@ const joinCircleByCode = async (req: Request, res: Response) => {
     } catch (error: any) {
         /* one possible error: invalid mongo id that could not be cast */
         // console.log(error.message);
-        res.status(400).json({ error: "Social circle not found" });
+        res.status(404).json({ error: "Social circle not found" });
         // res.status(400).json({ error: "Could not join circle" });
     }
 };

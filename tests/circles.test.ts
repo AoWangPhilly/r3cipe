@@ -219,6 +219,33 @@ describe("PUT join circles by code", () => {
             console.log(error);
         }
     });
+
+    test("Invalid circle ID", async () => {
+        try {
+            const loginResponse = await axios.post(
+                `${BASE_URL}/api/auth/login`,
+                {
+                    email: "test@example.com",
+                    password: "test12345",
+                }
+            );
+
+            const response = await axios.put(
+                `${BASE_URL}/api/circles`,
+                { id: "INVALID" },
+                {
+                    headers: {
+                        Cookie: loginResponse.headers["set-cookie"]![0],
+                    },
+                }
+            );
+        } catch (error: any) {
+            expect(error.response.data.error).toEqual(
+                "Social circle not found"
+            );
+            expect(error.response.status).toEqual(404);
+        }
+    });
 });
 
 describe("DELETE remove social circle", () => {
@@ -228,17 +255,16 @@ describe("DELETE remove social circle", () => {
             password: "test12345",
         });
 
-        const response = await axios.post(
-            `${BASE_URL}/api/circles/`,
-            {
-                name: "example",
-                description: "test",
-            },
+        const circle = await SocialCircle.findOne({ name: "test" });
+        const response = await axios.delete(
+            `${BASE_URL}/api/circles/${circle?._id}`,
             {
                 headers: {
                     Cookie: loginResponse.headers["set-cookie"]![0],
                 },
             }
         );
+
+        expect(response.status).toEqual(200);
     });
 });
