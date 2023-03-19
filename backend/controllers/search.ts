@@ -266,7 +266,7 @@ async function getRecentRecipes(req: Request, res: Response) {
         .sort({ createdAt: -1 })
         .limit(userRecipes);
 
-    if (userRecentRecipes.length < userRecipes) {
+    if (userRecentRecipes.length <= userRecipes) {
         spoonRecipes += userRecipes - userRecentRecipes.length;
     } else if (userRecentRecipes.length > userRecipes) {
         userRecipes += userRecentRecipes.length - userRecipes;
