@@ -13,8 +13,8 @@ socialCircleRouter.get("/", authorize, controller.getSocialCirclesByUserId);
 socialCircleRouter.post("/", authorize, controller.createSocialCircle);
 socialCircleRouter.get("/:id", authorize, controller.getCircleById);
 socialCircleRouter.put("/", authorize, controller.joinCircleByCode);
-socialCircleRouter.put("/:id", authorize, controller.addUserToSocialCircle);
 socialCircleRouter.delete("/:id", authorize, controller.deleteSocialCircle);
+// socialCircleRouter.put("/:id", authorize, controller.addUserToSocialCircle); // unused
 
 // Routes for Members & Posts of a specific social circle
 socialCircleRouter.use("/:id/members", membersRouter);
