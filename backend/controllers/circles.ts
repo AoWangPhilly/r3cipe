@@ -138,10 +138,11 @@ const joinCircleByCode = async (req: Request, res: Response) => {
 };
 
 /**
+ *** UNUSED ***
  * Add User to a circle based on the circle's mongo id
  * Gets id from req.params
  */
-const addUserToSocialCircle = async (req: Request, res: Response) => {
+/* const addUserToSocialCircle = async (req: Request, res: Response) => {
     console.log("here2");
 
     const user = req.user;
@@ -162,7 +163,7 @@ const addUserToSocialCircle = async (req: Request, res: Response) => {
     } catch (error: any) {
         return res.status(400).json({ error: error.message });
     }
-};
+}; */
 
 /**
  * Nuke the social circle by mongo id; need to be owner of circle
@@ -194,6 +195,6 @@ export default {
     getSocialCirclesByUserId,
     joinCircleByCode,
     getCircleById,
-    addUserToSocialCircle,
     deleteSocialCircle,
+    // addUserToSocialCircle,
 };
