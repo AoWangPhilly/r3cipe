@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { CircleType, RecipeType } from "../types";
-import { Avatar, Grid, IconButton, Typography } from "@mui/material";
+import { Avatar, Grid, IconButton, Rating, Typography } from "@mui/material";
 import { stripHtml } from "string-strip-html";
 import RestaurantIcon from "@mui/icons-material/Restaurant";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
@@ -150,6 +150,15 @@ const Recipe: React.FC = () => {
                 }
             );
     }, [id]);
+
+    function onRecipeRatingChange(
+        event: React.SyntheticEvent<Element, Event>,
+        value: number | null
+    ) {
+        console.log(value);
+        // Send user's rating to backend
+    }
+
     if (error) {
         return <div>Error: {error}</div>;
     } else if (!isLoaded) {
@@ -228,7 +237,17 @@ const Recipe: React.FC = () => {
                                     <></>
                                 )}
                             </Typography>
+                            {/* Rating for recipe */}
+                            {isAuth && (
+                                <Rating
+                                    name="half-rating"
+                                    defaultValue={0}
+                                    precision={0.5}
+                                    onChange={onRecipeRatingChange}
+                                />
+                            )}
                         </Grid>
+
                         <Grid item xs={12} md={6}>
                             <Avatar
                                 alt={recipe.title}
