@@ -1,7 +1,14 @@
 import React, { useContext, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { CircleType, RecipeType } from "../types";
-import { Avatar, Grid, IconButton, Rating, Typography } from "@mui/material";
+import {
+    Avatar,
+    Grid,
+    IconButton,
+    Rating,
+    Typography,
+    Box,
+} from "@mui/material";
 import { stripHtml } from "string-strip-html";
 import RestaurantIcon from "@mui/icons-material/Restaurant";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
@@ -18,11 +25,11 @@ const addFavorite = (id: string) => {
         headers: {
             "Content-Type": "application/json",
         },
-    })
-        // .then((res) => res.json())
-        // .then((data) => {
-        //     console.log("add favorite", data);
-        // });
+    });
+    // .then((res) => res.json())
+    // .then((data) => {
+    //     console.log("add favorite", data);
+    // });
 };
 
 const removeFavorite = (id: string) => {
@@ -32,11 +39,11 @@ const removeFavorite = (id: string) => {
         headers: {
             "Content-Type": "application/json",
         },
-    })
-        // .then((res) => res.json())
-        // .then((data) => {
-        //     console.log("remove favorite", data);
-        // });
+    });
+    // .then((res) => res.json())
+    // .then((data) => {
+    //     console.log("remove favorite", data);
+    // });
 };
 
 const Recipe: React.FC = () => {
@@ -51,6 +58,8 @@ const Recipe: React.FC = () => {
     const [shareModalOpen, setShareModalOpen] = React.useState(false);
     const [circles, setCircles] = React.useState<CircleType[]>([]);
     const [selectedCircle, setSelectedCircle] = React.useState<string>("");
+    const [userRating, setUserRating] = React.useState<number | null>(0);
+    const [totalReviews, setTotalReviews] = React.useState<number>(0);
 
     const handleShareModalOpen = () => {
         setShareModalOpen(true);
@@ -151,12 +160,42 @@ const Recipe: React.FC = () => {
             );
     }, [id]);
 
+    // get reviews and ratings info from backend
+    const fetchReviews = async () => {
+        try {
+            const res = await fetch(`/api/reviews/recipe/${id}`, {
+                method: "GET",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (!res.ok) {
+                throw new Error("Could not fetch reviews");
+            }
+
+            const data = await res.json();
+            console.log("reviews", data);
+            setTotalReviews(data.totalReviews);
+        } catch (error) {
+            console.error("Error fetching reviews:", error);
+        }
+    };
+
+    useEffect(() => {
+        //fetchReviews();
+    }, [id]);
+
     function onRecipeRatingChange(
         event: React.SyntheticEvent<Element, Event>,
         value: number | null
     ) {
+        setUserRating(value);
         console.log(value);
         // Send user's rating to backend
+        // Update overall recipe's rating in backend
+        // retrieve new backend rating and update state of userRating and totalReviews to show new rating
     }
 
     if (error) {
@@ -239,12 +278,37 @@ const Recipe: React.FC = () => {
                             </Typography>
                             {/* Rating for recipe */}
                             {isAuth && (
-                                <Rating
-                                    name="half-rating"
-                                    defaultValue={0}
-                                    precision={0.5}
-                                    onChange={onRecipeRatingChange}
-                                />
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        mt: 1,
+                                        mb: 2,
+                                    }}
+                                >
+                                    <Typography
+                                        variant="subtitle1"
+                                        component="span"
+                                    >
+                                        Ratings:
+                                    </Typography>
+                                    <Rating
+                                        name="half-rating"
+                                        defaultValue={0}
+                                        precision={0.5}
+                                        value={userRating}
+                                        onChange={onRecipeRatingChange}
+                                        sx={{ ml: 1 }}
+                                    />
+                                    <Typography
+                                        variant="subtitle1"
+                                        component="span"
+                                        sx={{ ml: 2 }}
+                                    >
+                                        Total Reviews: {totalReviews}
+                                    </Typography>
+                                </Box>
                             )}
                         </Grid>
 
