@@ -198,14 +198,14 @@ async function getRecipeById(req: Request, res: Response) {
                     userId: "Spoonacular",
                 });
 
-                await spoonacularRecipe
+                /* await spoonacularRecipe
                     .save()
                     .then((recipe) => {
                         console.log("recipe saved");
                     })
                     .catch((error) => {
                         console.log(error);
-                    });
+                    }); */
                 return res.status(200).json({ recipe: spoonacularRecipe });
             })
             .catch((error) => {
@@ -218,6 +218,7 @@ async function getRecipeById(req: Request, res: Response) {
 
 /**
  * Return the Review (rating + number of reviews) of a recipe
+ * NOTE: avgRating is the total rating; need to divide by numReviews to get average
  */
 async function getRecipeReview(req: Request, res: Response) {
     const { id } = req.params;

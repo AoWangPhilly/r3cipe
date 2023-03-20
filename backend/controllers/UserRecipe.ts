@@ -173,22 +173,25 @@ const deleteRecipe = async (req: Request, res: Response) => {
     const tokenStorage = getTokenStorage(); */
 
     const user = req.user;
+
+    const userId = user.id;
+
     try {
-        const userId = user.id;
-        let existingRecipe = await UserRecipe.findOne({ recipeId: id });
-        if (!existingRecipe) {
+        let recipe = await UserRecipe.findOneAndDelete({
+            recipeId: id,
+            userId: userId,
+        });
+
+        if (!recipe) {
             return res.status(404).json({ message: "Recipe not found" });
         }
-        if (!existingRecipe.recipeId.startsWith("u")) {
+
+        if (!recipe.recipeId.startsWith("u")) {
             return res
+
                 .status(401)
                 .json({ message: "Cannot delete spoontacular recipes" });
         }
-        if (existingRecipe.userId !== userId) {
-            return res.status(401).json({ message: "Not owner of recipe" });
-        }
-
-        await existingRecipe.delete();
 
         const inventory = await Inventory.findOne({
             userId: userId,
@@ -197,13 +200,14 @@ const deleteRecipe = async (req: Request, res: Response) => {
         if (!inventory) {
             return res.status(404).json({ message: "Inventory not found" });
         }
+
         inventory.myRecipes = inventory.myRecipes.filter(
-            (id: string) => id !== id
+            (recipeId) => recipeId !== id
         );
         inventory.save();
-
         res.status(201).json({ message: "Recipe deleted" });
     } catch (error: any) {
+        console.log(error);
         res.status(400).json({ message: error.message });
     }
 };
