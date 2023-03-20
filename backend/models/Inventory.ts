@@ -6,6 +6,7 @@ export interface FavoriteRecipe {
     date: Date;
 }
 
+// stores a User review of a recipe
 export interface Review {
     recipeId: string;
     rating: number;
