@@ -38,4 +38,4 @@ Our app uses OpenAI's Davinci GPT-3 text completition model to fill in instructi
 4. `cd frontend` and run `npm install`
 5. Development: run `npm run watch` in the root directory. In a separate terminal, `cd frontend` and run `npm run start`.
 6. Deployment: run `npm run build:deploy` in the root directory, then `npm run start`
-
+7. Testing: run `npm run test` in the root directory
