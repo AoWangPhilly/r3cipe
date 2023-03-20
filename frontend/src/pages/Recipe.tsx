@@ -63,8 +63,7 @@ const Recipe: React.FC = () => {
     const [circles, setCircles] = React.useState<CircleType[]>([]);
     const [selectedCircle, setSelectedCircle] = React.useState<string>("");
     const [userRating, setUserRating] = React.useState<number | null>(0);
-    const [overallRating, setOverallRating] = React.useState<number | null>(0);
-    const [totalReviews, setTotalReviews] = React.useState<number>(0);
+    const [averageRating, setAverageRating] = React.useState<number | null>(0);
 
     const handleShareModalOpen = () => {
         setShareModalOpen(true);
@@ -169,7 +168,7 @@ const Recipe: React.FC = () => {
     // get reviews and ratings info from backend
     const fetchReviews = async () => {
         try {
-            const res = await fetch(`/api/reviews/recipe/${id}`, {
+            const res = await fetch(`/api/search/recipe/${id}/review`, {
                 method: "GET",
                 credentials: "include",
                 headers: {
@@ -183,18 +182,17 @@ const Recipe: React.FC = () => {
 
             const data = await res.json();
             console.log("reviews", data);
-            setOverallRating(data.overallRating);
-            setTotalReviews(data.totalReviews);
+            setAverageRating(data.avgRating / data.numReviews);
         } catch (error) {
             console.error("Error fetching reviews:", error);
         }
     };
 
     useEffect(() => {
-        //fetchReviews();
+        fetchReviews();
     }, [id]);
 
-    function onRecipeRatingChange(
+    async function onRecipeRatingChange(
         event: React.SyntheticEvent<Element, Event>,
         value: number | null
     ) {
@@ -203,6 +201,28 @@ const Recipe: React.FC = () => {
         // Send user's rating to backend
         // Update overall recipe's rating in backend
         // retrieve new backend rating and update state of userRating and totalReviews to show new rating
+
+        try {
+            const res = await fetch(`/api/user/inventory/review/${id}`, {
+                method: "PUT",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ rating: value }),
+            });
+
+            if (!res.ok) {
+                throw new Error("Could not post review");
+            }
+
+            const data = await res.json();
+            console.log("reviews", data);
+            setAverageRating(data.avgRating / data.numReviews);
+
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     if (error) {
@@ -263,7 +283,7 @@ const Recipe: React.FC = () => {
                                         name="overall-rating"
                                         defaultValue={0}
                                         precision={0.5}
-                                        value={overallRating}
+                                        value={averageRating}
                                         readOnly
                                         sx={{ ml: 1 }}
                                     />
