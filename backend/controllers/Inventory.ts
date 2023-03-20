@@ -1,10 +1,10 @@
-import Inventory from "../models/Inventory.js";
 import { Request, Response } from "express";
+import axios from "axios";
+import { buildUrl } from "build-url-ts";
+import Inventory from "../models/Inventory.js";
 import SpoonacularRecipe from "../models/SpoonacularRecipe.js";
 import UserRecipe from "../models/UserRecipe.js";
-import { buildUrl } from "build-url-ts";
-import axios from "axios";
-import { parseRecipe } from "../helpers/recipeParser.js";
+import { parseRecipe, updateAvgRecipeRating } from "../helpers/recipes.js";
 import { checkApiKey, getApiKey } from "../helpers/apiKey.js";
 
 // const API_KEY = process.env.API_KEY;
@@ -274,7 +274,7 @@ async function updateUserReviewForRecipe(req: Request, res: Response) {
             };
             // console.log(newReview);
             ratingDiff = rating;
-            console.log(ratingDiff);
+            // console.log(ratingDiff);
             inventory.myReviews.push(newReview);
 
             await inventory.save();
@@ -298,34 +298,6 @@ async function updateUserReviewForRecipe(req: Request, res: Response) {
         }
     } catch (error) {
         return res.status(500).json({ message: "Internal server error" });
-    }
-}
-
-/**
- * Updates User/Spoonacular recipe's avgRating / numReviews
- */
-async function updateAvgRecipeRating(id: string, ratingDiff: number, numReviews: number) {
-    // update the average rating for the recipe
-    if (id.startsWith("u")) {
-        const recipe = await UserRecipe.findOne({ recipeId: id });
-
-        if (recipe) {
-            recipe.review.avgRating = recipe.review.avgRating + ratingDiff;
-            recipe.review.numReviews = recipe.review.numReviews + numReviews;
-            recipe.markModified("review");
-            await recipe.save();
-        }
-    } else {
-        // spoonacular recipe
-        const recipe = await SpoonacularRecipe.findOne({ recipeId: id });
-        // console.log(recipe?.recipeId, recipe?.review);
-        if (recipe) {
-            recipe.review.avgRating = recipe.review.avgRating + ratingDiff;
-            recipe.review.numReviews = recipe.review.numReviews + numReviews;
-            recipe.markModified("review");
-            await recipe.save();
-            // console.log(recipe?.recipeId, recipe?.review);
-        }
     }
 }
 

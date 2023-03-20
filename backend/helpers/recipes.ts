@@ -1,10 +1,11 @@
+import SpoonacularRecipe from "../models/SpoonacularRecipe.js";
+import UserRecipe from "../models/UserRecipe.js";
+import { generateInstructions } from "./ai.js";
+
 /**
  * Parses extremely long Spoonacular recipe object into smaller object
  * Although not used here, these follow the types defined in types.ts
  */
-
-import { generateInstructions } from "./ai.js";
-
 export async function parseRecipe(recipe: any) {
     const {
         preparationMinutes,
@@ -62,4 +63,36 @@ export async function parseRecipe(recipe: any) {
         sourceUrl: sourceUrl,
         recipeId: id,
     };
+}
+
+/**
+ * Updates User/Spoonacular recipe's avgRating / numReviews
+ */
+export async function updateAvgRecipeRating(
+    id: string,
+    ratingDiff: number,
+    numReviews: number
+) {
+    // update the average rating for the recipe
+    if (id.startsWith("u")) {
+        const recipe = await UserRecipe.findOne({ recipeId: id });
+
+        if (recipe) {
+            recipe.review.avgRating = recipe.review.avgRating + ratingDiff;
+            recipe.review.numReviews = recipe.review.numReviews + numReviews;
+            recipe.markModified("review");
+            await recipe.save();
+        }
+    } else {
+        // spoonacular recipe
+        const recipe = await SpoonacularRecipe.findOne({ recipeId: id });
+        // console.log(recipe?.recipeId, recipe?.review);
+        if (recipe) {
+            recipe.review.avgRating = recipe.review.avgRating + ratingDiff;
+            recipe.review.numReviews = recipe.review.numReviews + numReviews;
+            recipe.markModified("review");
+            await recipe.save();
+            // console.log(recipe?.recipeId, recipe?.review);
+        }
+    }
 }

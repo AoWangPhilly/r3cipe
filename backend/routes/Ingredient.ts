@@ -3,7 +3,6 @@ import controller from "../controllers/Ingredient.js";
 
 export const ingredientRouter: Router = Router();
 
-// TODO: review if these are needed
 ingredientRouter.post("/", controller.createIngredient);
 ingredientRouter.get("/", controller.getIngredients);
 ingredientRouter.get("/:id", controller.getIngredientById);
