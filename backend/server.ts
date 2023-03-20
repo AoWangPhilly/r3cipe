@@ -15,12 +15,21 @@ import { userRecipeRouter } from "./routes/UserRecipe.js";
 import { socialCircleRouter } from "./routes/circles.js";
 
 import multer from "multer";
+import rateLimit from "express-rate-limit";
+import helmet from "helmet";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 let publicStaticFolder = path.resolve(__dirname, "public");
 
 dotenv.config({ path: path.join(__dirname, "../.env") });
+
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
 
 const app = express();
 
@@ -38,6 +47,8 @@ mongoose
     });
 
 /* Middleware */
+app.use(limiter);
+app.use(helmet());
 app.use(
     cors({
         origin: ["http://localhost:3000", "http://localhost:3001"],
