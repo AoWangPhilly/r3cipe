@@ -272,8 +272,9 @@ async function updateUserReviewForRecipe(req: Request, res: Response) {
                 recipeId: id,
                 rating: rating,
             };
-            console.log(newReview);
+            // console.log(newReview);
             ratingDiff = rating;
+            console.log(ratingDiff);
             inventory.myReviews.push(newReview);
 
             await inventory.save();
@@ -282,7 +283,14 @@ async function updateUserReviewForRecipe(req: Request, res: Response) {
         } else {
             // update the review
             ratingDiff = rating - review.rating;
+            // console.log(ratingDiff);
             review.rating = rating;
+
+            // update recipe in inventory
+            const recipeIndex = inventory.myReviews.findIndex(
+                (review) => review.recipeId === id
+            );
+            inventory.myReviews[recipeIndex] = review;
 
             await inventory.save();
             await updateAvgRecipeRating(id, ratingDiff, 0);
@@ -310,13 +318,13 @@ async function updateAvgRecipeRating(id: string, ratingDiff: number, numReviews:
     } else {
         // spoonacular recipe
         const recipe = await SpoonacularRecipe.findOne({ recipeId: id });
-        console.log(recipe?.recipeId, recipe?.review);
+        // console.log(recipe?.recipeId, recipe?.review);
         if (recipe) {
             recipe.review.avgRating = recipe.review.avgRating + ratingDiff;
             recipe.review.numReviews = recipe.review.numReviews + numReviews;
             recipe.markModified("review");
             await recipe.save();
-            console.log(recipe?.recipeId, recipe?.review);
+            // console.log(recipe?.recipeId, recipe?.review);
         }
     }
 }
