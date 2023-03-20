@@ -22,6 +22,7 @@ export async function generateInstructions(
     // console.log(prompt);
 
     try {
+        // ChatCompletion (a bit slow)
         /* const completition = await openai.createChatCompletion({
             model: "gpt-3.5-turbo",
             messages: [{"role": "user", "content": prompt}],
@@ -29,11 +30,12 @@ export async function generateInstructions(
             // temperature: 0.2,
         }) */
 
+        // Text Completition
         const completion = await openai.createCompletion({
             model: "text-davinci-003",
             prompt: prompt,
             max_tokens: 275,
-            temperature: 0.7,
+            temperature: 0.7, // reduce for more deterministic results
         });
 
         let genInstruc = completion.data.choices[0].text;
