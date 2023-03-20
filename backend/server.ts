@@ -39,7 +39,11 @@ const app = express();
  */
 mongoose.set("strictQuery", true);
 mongoose
-    .connect(config.mongo.url, { retryWrites: true, w: "majority" })
+    .connect(config.mongo.url, {
+        dbName: process.env.STAGE?.toLowerCase(),
+        retryWrites: true,
+        w: "majority",
+    })
     .then(() => {
         console.log("Connected to DB");
     })
@@ -108,7 +112,10 @@ app.get("/images/:filename", (req, res) => {
                 path.join(__dirname, "../data/images", req.params.filename),
                 (err) => {
                     if (err) {
-                        console.log("file is not truly there", req.params.filename);
+                        console.log(
+                            "file is not truly there",
+                            req.params.filename
+                        );
                     }
                 }
             );
