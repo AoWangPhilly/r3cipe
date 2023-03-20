@@ -54,7 +54,6 @@ const Circle = () => {
     if (loading) {
         return (
             <div>
-                <Typography variant="h4">Circles</Typography>
                 <CircleSidebar />
                 <div style={{ display: "flex", justifyContent: "center" }}>
                     <CircularProgress />
@@ -65,7 +64,6 @@ const Circle = () => {
 
     return (
         <>
-            <Typography variant="h4">Circles</Typography>
             <Box
                 sx={{
                     display: "flex",
@@ -75,9 +73,19 @@ const Circle = () => {
                     width: "40%",
                 }}
             >
+                {circles.length > 0 && (
+                    <Typography variant="h4" sx={{ mt: 2, ml: 60, mb: 2 }}>
+                        Circles
+                    </Typography>
+                )}
                 <CircleSidebar />
                 {circles.length === 0 ? (
-                    <NoCircleJoined /> //
+                    <>
+                        <Typography variant="h4" sx={{ mt: 2, mr: 20 }}>
+                            Circles
+                        </Typography>
+                        <NoCircleJoined />
+                    </>
                 ) : (
                     circles.map((circle: CircleData) => (
                         <GroupCard
