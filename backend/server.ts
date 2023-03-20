@@ -14,7 +14,6 @@ import searchRouter from "./routes/search.js";
 import { userRecipeRouter } from "./routes/UserRecipe.js";
 import { socialCircleRouter } from "./routes/circles.js";
 
-import { userProfileRouter } from "./routes/UserProfile.js";
 import multer from "multer";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -99,8 +98,6 @@ app.use("/api/user/inventory", inventoryRouter);
 app.use("/api/search", searchRouter);
 app.use("/api/user/recipes", userRecipeRouter);
 app.use("/api/circles", socialCircleRouter);
-
-app.use("/api/user/profiles", userProfileRouter); // TODO: DELETE
 
 app.use(express.static("public"));
 app.get("/*", (req, res) => {
