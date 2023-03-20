@@ -113,7 +113,7 @@ export default function Navbar() {
                                 textDecoration: "none",
                             }}
                         >
-                            Recipe App
+                            r3cipe
                         </Typography>
 
                         <Box
@@ -216,7 +216,7 @@ export default function Navbar() {
                                 textDecoration: "none",
                             }}
                         >
-                            Recipe App
+                            r3cipe
                         </Typography>
                         <Box
                             sx={{
@@ -255,18 +255,20 @@ export default function Navbar() {
                                     handleCloseNavMenu();
                                     navigate("/circle");
                                 }}
-                                sx={{ my: 2, color: "white"}}
+                                sx={{ my: 2, color: "white" }}
                             >
                                 Circles
                             </Button>
                             <Button
                                 key="library-page"
-                                startIcon={<CollectionsBookmarkIcon fontSize="small" />}
+                                startIcon={
+                                    <CollectionsBookmarkIcon fontSize="small" />
+                                }
                                 onClick={() => {
                                     handleCloseNavMenu();
                                     navigate("/library");
                                 }}
-                                sx={{ my: 2, color: "white"}}
+                                sx={{ my: 2, color: "white" }}
                             >
                                 Library
                             </Button>
@@ -277,7 +279,7 @@ export default function Navbar() {
                                     handleCloseNavMenu();
                                     navigate("/create");
                                 }}
-                                sx={{ my: 2, color: "white", }}
+                                sx={{ my: 2, color: "white" }}
                             >
                                 Create a Recipe
                             </Button>
