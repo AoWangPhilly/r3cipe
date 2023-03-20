@@ -16,6 +16,7 @@ import {
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import DeleteRecipeModal from "../components/DeleteRecipeModal";
 
 interface IngredientRaw {
     id: number;
@@ -52,9 +53,15 @@ export const RecipeInput = (props: RecipeInputProps) => {
     const { id } = useParams<{ id: string }>();
     const [imageUrl, setImageUrl] = useState<string>("");
     const [currentFile, setCurrentFile] = useState<File | null>(null);
+    const [deleteRecipeModalOpen, setDeleteRecipeModalOpen] = useState<boolean>(
+        false
+    );
     let FileInput: HTMLInputElement | null = null;
     const navigate = useNavigate();
-    const IS_OWNER = true; //TODO: check
+
+    const handleDeleteRecipeModalOpen = () => {
+        setDeleteRecipeModalOpen(true);
+    };
 
     useEffect(() => {
         fetch("/api/ingredients", {
@@ -265,203 +272,218 @@ export const RecipeInput = (props: RecipeInputProps) => {
         return <h1>Error</h1>;
     } else {
         return (
-            <Box sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "80%",
-                height: "100%",
-                marginLeft: "auto",
-                marginRight: "auto",
-            }}>
-                {props.isEdit ? <h1>Edit Recipe</h1> : <h1>Create Recipe</h1>}
-                <form onSubmit={handleSubmit}>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} md={6}>
-                            <Grid container spacing={2} display="flex">
-                                <Grid item xs={12}>
-                                    <TextField
-                                        label="Title"
-                                        name="title"
-                                        value={formState.title}
-                                        onChange={handleInputChange}
-                                        required
-                                        autoFocus
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        label="Summary"
-                                        name="summary"
-                                        value={formState.summary}
-                                        onChange={handleInputChange}
-                                        required
-                                        sx={{
-                                            width: "85%",
-                                        }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} display="flex">
-                                    <Autocomplete
-                                        disablePortal
-                                        aria-label="cuisines"
-                                        id="tags-standard"
-                                        options={CUISINES}
-                                        multiple
-                                        getOptionLabel={(option) => option}
-                                        renderInput={(params) => (
-                                            <TextField
-                                                {...params}
-                                                label="Cuisine"
-                                            />
+            <>
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        width: "80%",
+                        height: "100%",
+                        marginLeft: "auto",
+                        marginRight: "auto",
+                    }}
+                >
+                    {props.isEdit ? (
+                        <h1>Edit Recipe</h1>
+                    ) : (
+                        <h1>Create Recipe</h1>
+                    )}
+                    <form onSubmit={handleSubmit}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12} md={6}>
+                                <Grid container spacing={2} display="flex">
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            label="Title"
+                                            name="title"
+                                            value={formState.title}
+                                            onChange={handleInputChange}
+                                            required
+                                            autoFocus
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            label="Summary"
+                                            name="summary"
+                                            value={formState.summary}
+                                            onChange={handleInputChange}
+                                            required
+                                            sx={{
+                                                width: "85%",
+                                            }}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} display="flex">
+                                        <Autocomplete
+                                            disablePortal
+                                            aria-label="cuisines"
+                                            id="tags-standard"
+                                            options={CUISINES}
+                                            multiple
+                                            getOptionLabel={(option) => option}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label="Cuisine"
+                                                />
+                                            )}
+                                            onChange={handleSelectChangeCuisine}
+                                            value={formState.cuisines}
+                                            sx={{
+                                                width: "40%",
+                                                color: "white",
+                                            }}
+                                        />
+                                        <Autocomplete
+                                            disablePortal
+                                            aria-label="dishTypes"
+                                            id="tags-standard"
+                                            options={DISH_TYPES}
+                                            multiple
+                                            getOptionLabel={(option) => option}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label="Dish Type"
+                                                />
+                                            )}
+                                            onChange={
+                                                handleSelectChangeDishType
+                                            }
+                                            value={formState.dishTypes}
+                                            sx={{
+                                                width: "40%",
+                                            }}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}></Grid>
+                                    <Grid item xs={12}>
+                                        <input
+                                            type="file"
+                                            onChange={handleFileSelect}
+                                            style={{ display: "none" }}
+                                            ref={(fileInput) =>
+                                                (FileInput = fileInput)
+                                            }
+                                            accept="image/*"
+                                            name="image"
+                                            id="image"
+                                        />
+                                        <Button
+                                            startIcon={<CloudUploadIcon />}
+                                            variant="contained"
+                                            color="primary"
+                                            onClick={() => FileInput?.click()}
+                                        >
+                                            Upload Image
+                                        </Button>
+                                        {currentFile && (
+                                            <div>
+                                                <p>
+                                                    Selected file:{" "}
+                                                    {currentFile.name}
+                                                </p>
+                                            </div>
                                         )}
-                                        onChange={handleSelectChangeCuisine}
-                                        value={formState.cuisines}
-                                        sx={{
-                                            width: "40%",
-                                            color: "white",
-                                        }}
-                                    />
-                                    <Autocomplete
-                                        disablePortal
-                                        aria-label="dishTypes"
-                                        id="tags-standard"
-                                        options={DISH_TYPES}
-                                        multiple
-                                        getOptionLabel={(option) => option}
-                                        renderInput={(params) => (
-                                            <TextField
-                                                {...params}
-                                                label="Dish Type"
-                                            />
-                                        )}
-                                        onChange={handleSelectChangeDishType}
-                                        value={formState.dishTypes}
-                                        sx={{
-                                            width: "40%",
-                                        }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12}></Grid>
-                                <Grid item xs={12}>
-                                    <input
-                                        type="file"
-                                        onChange={handleFileSelect}
-                                        style={{ display: "none" }}
-                                        ref={(fileInput) =>
-                                            (FileInput = fileInput)
-                                        }
-                                        accept="image/*"
-                                        name="image"
-                                        id="image"
-                                    />
-                                    <Button
-                                        startIcon={<CloudUploadIcon />}
-                                        variant="contained"
-                                        color="primary"
-                                        onClick={() => FileInput?.click()}
-                                    >
-                                        Upload Image
-                                    </Button>
-                                    {currentFile && (
-                                        <div>
-                                            <p>
-                                                Selected file:{" "}
-                                                {currentFile.name}
-                                            </p>
-                                        </div>
-                                    )}
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        label="Preparation Minutes"
-                                        name="preparationMinutes"
-                                        value={formState.preparationMinutes}
-                                        onChange={handleInputChange}
-                                        type="number"
-                                        required
-                                        sx={{
-                                            width: "15%",
-                                        }}
-                                    />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            label="Preparation Minutes"
+                                            name="preparationMinutes"
+                                            value={formState.preparationMinutes}
+                                            onChange={handleInputChange}
+                                            type="number"
+                                            required
+                                            sx={{
+                                                width: "15%",
+                                            }}
+                                        />
 
-                                    <TextField
-                                        label="Cooking Minutes"
-                                        name="cookingMinutes"
-                                        value={formState.cookingMinutes}
-                                        onChange={handleInputChange}
-                                        type="number"
-                                        required
-                                        sx={{
-                                            width: "15%",
-                                        }}
-                                    />
-                                    <TextField
-                                        label="Servings"
-                                        name="servings"
-                                        value={formState.servings}
-                                        onChange={handleInputChange}
-                                        type="number"
-                                        required
-                                        sx={{
-                                            width: "15%",
-                                        }}
-                                    />
+                                        <TextField
+                                            label="Cooking Minutes"
+                                            name="cookingMinutes"
+                                            value={formState.cookingMinutes}
+                                            onChange={handleInputChange}
+                                            type="number"
+                                            required
+                                            sx={{
+                                                width: "15%",
+                                            }}
+                                        />
+                                        <TextField
+                                            label="Servings"
+                                            name="servings"
+                                            value={formState.servings}
+                                            onChange={handleInputChange}
+                                            type="number"
+                                            required
+                                            sx={{
+                                                width: "15%",
+                                            }}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            label="Source URL"
+                                            name="sourceUrl"
+                                            value={formState.sourceUrl}
+                                            onChange={handleInputChange}
+                                            sx={{
+                                                width: "60%",
+                                            }}
+                                        />
+                                    </Grid>
                                 </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        label="Source URL"
-                                        name="sourceUrl"
-                                        value={formState.sourceUrl}
-                                        onChange={handleInputChange}
-                                        sx={{
-                                            width: "60%",
-                                        }}
-                                    />
-                                </Grid>
-                            </Grid>
-                            <FormControlLabel
-                                control={
-                                    <Switch
-                                        checked={isPublic}
-                                        onChange={handleSwitchChange}
-                                        name="isPublic"
-                                        inputProps={{
-                                            "aria-label": "controlled",
-                                        }}
-                                    />
-                                }
-                                label="Public?"
-                            />
-                            <Button variant="contained" type="submit">
-                                {props.isEdit ? "Save" : "Create Recipe"}
-                            </Button>
-                            {props.isEdit ? (
-                                <Button
-                                    variant="contained"
-                                    color="error"
-                                    onClick={handleDelete}
-                                >
-                                    Delete
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={isPublic}
+                                            onChange={handleSwitchChange}
+                                            name="isPublic"
+                                            inputProps={{
+                                                "aria-label": "controlled",
+                                            }}
+                                        />
+                                    }
+                                    label="Public?"
+                                />
+                                <Button variant="contained" type="submit">
+                                    {props.isEdit ? "Save" : "Create Recipe"}
                                 </Button>
-                            ) : null}
+                                {props.isEdit ? (
+                                    <Button
+                                        variant="contained"
+                                        color="error"
+                                        onClick={handleDeleteRecipeModalOpen}
+                                    >
+                                        Delete
+                                    </Button>
+                                ) : null}
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <IngredientSelect
+                                    allIngredients={allIngredients}
+                                    ingredients={ingredients}
+                                    setIngredients={setIngredients}
+                                />
+                                <InstructionsInput
+                                    instructions={instructions}
+                                    setInstructions={setInstructions}
+                                />
+                            </Grid>
                         </Grid>
-                        <Grid item xs={12} md={6}>
-                            <IngredientSelect
-                                allIngredients={allIngredients}
-                                ingredients={ingredients}
-                                setIngredients={setIngredients}
-                            />
-                            <InstructionsInput
-                                instructions={instructions}
-                                setInstructions={setInstructions}
-                            />
-                        </Grid>
-                    </Grid>
-                    <br />
-                </form>
-            </Box>
+                        <br />
+                    </form>
+                </Box>
+                <DeleteRecipeModal
+                    deleteRecipeModalOpen={deleteRecipeModalOpen}
+                    setDeleteRecipeModalOpen={setDeleteRecipeModalOpen}
+                    recipeId={id!}
+                />
+            </>
         );
     }
 };

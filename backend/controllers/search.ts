@@ -155,10 +155,12 @@ async function getRecipeById(req: Request, res: Response) {
         const recipe = await UserRecipe.findOne({ recipeId: id });
 
         //if recipe exists, and recipe is public OR recipe is private and user is logged in
+        const tokenStorage = getTokenStorage();
         if (
             recipe &&
             (recipe.isPublic ||
-                (req.cookies.token && recipe.userId === req.cookies.token))
+                (req.cookies.token &&
+                    recipe.userId === tokenStorage[req.cookies.token].id))
         ) {
             return res.status(200).json({ recipe });
         } else {
