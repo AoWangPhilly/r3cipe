@@ -306,20 +306,21 @@ async function getRandomSpoonacularRecipe(req: Request, res: Response) {
  */
 async function getRecentRecipes(req: Request, res: Response) {
     // randomly get 2 numbers summing to 16
-    let spoonRecipes = Math.ceil(16 - Math.random() * 12);
+    let spoonRecipes = Math.floor(16 - Math.random() * 12);
     let userRecipes = 16 - spoonRecipes;
+
     const userRecentRecipes = await UserRecipe.find({
         isPublic: true,
     })
         .sort({ createdAt: -1 })
         .limit(userRecipes);
-
-    if (userRecentRecipes.length <= userRecipes) {
+    if (
+        userRecentRecipes.length === 0 ||
+        userRecentRecipes.length < userRecipes
+    ) {
         spoonRecipes += userRecipes - userRecentRecipes.length;
-    } else if (userRecentRecipes.length > userRecipes) {
-        userRecipes += userRecentRecipes.length - userRecipes;
+        userRecipes = userRecentRecipes.length;
     }
-
     const spoonacularRecentRecipes = await SpoonacularRecipe.find({
         userId: "Spoonacular",
     })
