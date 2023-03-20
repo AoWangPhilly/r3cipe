@@ -52,7 +52,12 @@ mongoose
 app.use(helmet());
 app.use(
     cors({
-        origin: ["http://localhost:3000", "http://localhost:3001"],
+        origin: [
+            "http://localhost:3000",
+            "http://localhost:3001",
+            "https://spoonacular.com",
+            "https://food.tylers.works"
+        ],
         credentials: true, // tells client to send token
     })
 );
