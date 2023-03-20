@@ -13,7 +13,7 @@ import {
     Typography,
     Container,
 } from "@mui/material";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { AuthContext, checkAuth } from "../context/AuthContext";
@@ -172,7 +172,15 @@ export const SignUp: React.FC = () => {
                             Sign Up
                         </Typography>
                         {/* center the grid item */}
-                        <Grid item xs={12} style={{ textAlign: "center" }}>
+                        <Grid
+                            item
+                            xs={12}
+                            style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                            }}
+                        >
                             <input
                                 type="file"
                                 onChange={handleFileSelect}
@@ -184,7 +192,11 @@ export const SignUp: React.FC = () => {
                             />
                             <Avatar
                                 onClick={() => FileInput?.click()}
-                                sx={{ width: 100, height: 100 }}
+                                sx={{
+                                    width: 100,
+                                    height: 100,
+                                    cursor: "pointer",
+                                }}
                             >
                                 {currentFile ? (
                                     <img
@@ -193,7 +205,7 @@ export const SignUp: React.FC = () => {
                                         style={{ height: "100%" }}
                                     />
                                 ) : (
-                                    <LockOutlinedIcon />
+                                    <AddAPhotoIcon />
                                 )}
                             </Avatar>
                         </Grid>

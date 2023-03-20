@@ -136,7 +136,8 @@ const CircleSignUp = () => {
                 />
                 <Avatar
                     onClick={() => FileInput?.click()}
-                    sx={{ width: 100, height: 100 }}
+                    style={{ cursor: "pointer" }}
+                    sx={{ width: 100, height: 100, marginBottom: "20px" }}
                 >
                     {currentFile ? (
                         <img

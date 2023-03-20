@@ -11,9 +11,16 @@ import {
     MenuItem,
     Button,
     Avatar,
+    ListItemIcon,
+    ListItemText,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
+import LogoutIcon from "@mui/icons-material/Logout";
 import KitchenIcon from "@mui/icons-material/Kitchen";
+import SearchIcon from "@mui/icons-material/Search";
+import GroupsIcon from "@mui/icons-material/Groups";
+import CollectionsBookmarkIcon from "@mui/icons-material/CollectionsBookmark";
+import AddBoxIcon from "@mui/icons-material/AddBox";
 import { Link, redirect, useNavigate } from "react-router-dom";
 import { AuthContext, checkAuth } from "../context/AuthContext";
 import PantryModal from "./PantryModal";
@@ -96,7 +103,6 @@ export default function Navbar() {
                         <Typography
                             variant="h6"
                             noWrap
-                            component="a"
                             sx={{
                                 mr: 2,
                                 display: { xs: "none", md: "flex" },
@@ -124,7 +130,11 @@ export default function Navbar() {
                                 onClick={handleOpenNavMenu}
                                 color="inherit"
                             >
-                                <MenuIcon />
+                                <MenuIcon
+                                    style={{
+                                        color: "white",
+                                    }}
+                                />
                             </IconButton>
                             <Menu
                                 id="menu-appbar"
@@ -144,17 +154,49 @@ export default function Navbar() {
                                     display: { xs: "block", md: "none" },
                                 }}
                             >
-                                <MenuItem onClick={handleCloseNavMenu}>
-                                    <Link to="/">Find Recipes</Link>
+                                <MenuItem
+                                    onClick={() => {
+                                        handleCloseNavMenu();
+                                        navigate("/");
+                                    }}
+                                >
+                                    <ListItemIcon>
+                                        <SearchIcon fontSize="small" />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Find Recipes" />
                                 </MenuItem>
-                                <MenuItem onClick={handleCloseNavMenu}>
-                                    <Link to="/circle">Circles</Link>
+                                <MenuItem
+                                    onClick={() => {
+                                        handleCloseNavMenu();
+                                        navigate("/circle");
+                                    }}
+                                >
+                                    <ListItemIcon>
+                                        <GroupsIcon fontSize="small" />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Circles" />
                                 </MenuItem>
-                                <MenuItem onClick={handleCloseNavMenu}>
-                                    <Link to="/library">Library</Link>
+                                <MenuItem
+                                    onClick={() => {
+                                        handleCloseNavMenu();
+                                        navigate("/library");
+                                    }}
+                                >
+                                    <ListItemIcon>
+                                        <CollectionsBookmarkIcon fontSize="small" />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Library" />
                                 </MenuItem>
-                                <MenuItem onClick={handleCloseNavMenu}>
-                                    <Link to="/create">Create a Recipe</Link>
+                                <MenuItem
+                                    onClick={() => {
+                                        handleCloseNavMenu();
+                                        navigate("/create");
+                                    }}
+                                >
+                                    <ListItemIcon>
+                                        <AddBoxIcon fontSize="small" />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Create a Recipe" />
                                 </MenuItem>
                             </Menu>
                         </Box>
@@ -180,45 +222,62 @@ export default function Navbar() {
                             sx={{
                                 flexGrow: 1,
                                 display: { xs: "none", md: "flex" },
+                                gap: 2,
                             }}
                         >
-                            <Button
-                                key="search-page"
-                                onClick={() => {
-                                    handleCloseNavMenu();
-                                    navigate("/");
+                            <div
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    flexWrap: "wrap",
                                 }}
-                                sx={{ my: 2, color: "white", display: "block" }}
                             >
-                                Find Recipes
-                            </Button>
+                                <Button
+                                    key="search-page"
+                                    startIcon={<SearchIcon fontSize="small" />}
+                                    onClick={() => {
+                                        handleCloseNavMenu();
+                                        navigate("/");
+                                    }}
+                                    sx={{
+                                        my: 2,
+                                        color: "white",
+                                    }}
+                                >
+                                    Find Recipes
+                                </Button>
+                            </div>
+
                             <Button
                                 key="circle-page"
+                                startIcon={<GroupsIcon fontSize="small" />}
                                 onClick={() => {
                                     handleCloseNavMenu();
                                     navigate("/circle");
                                 }}
-                                sx={{ my: 2, color: "white", display: "block" }}
+                                sx={{ my: 2, color: "white"}}
                             >
                                 Circles
                             </Button>
                             <Button
                                 key="library-page"
+                                startIcon={<CollectionsBookmarkIcon fontSize="small" />}
                                 onClick={() => {
                                     handleCloseNavMenu();
                                     navigate("/library");
                                 }}
-                                sx={{ my: 2, color: "white", display: "block" }}
+                                sx={{ my: 2, color: "white"}}
                             >
                                 Library
                             </Button>
                             <Button
                                 key="create-page"
+                                startIcon={<AddBoxIcon fontSize="small" />}
                                 onClick={() => {
                                     handleCloseNavMenu();
                                     navigate("/create");
                                 }}
-                                sx={{ my: 2, color: "white", display: "block" }}
+                                sx={{ my: 2, color: "white", }}
                             >
                                 Create a Recipe
                             </Button>
@@ -325,13 +384,16 @@ export default function Navbar() {
                                         open={Boolean(anchorElUser)}
                                         onClose={handleCloseUserMenu}
                                     >
-                                        <MenuItem onClick={handleCloseUserMenu}>
-                                            <Link to="/settings">Settings</Link>
-                                        </MenuItem>
-                                        <MenuItem onClick={handleCloseUserMenu}>
-                                            <Link onClick={handleLogout} to="/">
-                                                Logout
-                                            </Link>
+                                        <MenuItem
+                                            onClick={() => {
+                                                handleCloseUserMenu();
+                                                handleLogout();
+                                            }}
+                                        >
+                                            <ListItemIcon>
+                                                <LogoutIcon fontSize="small" />
+                                            </ListItemIcon>
+                                            <ListItemText>Logout</ListItemText>
                                         </MenuItem>
                                     </Menu>
                                 </Box>
