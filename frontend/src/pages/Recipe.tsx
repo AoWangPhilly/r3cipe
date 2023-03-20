@@ -165,8 +165,8 @@ const Recipe: React.FC = () => {
             );
     }, [id]);
 
-    // get reviews and ratings info from backend
-    const fetchReviews = async () => {
+    // get average reviews and ratings info from backend
+    const fetchAverageReview = async () => {
         try {
             const res = await fetch(`/api/search/recipe/${id}/review`, {
                 method: "GET",
@@ -188,8 +188,32 @@ const Recipe: React.FC = () => {
         }
     };
 
+    // Get User's current review
+    async function fetchCurrentUserReview() {
+        try {
+            const res = await fetch(`/api/user/inventory/review/${id}`, {
+                method: "GET",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (!res.ok) {
+                throw new Error("Could not fetch reviews");
+            }
+
+            const data: { rating: number } = await res.json();
+            console.log(data.rating);
+            setUserRating(data.rating);
+        } catch (error) {
+            console.error("Error fetching reviews:", error);
+        }
+    }
+
     useEffect(() => {
-        fetchReviews();
+        fetchAverageReview();
+        fetchCurrentUserReview();
     }, [id]);
 
     async function onRecipeRatingChange(
@@ -213,13 +237,23 @@ const Recipe: React.FC = () => {
             });
 
             if (!res.ok) {
-                throw new Error("Could not post review");
+                throw new Error("Could not update review");
             }
 
-            const data = await res.json();
-            console.log("reviews", data);
-            setAverageRating(data.avgRating / data.numReviews);
+            // const data = await res.json(); // just gives a success message
 
+            // fetch updated average rating
+            const res2 = await fetch(`/api/search/recipe/${id}/review`, {
+                method: "GET",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            const data: { avgRating: number; numReviews: number } =
+                await res2.json();
+            console.log(data);
+            setAverageRating(data.avgRating / data.numReviews);
         } catch (error) {
             console.log(error);
         }
@@ -287,6 +321,30 @@ const Recipe: React.FC = () => {
                                         readOnly
                                         sx={{ ml: 1 }}
                                     />
+                                </Box>
+                            )}
+                        </Grid>
+
+                        <Grid
+                            item
+                            xs={12}
+                            sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                margin: "auto",
+                            }}
+                        >
+                            {isAuth && (
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        mt: 1,
+                                        mb: 2,
+                                    }}
+                                >
                                     <Typography
                                         variant="subtitle1"
                                         component="span"
