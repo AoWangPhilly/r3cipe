@@ -27,7 +27,7 @@ async function searchSpoonacularRecipes(req: Request, res: Response) {
     const { token } = req.cookies;
     const tokenStorage = getTokenStorage();
     // parameters are empty
-    if (!query && !cuisine && !mealtype) {
+    if (!query && !cuisine && !mealtype && !pantry) {
         return res.status(400).json({ error: "no parameters provided" });
     }
 
