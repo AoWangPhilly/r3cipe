@@ -297,32 +297,31 @@ const Recipe: React.FC = () => {
                             }}
                         >
                             {/* Rating for recipe */}
-                            {isAuth && (
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        mt: 1,
-                                        mb: 2,
-                                    }}
+
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    mt: 1,
+                                    mb: 2,
+                                }}
+                            >
+                                <Typography
+                                    variant="subtitle1"
+                                    component="span"
                                 >
-                                    <Typography
-                                        variant="subtitle1"
-                                        component="span"
-                                    >
-                                        Average Rating:
-                                    </Typography>
-                                    <Rating
-                                        name="overall-rating"
-                                        defaultValue={0}
-                                        precision={0.5}
-                                        value={averageRating}
-                                        readOnly
-                                        sx={{ ml: 1 }}
-                                    />
-                                </Box>
-                            )}
+                                    Average Rating:
+                                </Typography>
+                                <Rating
+                                    name="overall-rating"
+                                    defaultValue={0}
+                                    precision={0.5}
+                                    value={averageRating}
+                                    readOnly
+                                    sx={{ ml: 1 }}
+                                />
+                            </Box>
                         </Grid>
 
                         <Grid

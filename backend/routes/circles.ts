@@ -4,9 +4,6 @@ import { authorize } from "../middleware/checkAuth.js";
 import { membersRouter } from "./members.js";
 import { postsRouter } from "./posts.js";
 
-// TODO!: we might need to filter info sent to frontend for Security
-// for ex: /circles/:id/members should NOT return passwords!
-
 export const socialCircleRouter: Router = Router();
 
 socialCircleRouter.get("/", authorize, controller.getSocialCirclesByUserId);

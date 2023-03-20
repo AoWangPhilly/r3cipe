@@ -9,7 +9,7 @@ import { UserInfo } from "../types/types.js";
 
 const TOKEN_EXPIRY = 3600; // 1 hr (in seconds)
 export const clientCookieOptions: CookieOptions = {
-    // secure: true, // TODO: enable!!!
+    secure: true,
     sameSite: "strict",
 };
 export const cookieOptions: CookieOptions = {

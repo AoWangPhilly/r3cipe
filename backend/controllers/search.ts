@@ -5,7 +5,7 @@ import axios from "axios";
 import SpoonacularRecipe from "../models/SpoonacularRecipe.js";
 import SpoonacularSearchResult from "../models/SearchResults.js";
 import { getTokenStorage } from "../helpers/tokenStorage.js";
-import { parseRecipe } from "../helpers/recipeParser.js";
+import { parseRecipe } from "../helpers/recipes.js";
 import Inventory from "../models/Inventory.js";
 import { RecipeTypeWithId } from "../types/types.js";
 import UserRecipe from "../models/UserRecipe.js";
