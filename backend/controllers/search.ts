@@ -198,14 +198,14 @@ async function getRecipeById(req: Request, res: Response) {
                     userId: "Spoonacular",
                 });
 
-                /* await spoonacularRecipe
+                await spoonacularRecipe
                     .save()
                     .then((recipe) => {
                         console.log("recipe saved");
                     })
                     .catch((error) => {
                         console.log(error);
-                    }); */
+                    });
                 return res.status(200).json({ recipe: spoonacularRecipe });
             })
             .catch((error) => {
@@ -214,6 +214,33 @@ async function getRecipeById(req: Request, res: Response) {
                 return res.status(404).json({ error: "recipe not found" });
             });
     }
+}
+
+/**
+ * Return the Review (rating + number of reviews) of a recipe
+ */
+async function getRecipeReview(req: Request, res: Response) {
+    const { id } = req.params;
+
+    // check if user recipe
+    if (id.startsWith("u")) {
+        const recipe = await UserRecipe.findOne({ recipeId: id });
+
+        if (recipe) {
+            return res.status(200).json({ ...recipe.review });
+        } else {
+            return res.status(404).json({ error: "user recipe not found" });
+        }
+    }
+
+    // spoonacular recipe
+    const recipe = await SpoonacularRecipe.findOne({ recipeId: id });
+    if (recipe) {
+        return res.status(200).json({
+            ...recipe.review,
+        });
+    }
+    return res.status(404).json({ error: "recipe not found" });
 }
 
 async function getRandomSpoonacularRecipe(req: Request, res: Response) {
@@ -272,6 +299,10 @@ async function getRandomSpoonacularRecipe(req: Request, res: Response) {
     res.json({ randomRecipeList });
 }
 
+/**
+ * Returns a list of recent recipes from the Cache
+ * Used as "Trending Recipes" on the home page
+ */
 async function getRecentRecipes(req: Request, res: Response) {
     // randomly get 2 numbers summing to 16
     let spoonRecipes = Math.ceil(16 - Math.random() * 12);
@@ -310,7 +341,8 @@ async function getRecentRecipes(req: Request, res: Response) {
 
 export default {
     searchSpoonacularRecipes,
-    getRecipeById,
     getRandomSpoonacularRecipe,
     getRecentRecipes,
+    getRecipeById,
+    getRecipeReview,
 };

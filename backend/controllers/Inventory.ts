@@ -162,7 +162,9 @@ const getFavoriteRecipes = async (req: Request, res: Response) => {
                     // TODO: might need error catching here?
 
                     // console.log(response.data);
-                    const { recipeId, ...parsedRecipe } = await parseRecipe(data);
+                    const { recipeId, ...parsedRecipe } = await parseRecipe(
+                        data
+                    );
                     const spoonacularRecipe = new SpoonacularRecipe({
                         recipeId: recipeId,
                         recipe: parsedRecipe,
@@ -205,6 +207,110 @@ const getMyRecipes = async (req: Request, res: Response) => {
     }
 };
 
+async function getUserReviewForRecipe(req: Request, res: Response) {
+    const user = req.user;
+    const { id } = req.params;
+    try {
+        const inventory = await Inventory.findOne({
+            userId: user.id,
+        });
+        if (!inventory) {
+            return res.status(404).json({ message: "Inventory not found" });
+        }
+
+        // find the review by recipeId in the inventory
+        const review = inventory.myReviews.find(
+            (review) => review.recipeId === id
+        );
+        if (!review) {
+            return res.status(404).json({ message: "Review not found" });
+        }
+        res.status(201).json({ rating: review.rating });
+    } catch (error) {
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+async function updateUserReviewForRecipe(req: Request, res: Response) {
+    const user = req.user;
+    const { id } = req.params;
+    const { rating } = req.body;
+
+    if (!rating) {
+        return res.status(400).json({ message: "Rating is required" });
+    }
+
+    if (rating < 0 || rating > 5) {
+        return res.status(400).json({ message: "Rating must be between 0-5" });
+    }
+
+    try {
+        const inventory = await Inventory.findOne({
+            userId: user.id,
+        });
+        if (!inventory) {
+            return res.status(404).json({ message: "Inventory not found" });
+        }
+
+        // find the review by recipeId in the inventory
+        const review = inventory.myReviews.find(
+            (review) => review.recipeId === id
+        );
+
+        let ratingDiff = 0;
+
+        if (!review) {
+            // create a new review
+            const newReview = {
+                recipeId: id,
+                rating: rating,
+            };
+            console.log(newReview);
+            ratingDiff = rating;
+            inventory.myReviews.push(newReview);
+
+            await inventory.save();
+            await updateAvgRecipeRating(id, ratingDiff, 1);
+            return res.status(201).json({ message: "Review updated" });
+        } else {
+            // update the review
+            ratingDiff = rating - review.rating;
+            review.rating = rating;
+
+            await inventory.save();
+            await updateAvgRecipeRating(id, ratingDiff, 0);
+            return res.status(201).json({ message: "Review updated" });
+        }
+    } catch (error) {
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+async function updateAvgRecipeRating(id: string, ratingDiff: number, numReviews: number) {
+    // update the average rating for the recipe
+    if (id.startsWith("u")) {
+        const recipe = await UserRecipe.findOne({ recipeId: id });
+
+        if (recipe) {
+            recipe.review.avgRating = recipe.review.avgRating + ratingDiff;
+            recipe.review.numReviews = recipe.review.numReviews + numReviews;
+            recipe.markModified("review");
+            await recipe.save();
+        }
+    } else {
+        // spoonacular recipe
+        const recipe = await SpoonacularRecipe.findOne({ recipeId: id });
+        console.log(recipe?.recipeId, recipe?.review);
+        if (recipe) {
+            recipe.review.avgRating = recipe.review.avgRating + ratingDiff;
+            recipe.review.numReviews = recipe.review.numReviews + numReviews;
+            recipe.markModified("review");
+            await recipe.save();
+            console.log(recipe?.recipeId, recipe?.review);
+        }
+    }
+}
+
 export default {
     updatePantry,
     getPantry,
@@ -212,4 +318,6 @@ export default {
     removeRecipeFromFavorite,
     getFavoriteRecipes,
     getMyRecipes,
+    getUserReviewForRecipe,
+    updateUserReviewForRecipe,
 };

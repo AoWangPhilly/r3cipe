@@ -8,7 +8,10 @@ interface IUserRecipe {
     isPublic: boolean;
     createdAt: Date;
     updatedAt: Date;
-    // lastModified: Date;
+    review: {
+        avgRating: number;
+        numReviews: number;
+    };
 }
 
 const userRecipeSchema = new mongoose.Schema<IUserRecipe>(
@@ -17,6 +20,7 @@ const userRecipeSchema = new mongoose.Schema<IUserRecipe>(
         recipe: { type: Object, required: true },
         userId: { type: String, required: true },
         isPublic: { type: Boolean, required: true },
+        review: { type: Object, default: { avgRating: 0, numReviews: 0 } },
     },
     { versionKey: false, timestamps: true }
 );

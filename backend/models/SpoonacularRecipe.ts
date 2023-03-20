@@ -9,7 +9,10 @@ interface ISpoonacularRecipe {
     isPublic: boolean;
     createdAt: boolean;
     updatedAt: boolean;
-    // lastModified: Date;
+    review: {
+        avgRating: number;
+        numReviews: number;
+    };
 }
 
 const spoonacularRecipeSchema = new mongoose.Schema<ISpoonacularRecipe>(
@@ -18,6 +21,7 @@ const spoonacularRecipeSchema = new mongoose.Schema<ISpoonacularRecipe>(
         recipe: { type: Object, required: true },
         userId: { type: String, default: null },
         isPublic: { type: Boolean, default: true },
+        review: { type: Object, default: { avgRating: 0, numReviews: 0 } },
     },
     { versionKey: false, timestamps: true }
 );

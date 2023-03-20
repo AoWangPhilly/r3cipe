@@ -2,6 +2,7 @@ import { Router } from "express";
 import controller from "../controllers/Inventory.js";
 import { authorize } from "../middleware/checkAuth.js";
 
+// Routes to /api/user/inventory
 export const inventoryRouter: Router = Router();
 
 inventoryRouter.put("/pantry", authorize, controller.updatePantry);
@@ -14,3 +15,6 @@ inventoryRouter.delete(
     controller.removeRecipeFromFavorite
 );
 inventoryRouter.get("/myrecipes", authorize, controller.getMyRecipes);
+
+inventoryRouter.get("/review/:id", authorize, controller.getUserReviewForRecipe);
+inventoryRouter.put("/review/:id", authorize, controller.updateUserReviewForRecipe);
