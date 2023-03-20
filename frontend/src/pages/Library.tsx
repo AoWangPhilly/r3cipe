@@ -90,11 +90,14 @@ export const Library = () => {
                         margin: 2,
                     }}
                 >
-                    {recipes.map((recipe: RecipeThumbnailType) => (
-                        <Grid item xs={1} key={recipe.id}>
-                            <RecipeThumbnail recipeThumbnail={recipe} />
-                        </Grid>
-                    ))}
+                    {recipes.map(
+                        (recipe: RecipeThumbnailType) =>
+                            recipe !== null && (
+                                <Grid item xs={1} key={recipe.id}>
+                                    <RecipeThumbnail recipeThumbnail={recipe} />
+                                </Grid>
+                            )
+                    )}
                 </Grid>
             ) : (
                 <Box
