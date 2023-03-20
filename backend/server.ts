@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import { config } from "./config/config.js";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
+import fs from "fs";
 
 import authRouter from "./routes/auth.js";
 import { ingredientRouter } from "./routes/Ingredient.js";
@@ -91,14 +92,27 @@ app.get("/images/:filename", (req, res) => {
     //if it exists, send it to client
     //if it doesn't exist, send 404
     // res.sendFile(path.join(__dirname, "../data/images", req.params.filename));
-    res.sendFile(
-        path.join(__dirname, "../data/images", req.params.filename),
-        (err) => {
-            if (err) {
-                res.sendStatus(404);
-            }
+    //check if file exists first
+    try {
+        if (
+            fs.existsSync(
+                path.join(__dirname, "../data/images", req.params.filename)
+            )
+        ) {
+            res.sendFile(
+                path.join(__dirname, "../data/images", req.params.filename),
+                (err) => {
+                    if (err) {
+                        console.log("file is not truly there", req.params.filename);
+                    }
+                }
+            );
+        } else {
+            res.status(404).send("File not found");
         }
-    );
+    } catch (err) {
+        console.error("get image error: ", err);
+    }
 });
 //********************************************************
 //********************************************************
