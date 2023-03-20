@@ -207,6 +207,9 @@ const getMyRecipes = async (req: Request, res: Response) => {
     }
 };
 
+/**
+ * Gets a User's review (rating) for a recipe
+ */
 async function getUserReviewForRecipe(req: Request, res: Response) {
     const user = req.user;
     const { id } = req.params;
@@ -231,6 +234,10 @@ async function getUserReviewForRecipe(req: Request, res: Response) {
     }
 }
 
+/**
+ * Creates/updates a User's review (rating) for a recipe
+ * Updates the Recipe's avgRating / numReviews
+ */
 async function updateUserReviewForRecipe(req: Request, res: Response) {
     const user = req.user;
     const { id } = req.params;
@@ -286,6 +293,9 @@ async function updateUserReviewForRecipe(req: Request, res: Response) {
     }
 }
 
+/**
+ * Updates User/Spoonacular recipe's avgRating / numReviews
+ */
 async function updateAvgRecipeRating(id: string, ratingDiff: number, numReviews: number) {
     // update the average rating for the recipe
     if (id.startsWith("u")) {
