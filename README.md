@@ -20,7 +20,7 @@ A unique feature of r3cipe is that it uses Open AI's GPT-3 model to fill in miss
 
 **Authentication**: Custom Sessions
 
-**Deployment**: Linode, CloudFlare
+**Deployment**: CloudFlare, Linode, Caddy
 
 **Tests**: Jest
 
